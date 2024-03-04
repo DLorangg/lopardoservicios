@@ -13,6 +13,7 @@ const db = mysql.createConnection({
     database: "lopardo"
 })
 
+//Ruta para login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const sql = "SELECT * FROM usuarios WHERE Nombre = ? AND Contraseña = ?";
@@ -23,6 +24,15 @@ app.post('/login', (req, res) => {
         } else {
             return res.status(401).json({ error: "Credenciales incorrectas" });
         }
+    })
+})
+
+//Ruta CRUD
+app.get('/', (req, res) =>{
+    const sql =  'SELECT * FROM datos1';
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Message: "Error en server"})
+        return res.json(result)
     })
 })
 

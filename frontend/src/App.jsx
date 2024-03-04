@@ -1,10 +1,14 @@
-import LoginForm from './Components/LoginForm/LoginForm';
+//import LoginForm from './Components/LoginForm/LoginForm';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import Crud from './Components/Crud/Crud';
 
 function App() {
   return (
-    <div>
-      <LoginForm/>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Crud />}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
