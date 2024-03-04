@@ -82,7 +82,7 @@
 
 }
 
-/*body {
+body {
   font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -92,7 +92,7 @@
   min-height: 100vh;
   background: rgb(15,111,187);
   background: radial-gradient(circle, rgba(15,111,187,1) 31%, rgba(20,20,103,1) 88%);
-}*/
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
