@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginForm from './Components/LoginForm/LoginForm';
 import Crud from './Components/Crud/Crud';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('loggedIn');
+    if (isLoggedIn === 'true') {
+      setLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.setItem('loggedIn', 'false');
+    setLoggedIn(false);
+  };
 
   return (
     <BrowserRouter>
@@ -15,7 +27,7 @@ function App() {
         />
         <Route
           path='/'
-          element={loggedIn ? <Crud /> : <Navigate to='/login' />}
+          element={loggedIn ? <Crud onLogout={handleLogout} /> : <Navigate to='/login' />}
         />
       </Routes>
     </BrowserRouter>
