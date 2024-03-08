@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import {useState } from 'react';
 import './LoginForm.css';
 import { FaUser, FaLock } from "react-icons/fa";
 import LogoCompleto from '../../Assets/Logo_Completo.png';
