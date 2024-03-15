@@ -22,7 +22,7 @@ export function DatosUpdate() {
 
   // Obtener el IdCliente de la visita actual
   const visitaActual = dataVisita.find(visita => visita.id === id);
-  const IdClienteVisitaActual = visitaActual ? visitaActual.IdCliente : '';
+  const IdClienteVisitaActual = visitaActual ? visitaActual.IdCliente : ''; 
 
   const [IdCliente, setIdCliente] = useState(IdClienteVisitaActual);
   const [Ciudad, setCiudad] = useState('');
