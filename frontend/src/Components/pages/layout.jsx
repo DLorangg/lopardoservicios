@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import LogoutIcon from '../../Assets/logout.png';
 
 export function Navbar({ setAuthenticated }) {
   const navigate = useNavigate();
@@ -31,19 +32,26 @@ export function Navbar({ setAuthenticated }) {
               <Link className="nav-link text-dark" to="/equipo">Equipo</Link>
             </li>
           </ul>
-          <button className="btn btn-primary" onClick={handleLogout}>Cerrar sesión</button>
+          {/* Icono de cerrar sesión con estilos */}
+          <img
+            src={LogoutIcon}
+            alt="Cerrar sesión"
+            className="logout-icon"
+            style={{ width: '32px', height: '32px', cursor: 'pointer' }}
+            onClick={handleLogout}
+          />
         </div>
       </div>
     </nav>
   );
 }
 
-export function Footer(){
-    return(
-        <footer>
-            <div className="container p-3 mt-5 border-top"> 
-                <small className="d-block text-muted text-center" >&copy; 2024 - Lopardo</small>
-            </div>
-        </footer>
-    );
+export function Footer() {
+  return (
+    <footer>
+      <div className="container p-3 mt-5 border-top">
+        <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
+      </div>
+    </footer>
+  );
 }
