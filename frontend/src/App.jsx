@@ -7,7 +7,6 @@ import { DatosUpdate } from './Components/pages/datosViews/datosUpdate';
 import { Equipo } from './Components/pages/equipoViews/equipo';
 import { EquipoUpdate } from './Components/pages/equipoViews/equipoUpdate';
 import { LoginForm } from './Components/LoginForm/LoginForm';
-import Cookies from 'js-cookie';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);

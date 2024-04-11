@@ -169,6 +169,30 @@ app.post('/visitapost', (req, res) => {
     })
 });
 
+app.post('/clientepost', (req, res) => {
+    const clienteData = req.body; // Asegúrate de que los datos lleguen correctamente desde el cliente
+
+    const equipamiento = clienteData.Equipamiento.join(', ');
+
+    const sql = "INSERT INTO cliente (Nombre, DNI, Ciudad, Direccion, Equipamiento, Telefono) VALUES (?, ?, ?, ?, ?, ?)";
+    const values = [
+        clienteData.Nombre,
+        clienteData.DNI,
+        clienteData.Ciudad,
+        clienteData.Direccion,
+        equipamiento,
+        clienteData.Telefono
+    ];
+
+    db.query(sql, values, (err, data) => {
+        if (err) {
+            console.error("Error al insertar cliente:", err);
+            return res.status(500).json({ error: "Error interno del servidor al crear cliente" });
+        }
+        return res.json({ success: true, message: "Cliente creado exitosamente" });
+    });
+});
+
 app.listen(8081, () => {
     console.log('Escuchando en el puerto 8081')
 })

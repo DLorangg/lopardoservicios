@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import {Link, useNavigate} from 'react-router-dom';
+import { ModalComponent } from "../modal";
 
 export function Datos() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -99,6 +100,10 @@ export function DatosList(props) {
 export function DatosForm(props) {
 
     const [dataCliente, setDataCliente] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+
+    const handleCloseModal = () => setShowModal(false);
+    const handleShowModal = () => setShowModal(true);
 
     function fetchCliente() {
         fetch("http://localhost:8081/cliente")
@@ -178,22 +183,22 @@ export function DatosForm(props) {
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
 
-            <label className="col-sm-4 col-form-label">Cliente</label>
-            <div className="col-sm-8">
-            <select className="form-control" name="IdCliente"   onChange={e => setIdCliente(e.target.value)}>
-            <option value="" disabled hidden selected>Seleccione</option>
-            {dataCliente && dataCliente.map((cliente) => (
-              
+          <label className="col-sm-4 col-form-label">Cliente</label>
+          <div className="col-sm-8 d-flex align-items-center">
+            <select className="form-control" name="IdCliente" onChange={e => setIdCliente(e.target.value)}>
+              <option value="" disabled hidden selected>Seleccione</option>
+              {dataCliente && dataCliente.map((cliente) => (
                 <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                
-                {cliente.Nombre}
+                  {cliente.Nombre}
                 </option>
-            ))}
-            {dataCliente && dataCliente.length === 0 && <option value="">No clients available</option>}
+              ))}
+              {dataCliente && dataCliente.length === 0 && <option value="">No clients available</option>}
             </select>
-
-            </div>
-
+            <button type="button" className="btn btn-primary ms-2" onClick={handleShowModal}>
+              Crear Cliente
+            </button>
+          </div>
+          <ModalComponent show={showModal} handleClose={handleCloseModal} />
 
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
