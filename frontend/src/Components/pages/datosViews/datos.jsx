@@ -112,19 +112,16 @@ export function DatosForm(props) {
     }
   
       useEffect(() => fetchCliente(), []);
-
-
-      const [dataEquipo, setDataEquipo] = useState([]);
  
 
-      function fetchEquipo() {
+      function fetchEquipamiento() {
         axios.get("http://localhost:8081/equipamiento")
-          .then(res => setDataEquipo(res.data))
+          .then(res => setDataEquipamiento(res.data))
           .catch((error) => console.log("Error: ", error));
       }
     
      
-      useEffect(() => fetchEquipo(), []);
+      useEffect(() => fetchEquipamiento(), []);
 
       const [dataEstado, setDataEstado] = useState([]);
  
@@ -146,6 +143,8 @@ export function DatosForm(props) {
       const [Direccion, setDireccion] = useState('');
       const [Descripcion, setDescripcion] = useState('')
       const [IdEquipamiento, setIdEquipamiento] = useState('')
+      const [Equipamiento, setEquipamiento] = useState([]);
+      const [dataEquipamiento, setDataEquipamiento] = useState([]);
       const [IdEstado, setIdEstado] = useState('')
       const [Precio, setPrecio] = useState('')
       const [Garantia, setGarantia] = useState('')
@@ -174,7 +173,22 @@ export function DatosForm(props) {
           setIdCliente(clienteId);
           setCiudad(clienteSeleccionado.Ciudad);
           setDireccion(clienteSeleccionado.Direccion);
+    
+          // Actualizar equipamientos seleccionados según el cliente
+          const equipamientosCliente = clienteSeleccionado.Equipamiento.split(',').map(e => e.trim());
+          setEquipamiento(equipamientosCliente);
         }
+      };
+
+      const handleEquipamientoChange = (event) => {
+        const options = event.target.options;
+        const selectedEquipamiento = [];
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].selected) {
+            selectedEquipamiento.push(options[i].value);
+          }
+        }
+        setEquipamiento(selectedEquipamiento);
       };
 
   return (
@@ -220,20 +234,14 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Equipamiento</label>
             <div className="col-sm-8">
-            <select className="form-control" name="IdEquipamiento"   onChange={e => setIdEquipamiento(e.target.value)}>
-            <option value="" disabled hidden selected>Seleccione</option>
-            {dataEquipo && dataEquipo.map((equipo) => (
-              
-                <option key={equipo.IdEquipamiento} value={equipo.IdEquipamiento}>
-                {equipo.Nombre}
-                </option>
-            ))}
-            {dataEquipo && dataEquipo.length === 0 && <option value="">No clients available</option>}
-            </select>
-
+              <select className="form-control" name="Equipamiento" multiple onChange={handleEquipamientoChange} value={Equipamiento}>
+                {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
+                  <option key={equipamiento.IdEquipamiento} value={equipamiento.Nombre}>
+                    {equipamiento.Nombre}
+                  </option>
+                ))}
+              </select>
             </div>
-
-
 
             <label className="col-sm-4 col-form-label">Estado</label>
             <div className="col-sm-8">
