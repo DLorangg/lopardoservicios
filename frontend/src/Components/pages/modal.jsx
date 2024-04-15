@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
-export function ModalComponent({ show, handleClose }) {
+export function ModalComponent({ show, handleClose, updateClientes }) {
   const [clienteData, setClienteData] = useState({
     Nombre: '',
     DNI: '',
@@ -54,6 +54,7 @@ export function ModalComponent({ show, handleClose }) {
         console.log('Cliente creado:', response.data);
         alert('Cliente creado exitosamente');
         handleClose();
+        updateClientes(); 
       })
       .catch(error => {
         console.error('Error al crear cliente:', error);

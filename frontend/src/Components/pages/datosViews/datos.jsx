@@ -191,6 +191,24 @@ export function DatosForm(props) {
         setEquipamiento(selectedEquipamiento);
       };
 
+      const handleGuardar = () => {
+        axios.post('http://localhost:8081/clientepost', clienteData)
+          .then(response => {
+            console.log('Cliente creado:', response.data);
+            alert('Cliente creado exitosamente');
+            handleCloseModal();
+            updateClientes(); // Llamar a la función para actualizar la lista de clientes
+          })
+          .catch(error => {
+            console.error('Error al crear cliente:', error);
+            alert('Error al crear cliente');
+          });
+      };
+
+      const updateClientes = () => {
+        fetchCliente()
+      }
+
   return (
     <>
       <h2 className="text-center mb-3">Crear una nueva Visita</h2>
@@ -214,8 +232,7 @@ export function DatosForm(props) {
               Crear Cliente
             </button>
           </div>
-          <ModalComponent show={showModal} handleClose={handleCloseModal} />
-
+          <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
               <input className="form-control" name="Ciudad" value={Ciudad} onChange={(e) => setCiudad(e.target.value)} />
