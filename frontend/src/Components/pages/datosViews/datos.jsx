@@ -180,17 +180,6 @@ export function DatosForm(props) {
         }
       };
 
-      const handleEquipamientoChange = (event) => {
-        const options = event.target.options;
-        const selectedEquipamiento = [];
-        for (let i = 0; i < options.length; i++) {
-          if (options[i].selected) {
-            selectedEquipamiento.push(options[i].value);
-          }
-        }
-        setEquipamiento(selectedEquipamiento);
-      };
-
       const handleGuardar = () => {
         axios.post('http://localhost:8081/clientepost', clienteData)
           .then(response => {
@@ -251,9 +240,9 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Equipamiento</label>
             <div className="col-sm-8">
-              <select className="form-control" name="Equipamiento" multiple onChange={handleEquipamientoChange} value={Equipamiento}>
+              <select className="form-control" name="Equipamiento" multiple>
                 {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
-                  <option key={equipamiento.IdEquipamiento} value={equipamiento.Nombre}>
+                  <option key={equipamiento.IdEquipamiento}>
                     {equipamiento.Nombre}
                   </option>
                 ))}

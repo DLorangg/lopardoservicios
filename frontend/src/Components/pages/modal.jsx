@@ -89,7 +89,7 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
             <Form.Label>Equipamiento</Form.Label>
             <Form.Control as="select" name="Equipamiento" multiple onChange={handleEquipamientoChange}>
               {equipamientoOptions.map(equipamiento => (
-                <option key={equipamiento.IdEquipamiento} value={equipamiento.Nombre}>
+                <option key={equipamiento.IdEquipamiento} >
                   {equipamiento.Nombre}
                 </option>
               ))}
