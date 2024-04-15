@@ -106,19 +106,11 @@ export function DatosForm(props) {
     const handleShowModal = () => setShowModal(true);
 
     function fetchCliente() {
-        fetch("http://localhost:8081/cliente")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Error con la respuesta del servidor");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            setDataCliente(data);
-          })
-          .catch((error) => console.log("Error: ", error));
-      }
-
+      axios.get("http://localhost:8081/cliente")
+        .then(res => setDataCliente(res.data))
+        .catch((error) => console.log("Error: ", error));
+    }
+  
       useEffect(() => fetchCliente(), []);
 
 
@@ -149,9 +141,9 @@ export function DatosForm(props) {
 
 
 
-      const [IdCliente, setIdCliente] = useState('')
-      const [Ciudad, setCiudad] = useState('')
-      const [Direccion, setDireccion] = useState('')
+      const [IdCliente, setIdCliente] = useState('');
+      const [Ciudad, setCiudad] = useState('');
+      const [Direccion, setDireccion] = useState('');
       const [Descripcion, setDescripcion] = useState('')
       const [IdEquipamiento, setIdEquipamiento] = useState('')
       const [IdEstado, setIdEstado] = useState('')
@@ -174,6 +166,17 @@ export function DatosForm(props) {
           })
     
       }
+
+      const handleClienteChange = (event) => {
+        const clienteId = event.target.value;
+        const clienteSeleccionado = dataCliente.find(cliente => cliente.IdCliente.toString() === clienteId);
+        if (clienteSeleccionado) {
+          setIdCliente(clienteId);
+          setCiudad(clienteSeleccionado.Ciudad);
+          setDireccion(clienteSeleccionado.Direccion);
+        }
+      };
+
   return (
     <>
       <h2 className="text-center mb-3">Crear una nueva Visita</h2>
@@ -185,15 +188,14 @@ export function DatosForm(props) {
 
           <label className="col-sm-4 col-form-label">Cliente</label>
           <div className="col-sm-8 d-flex align-items-center">
-            <select className="form-control" name="IdCliente" onChange={e => setIdCliente(e.target.value)}>
-              <option value="" disabled hidden selected>Seleccione</option>
-              {dataCliente && dataCliente.map((cliente) => (
-                <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                  {cliente.Nombre}
-                </option>
-              ))}
-              {dataCliente && dataCliente.length === 0 && <option value="">No clients available</option>}
-            </select>
+          <select className="form-control" name="IdCliente" onChange={handleClienteChange} value={IdCliente}>
+                <option value="" disabled hidden>Seleccione</option>
+                {dataCliente && dataCliente.map((cliente) => (
+                  <option key={cliente.IdCliente} value={cliente.IdCliente}>
+                    {cliente.Nombre}
+                  </option>
+                ))}
+              </select>
             <button type="button" className="btn btn-primary ms-2" onClick={handleShowModal}>
               Crear Cliente
             </button>
@@ -202,34 +204,12 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
-            <select className="form-control" name="Ciudad"   onChange={e => setCiudad(e.target.value)}>
-            <option value="" disabled hidden selected>Seleccione</option>
-            {dataCliente && dataCliente.map((cliente) => (
-              
-                <option key={cliente.IdCliente} value={cliente.Ciudad}>
-                {cliente.Ciudad}
-                </option>
-            ))}
-            {dataCliente && dataCliente.length === 0 && <option value="">No clients available</option>}
-            </select>
-
+              <input className="form-control" name="Ciudad" value={Ciudad} onChange={(e) => setCiudad(e.target.value)} />
             </div>
 
-
-
-            <label className="col-sm-4 col-form-label">Direccion</label>
+            <label className="col-sm-4 col-form-label">Dirección</label>
             <div className="col-sm-8">
-            <select className="form-control" name="Direccion"   onChange={e => setDireccion(e.target.value)}>
-            <option value="" disabled hidden selected>Seleccione</option>
-            {dataCliente && dataCliente.map((cliente) => (
-              
-                <option key={cliente.IdCliente} value={cliente.Direccion}>
-                {cliente.Direccion}
-                </option>
-            ))}
-            {dataCliente && dataCliente.length === 0 && <option value="">No clients available</option>}
-            </select>
-
+              <input className="form-control" name="Direccion" value={Direccion} onChange={(e) => setDireccion(e.target.value)} />
             </div>
 
             <label className="col-sm-4 col-form-label">Descripcion</label>
