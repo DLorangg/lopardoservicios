@@ -81,6 +81,9 @@ function DatosList(props) {
               <td>{`$ `+dato.Precio}</td>
               <td>{dato.Fecha}</td>
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
+                <Link to={`/datosdetalle/${dato.IdVisita}`} type="buttom" className="btn btn-secondary btn-sm me-2">
+                  Detalle
+                </Link>
                 <Link  to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2">
                   Editar
                 </Link>
@@ -118,7 +121,7 @@ function DatosForm(props) {
 
 
       const [dataEquipo, setDataEquipo] = useState([]);
- 
+
 
       function fetchEquipo() {
         axios.get("http://localhost:8081/equipamiento")
@@ -126,11 +129,11 @@ function DatosForm(props) {
           .catch((error) => console.log("Error: ", error));
       }
     
-     
+    
       useEffect(() => fetchEquipo(), []);
 
       const [dataEstado, setDataEstado] = useState([]);
- 
+
 
       function fetchEstado() {
         axios.get("http://localhost:8081/estado")
@@ -138,7 +141,7 @@ function DatosForm(props) {
           .catch((error) => console.log("Error: ", error));
       }
     
-     
+    
       useEffect(() => fetchEstado(), []);
 
 
@@ -169,10 +172,28 @@ function DatosForm(props) {
           })
     
       }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+    
+        // Formatear la fecha
+        const formattedDate = new Date(Fecha).toISOString().split('T')[0];
+    
+        axios.post('http://localhost:8081/visitapost',{IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha: formattedDate })
+          .then(res => {
+            console.log(res);
+            console.log(IdCliente);
+            console.log("result");
+            navigate(props.ShowList());
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      
   return (
     <>
       <h2 className="text-center mb-3">Crear una nueva Visita</h2>
-     
+    
 
       <div className="row">
         <div className="col-lg-6 mx-auto">
@@ -284,7 +305,7 @@ function DatosForm(props) {
                   checked={Garantia === 1}
                   onChange={() => {
                     setGarantia(1);
-                   
+                  
                   }}
                   style={{ borderRadius: '0' }}
                 />
@@ -313,22 +334,22 @@ function DatosForm(props) {
             </div>
 
 
-            <label className="col-sm-4 col-form-label">Fecha</label>
-            <div className="col-sm-8">
-              <input 
-                className="form-control" 
-                type="date" 
-                name="Fecha"  
-                onChange={e => setFecha(e.target.value)}
-              />
-            </div>
+              <label className="col-sm-4 col-form-label">Fecha</label>
+              <div className="col-sm-8">
+                <input 
+                  className="form-control" 
+                  type="date" 
+                  name="Fecha"  
+                  onChange={e => setFecha(e.target.value)}
+                />
+              </div>
 
 
 
 
       {/* 
-   
-         
+  
+        
 
             <label className="col-sm-4 col-form-label">Descripcion</label>
             <div className="col-sm-8">
@@ -350,7 +371,7 @@ function DatosForm(props) {
 
       
 
-     
+    
           
 
 

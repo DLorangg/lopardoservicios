@@ -8,6 +8,7 @@ import { DatosUpdate } from './Components/pages/datosViews/datosUpdate';
 import { Equipo } from './Components/pages/equipoViews/equipo';
 import {EquipoUpdate} from './Components/pages/equipoViews/equipoUpdate';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import DatosDetalle from './Components/pages/datosViews/datosDetalle'; // Asegúrate de importar correctamente el componente
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,6 +21,7 @@ root.render(
         <Route path='/equipo' element={<Equipo />} />
         <Route path='/update/:id' element={<EquipoUpdate />} />
         <Route path='/updatevisita/:id' element={<DatosUpdate />} />
+        <Route path='/datosdetalle/:id' element={<DatosDetalle />} />
       </Routes>
       <Footer />
     </BrowserRouter>
