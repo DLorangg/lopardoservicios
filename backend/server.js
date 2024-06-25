@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "lopardo"
+    database: "lopardo_v1" //   CAMBIAR DB
 })
 
 // Ruta para login
@@ -80,6 +80,16 @@ app.get('/visita', (req, res) =>{
     })
 })
 
+app.get('/visitadetalle', (req, res) => {
+    const idDato = req.query.idDato; // Obtener el idDato del query string
+    const sql = `SELECT * FROM visita WHERE IdVisita = ?`; // Consulta SQL con la cláusula WHERE
+    db.query(sql, [idDato], (err, result) => {
+        if (err) return res.json({ Message: "Error en server" });
+        return res.json(result);
+    });
+});
+
+
 app.post('/equipamientopost', (req, res) => {
     const sql = "INSERT INTO equipamiento (`Nombre`) VALUES (?)";
     const values = [
@@ -143,6 +153,7 @@ app.delete('/equipamiento/:id', (req, res) => {
         return res.json(data);
     });
 });
+
 
 
 

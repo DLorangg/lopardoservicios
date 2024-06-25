@@ -1,0 +1,85 @@
+/* Navbar Animation */
+.navbar-collapse {
+    animation: fadeInDown 0.5s forwards;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Navbar Item Animation */
+.navbar-nav .nav-item {
+    animation: slideFromLeft 0.3s forwards;
+}
+
+@keyframes slideFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+
+/* Navbar */
+.navbar {
+    padding: 0.5rem 1rem; /* Espaciado interno del navbar */
+}
+
+.navbar-brand {
+    font-size: 1.5rem; /* Tamaño del texto del navbar-brand */
+}
+
+.navbar-toggler {
+    border-color: transparent; /* Quita el borde del botón del toggler */
+}
+
+/* Navbar Link */
+.navbar-nav .nav-item {
+    margin-right: 1rem; /* Espacio entre elementos del navbar */
+}
+
+.navbar-nav .nav-link {
+    font-size: 1.1rem; /* Tamaño del texto del enlace del navbar */
+    position: relative; /* Establece posición relativa para la pestaña */
+}
+
+/* Navbar Link Hover */
+.navbar-nav .nav-link:hover {
+    color: blue; /* Color del texto al pasar el mouse sobre el enlace */
+}
+
+/* Navbar Active Link */
+.navbar-nav .nav-item.active .nav-link {
+    color: blue; /* Color del texto para la pestaña activa */
+    font-weight: bold; /* Estilo del texto para la pestaña activa */
+}
+
+/* Línea Marcada */
+.navbar-nav .nav-item .nav-link::after {
+    content: ''; /* Añade contenido para la línea */
+    display: block; /* Muestra la línea como bloque */
+    position: absolute; /* Establece posición absoluta para la línea */
+    bottom: -2px; /* Posiciona la línea 2px por debajo de la pestaña */
+    left: 0; /* Inicia la línea desde el borde izquierdo */
+    width: 100%; /* Establece la longitud de la línea al 100% del ancho de la pestaña */
+    height: 2px; /* Establece la altura de la línea */
+    background-color: blue; /* Color de la línea */
+    opacity: 0; /* Hace que la línea no sea visible inicialmente */
+    transition: opacity 0.3s ease; /* Añade transición para suavizar el efecto */
+}
+
+.navbar-nav .nav-item.active .nav-link::after {
+    opacity: 1; /* Hace que la línea sea visible cuando la pestaña está activa */
+}

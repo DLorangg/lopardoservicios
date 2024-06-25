@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ModalComponent } from "../modal";
 
 export function Datos() {
@@ -22,7 +22,6 @@ export function Datos() {
 }
 
 export function DatosList(props) {
-
   const [dataVisita, setDataVisita] = useState([]);
   const [dataCliente, setDataCliente] = useState([]);
 
@@ -65,7 +64,6 @@ export function DatosList(props) {
       <table className="table">
         <thead>
           <tr>
-            
             <th>Cliente</th>
             <th>Dirección</th>
             <th>Precio</th>
@@ -75,14 +73,16 @@ export function DatosList(props) {
         </thead>
         <tbody>
           {dataVisita.map((dato, index) => (
-          
             <tr key={index}>
               <td>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
               <td>{dato.Direccion}</td>
-              <td>{`$ `+dato.Precio}</td>
+              <td>{`$ ` + dato.Precio}</td>
               <td>{dato.Fecha}</td>
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                <Link  to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2">
+                <Link to={`/datosdetalle/${dato.IdVisita}`} type="buttom" className="btn btn-secondary btn-sm me-2">
+                  Detalle
+                </Link>
+                <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2">
                   Editar
                 </Link>
                 <button type="button" className="btn btn-danger btn-sm">
@@ -98,118 +98,142 @@ export function DatosList(props) {
 }
 
 export function DatosForm(props) {
+  const [dataCliente, setDataCliente] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
-    const [dataCliente, setDataCliente] = useState([]);
-    const [showModal, setShowModal] = useState(false);
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
 
-    const handleCloseModal = () => setShowModal(false);
-    const handleShowModal = () => setShowModal(true);
+  function fetchCliente() {
+    axios.get("http://localhost:8081/cliente")
+      .then(res => setDataCliente(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
 
-    function fetchCliente() {
-      axios.get("http://localhost:8081/cliente")
-        .then(res => setDataCliente(res.data))
-        .catch((error) => console.log("Error: ", error));
+  useEffect(() => fetchCliente(), []);
+
+  function fetchEquipamiento() {
+    axios.get("http://localhost:8081/equipamiento")
+      .then(res => setDataEquipamiento(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  useEffect(() => fetchEquipamiento(), []);
+
+  const [dataEstado, setDataEstado] = useState([]);
+
+  function fetchEstado() {
+    axios.get("http://localhost:8081/estado")
+      .then(res => setDataEstado(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  useEffect(() => fetchEstado(), []);
+
+  const [IdCliente, setIdCliente] = useState('');
+  const [Ciudad, setCiudad] = useState('');
+  const [Direccion, setDireccion] = useState('');
+  const [Descripcion, setDescripcion] = useState('');
+  const [IdEquipamiento, setIdEquipamiento] = useState('');
+  const [Equipamiento, setEquipamiento] = useState([]);
+  const [dataEquipamiento, setDataEquipamiento] = useState([]);
+  const [IdEstado, setIdEstado] = useState('');
+  const [Precio, setPrecio] = useState('');
+  const [Garantia, setGarantia] = useState('');
+  const [Fecha, setFecha] = useState('');
+  const navigate = useNavigate();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    // Formatear la fecha
+    const formattedDate = new Date(Fecha).toISOString().split('T')[0];
+
+    axios.post('http://localhost:8081/visitapost', { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha: formattedDate })
+      .then(res => {
+        console.log(res);
+        console.log(IdCliente);
+        console.log("result");
+        navigate(props.ShowList());
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  const handleClienteChange = (event) => {
+    const clienteId = event.target.value;
+    const clienteSeleccionado = dataCliente.find(cliente => cliente.IdCliente.toString() === clienteId);
+    if (clienteSeleccionado) {
+      setIdCliente(clienteId);
+      setCiudad(clienteSeleccionado.Ciudad);
+      setDireccion(clienteSeleccionado.Direccion);
+
+      // Actualizar equipamientos seleccionados según el cliente
+      const equipamientosCliente = clienteSeleccionado.Equipamiento.split(',').map(e => e.trim());
+      setEquipamiento(equipamientosCliente);
     }
-  
-      useEffect(() => fetchCliente(), []);
- 
+  };
 
-      function fetchEquipamiento() {
-        axios.get("http://localhost:8081/equipamiento")
-          .then(res => setDataEquipamiento(res.data))
-          .catch((error) => console.log("Error: ", error));
-      }
-    
-     
-      useEffect(() => fetchEquipamiento(), []);
+  const handleGuardar = () => {
+    axios.post('http://localhost:8081/clientepost', clienteData)
+      .then(response => {
+        console.log('Cliente creado:', response.data);
+        alert('Cliente creado exitosamente');
+        handleCloseModal();
+        updateClientes(); // Llamar a la función para actualizar la lista de clientes
+      })
+      .catch(error => {
+        console.error('Error al crear cliente:', error);
+        alert('Error al crear cliente');
+      });
+  };
 
-      const [dataEstado, setDataEstado] = useState([]);
- 
+  const updateClientes = () => {
+    fetchCliente()
+  }
 
-      function fetchEstado() {
-        axios.get("http://localhost:8081/estado")
-          .then(res => setDataEstado(res.data))
-          .catch((error) => console.log("Error: ", error));
-      }
-    
-     
-      useEffect(() => fetchEstado(), []);
+  const [files, setFiles] = useState([]);
+  const fileInputRef = useRef(null);
 
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = e.dataTransfer.files;
+    handleFiles(droppedFiles);
+  };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
+  const handleFiles = (selectedFiles) => {
+    const newFiles = [...files];
 
-      const [IdCliente, setIdCliente] = useState('');
-      const [Ciudad, setCiudad] = useState('');
-      const [Direccion, setDireccion] = useState('');
-      const [Descripcion, setDescripcion] = useState('')
-      const [IdEquipamiento, setIdEquipamiento] = useState('')
-      const [Equipamiento, setEquipamiento] = useState([]);
-      const [dataEquipamiento, setDataEquipamiento] = useState([]);
-      const [IdEstado, setIdEstado] = useState('')
-      const [Precio, setPrecio] = useState('')
-      const [Garantia, setGarantia] = useState('')
-      const [Fecha, setFecha] = useState('')
-      const navigate = useNavigate();
-    
-      function handleSubmit(event) {
-      
-    
-          event.preventDefault();
-    
-          axios.post('http://localhost:8081/visitapost',{IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha })
-          .then(res => {
-            console.log(res);
-            console.log(IdCliente);
-            console.log("result");
-            navigate(props.ShowList());
-          })
-    
-      }
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      newFiles.push(file);
+    }
 
-      const handleClienteChange = (event) => {
-        const clienteId = event.target.value;
-        const clienteSeleccionado = dataCliente.find(cliente => cliente.IdCliente.toString() === clienteId);
-        if (clienteSeleccionado) {
-          setIdCliente(clienteId);
-          setCiudad(clienteSeleccionado.Ciudad);
-          setDireccion(clienteSeleccionado.Direccion);
-    
-          // Actualizar equipamientos seleccionados según el cliente
-          const equipamientosCliente = clienteSeleccionado.Equipamiento.split(',').map(e => e.trim());
-          setEquipamiento(equipamientosCliente);
-        }
-      };
+    setFiles(newFiles);
+  };
 
-      const handleGuardar = () => {
-        axios.post('http://localhost:8081/clientepost', clienteData)
-          .then(response => {
-            console.log('Cliente creado:', response.data);
-            alert('Cliente creado exitosamente');
-            handleCloseModal();
-            updateClientes(); // Llamar a la función para actualizar la lista de clientes
-          })
-          .catch(error => {
-            console.error('Error al crear cliente:', error);
-            alert('Error al crear cliente');
-          });
-      };
+  const handleFileInputChange = (e) => {
+    const selectedFiles = e.target.files;
+    handleFiles(selectedFiles);
+  };
 
-      const updateClientes = () => {
-        fetchCliente()
-      }
+  const handleOpenFileDialog = () => {
+    fileInputRef.current.click();
+  };
 
   return (
     <>
       <h2 className="text-center mb-3">Crear una nueva Visita</h2>
-     
-
       <div className="row">
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
 
-          <label className="col-sm-4 col-form-label">Cliente</label>
-          <div className="col-sm-8 d-flex align-items-center">
-          <select className="form-control" name="IdCliente" onChange={handleClienteChange} value={IdCliente}>
+            <label className="col-sm-4 col-form-label">Cliente</label>
+            <div className="col-sm-8 d-flex align-items-center">
+              <select className="form-control" name="IdCliente" onChange={handleClienteChange} value={IdCliente}>
                 <option value="" disabled hidden>Seleccione</option>
                 {dataCliente && dataCliente.map((cliente) => (
                   <option key={cliente.IdCliente} value={cliente.IdCliente}>
@@ -217,11 +241,13 @@ export function DatosForm(props) {
                   </option>
                 ))}
               </select>
-            <button type="button" className="btn btn-primary ms-2" onClick={handleShowModal}>
-              Crear Cliente
-            </button>
-          </div>
-          <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
+              <button type="button"
+                className="btn btn-primary ms-2"
+                onClick={handleShowModal}
+                style={{ borderRadius: '35%', fontSize: '25px', width: '40px', height: '40px', padding: '0', display: 'flex', justifyContent: 'center' }}>+
+              </button>
+            </div>
+            <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
               <input className="form-control" name="Ciudad" value={Ciudad} onChange={(e) => setCiudad(e.target.value)} />
@@ -234,9 +260,8 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Descripcion</label>
             <div className="col-sm-8">
-              <textarea className="form-control" name="Descripcion"  onChange={e => setDescripcion(e.target.value)}/>
+              <textarea className="form-control" name="Descripcion" onChange={e => setDescripcion(e.target.value)} />
             </div>
-
 
             <label className="col-sm-4 col-form-label">Equipamiento</label>
             <div className="col-sm-8">
@@ -251,95 +276,104 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Estado</label>
             <div className="col-sm-8">
-            <select className="form-control" name="IdEstado"   onChange={e => setIdEstado(e.target.value)}>
-            <option value="" disabled hidden selected>Seleccione</option>
-            {dataEstado && dataEstado.map((estado) => (
-              
-                <option key={estado.IdEstado} value={estado.IdEstado}>
-                {estado.Estado}
-                </option>
-            ))}
-            {dataEstado && dataEstado.length === 0 && <option value="">No clients available</option>}
-            </select>
-
+              <select className="form-control" name="IdEstado" onChange={e => setIdEstado(e.target.value)}>
+                <option value="" disabled hidden>Seleccione</option>
+                {dataEstado && dataEstado.map((estado) => (
+                  <option key={estado.IdEstado} value={estado.IdEstado}>
+                    {estado.Estado}
+                  </option>
+                ))}
+                {dataEstado && dataEstado.length === 0 && <option value="">No clients available</option>}
+              </select>
             </div>
-              
 
             <label className="col-sm-4 col-form-label">Precio</label>
             <div className="col-sm-8">
-              <input className="form-control" name="Precio"  onChange={e => setPrecio(e.target.value)}/>
+              <input className="form-control" name="Precio" onChange={e => setPrecio(e.target.value)} />
             </div>
-
 
             <label className="col-sm-4 col-form-label">Garantia</label>
             <div className="col-sm-8">
               <div className="form-check form-check-inline">
-                <input 
-                  className="form-check-input" 
-                  type="radio" 
-                  name="Garantia" 
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="Garantia"
                   id="siRadio"
                   value={1}
                   checked={Garantia === 1}
-                  onChange={() => {
-                    setGarantia(1);
-                   
-                  }}
-                  style={{ borderRadius: '0' }}
+                  onChange={() => setGarantia(1)}
                 />
-                <label className="form-check-label" htmlFor="siRadio" style={{ borderRadius: '0' }}>
+                <label className="form-check-label" htmlFor="siRadio">
                   Si
                 </label>
               </div>
               <div className="form-check form-check-inline">
-                <input 
-                  className="form-check-input" 
-                  type="radio" 
-                  name="Garantia" 
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="Garantia"
                   id="noRadio"
                   value={0}
                   checked={Garantia === 0}
-                  onChange={() => {
-                    setGarantia(0);
-                    
-                  }}
-                  style={{ borderRadius: '0' }}
+                  onChange={() => setGarantia(0)}
                 />
-                <label className="form-check-label" htmlFor="noRadio" style={{ borderRadius: '0' }}>
+                <label className="form-check-label" htmlFor="noRadio">
                   No
                 </label>
               </div>
             </div>
 
-
             <label className="col-sm-4 col-form-label">Fecha</label>
             <div className="col-sm-8">
-              <input 
-                className="form-control" 
-                type="date" 
-                name="Fecha"  
+              <input
+                className="form-control"
+                type="date"
+                name="Fecha"
                 onChange={e => setFecha(e.target.value)}
               />
             </div>
-            
-      {/* 
-            <label className="col-sm-4 col-form-label">Descripcion</label>
-            <div className="col-sm-8">
-              <textarea className="form-control" name="descripcion" defaultValue="" />
-            </div> */}
+
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onClick={handleOpenFileDialog}
+              style={{ border: '2px dashed #ccc', padding: '20px', borderRadius: '5px', textAlign: 'center', cursor: 'pointer', marginTop: '20px' }}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileInputChange}
+                multiple
+                accept=".jpg,.jpeg,.png,.pdf"
+              />
+              <p>Arrastra y suelta archivos aquí o haz clic para seleccionar archivos</p>
+              {files.length > 0 && (
+                <div>
+                  <h2>Archivos seleccionados</h2>
+                  <ul>
+                    {files.map((file, index) => (
+                      <li key={index}>{file.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <br />
 
             <div className="row">
-                <div className="offset-sm-4 col-sm-4 d-grid">
-                  <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
-                </div>
-                <div className="col-sm-4 d-grid">
-                  <Link to={`../equipo`} type="button" className="btn btn-danger me-2">Cancelar</Link>
-                </div>
+              <div className="offset-sm-4 col-sm-4 d-grid">
+                <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
               </div>
-      
+              <div className="col-sm-4 d-grid">
+                <Link to={`../equipo`} type="button" className="btn btn-danger me-2">Cancelar</Link>
+              </div>
+            </div>
+
           </form>
         </div>
       </div>
-    </> 
+    </>
   );
 }
