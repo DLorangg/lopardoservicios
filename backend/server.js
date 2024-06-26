@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "lopardo_v1" //   CAMBIAR DB
+    database: "lopardo" //   CAMBIAR DB
 })
 
 // Ruta para login
@@ -159,25 +159,34 @@ app.delete('/equipamiento/:id', (req, res) => {
 
 
 app.post('/visitapost', (req, res) => {
-    const sql = "INSERT INTO visita (`IdCliente`,`Ciudad`,`Direccion`,`Descripcion`,`IdEquipamiento`,`IdEstado`,`Precio`, `Garantia`, `Fecha`) VALUES (?)";
-    console.log( req.body.IdCliente)
-    console.log( "dato")
+    const visitaData = req.body;
+
+    // Log para verificar los datos recibidos
+    console.log("Datos recibidos para crear visita:", visitaData);
+
+    // Asigna un valor predeterminado a IdEquipamiento si está vacío
+    const idEquipamiento = visitaData.IdEquipamiento || null;
+
+    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado`, `Precio`, `Garantia`, `Fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
-        req.body.IdCliente,
-        req.body.Ciudad,
-        req.body.Direccion,
-        req.body.Descripcion,
-        req.body.IdEquipamiento,
-        req.body.IdEstado,
-        req.body.Precio,
-        req.body.Garantia,
-        req.body.Fecha,
-      
-    ]
-    db.query(sql, [values], (err, data) => {
-        if(err) return res.json("Error");
-        return res.json(data);
-    })
+        visitaData.IdCliente,
+        visitaData.Ciudad,
+        visitaData.Direccion,
+        visitaData.Descripcion,
+        idEquipamiento,
+        visitaData.IdEstado,
+        visitaData.Precio,
+        visitaData.Garantia,
+        visitaData.Fecha
+    ];
+
+    db.query(sql, values, (err, data) => {
+        if (err) {
+            console.error("Error al insertar visita:", err);
+            return res.status(500).json({ error: "Error interno del servidor al crear visita", details: err });
+        }
+        return res.json({ success: true, message: "Visita creada exitosamente", data });
+    });
 });
 
 app.post('/clientepost', (req, res) => {

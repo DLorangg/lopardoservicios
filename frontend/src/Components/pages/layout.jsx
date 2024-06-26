@@ -1,8 +1,9 @@
 import React from 'react';
-
 import LogoutIcon from '../../Assets/logout.png';
+import CirculoLogo from '../../Assets/Circulo_Logo.png';
 import { Link, useNavigate } from "react-router-dom";
 import './layout.css'
+
 
 export function Navbar({ setAuthenticated }) {
   const navigate = useNavigate();
@@ -18,7 +19,9 @@ export function Navbar({ setAuthenticated }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow py-3 mb-3">
     <div className="container">
-      <Link className="navbar-brand" to="/">Lopardo</Link>
+        <Link className="navbar-brand" to="/">
+          <img src={CirculoLogo} alt="Logo Completo" className="rotate-animation" style={{ width: '80px' }} />
+        </Link>
       <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>

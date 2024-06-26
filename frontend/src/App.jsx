@@ -31,7 +31,7 @@ function App() {
         <Route path='/datosdetalle/:id' element={authenticated ? <DatosDetalle /> : <Navigate to='/login' replace />} />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
       </Routes>
-      <Footer />
+      {authenticated && <Footer />}
     </div>
   );
 }

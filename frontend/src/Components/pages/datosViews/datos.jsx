@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ModalComponent } from "../modal";
+import { parseISO, format } from 'date-fns';
 
 export function Datos() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -53,8 +54,21 @@ export function DatosList(props) {
       .catch((error) => console.log("Error: ", error));
   }
 
-  useEffect(() => fetchVisita(), []);
-  useEffect(() => fetchCliente(), []);
+  useEffect(() => {
+    fetchVisita();
+    fetchCliente();
+  }, []);
+
+   // Función para formatear la fecha
+   const formatFecha = (fecha) => {
+    if (!fecha) return "-";
+    const fechaISO = parseISO(fecha);
+    if (isNaN(fechaISO.getTime())) {
+      return "-";
+    } else {
+      return format(fechaISO, 'dd-MM-yyyy'); // Formato deseado para la fecha
+    }
+  };
 
   return (
     <>
@@ -77,7 +91,7 @@ export function DatosList(props) {
               <td>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
               <td>{dato.Direccion}</td>
               <td>{`$ ` + dato.Precio}</td>
-              <td>{dato.Fecha}</td>
+              <td>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="buttom" className="btn btn-secondary btn-sm me-2">
                   Detalle
@@ -100,6 +114,8 @@ export function DatosList(props) {
 export function DatosForm(props) {
   const [dataCliente, setDataCliente] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredClients, setFilteredClients] = useState([]);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
@@ -158,6 +174,17 @@ export function DatosForm(props) {
       })
       .catch(error => console.error('Error:', error));
   }
+
+  const handleSearch = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    const filtered = dataCliente.filter(cliente =>
+      cliente.Nombre.toLowerCase().includes(query.toLowerCase()) ||
+      cliente.Direccion.toLowerCase().includes(query.toLowerCase()) ||
+      cliente.DNI.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredClients(filtered);
+  };
 
   const handleClienteChange = (event) => {
     const clienteId = event.target.value;
@@ -230,42 +257,84 @@ export function DatosForm(props) {
       <div className="row">
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
-
+  
             <label className="col-sm-4 col-form-label">Cliente</label>
-            <div className="col-sm-8 d-flex align-items-center">
-              <select className="form-control" name="IdCliente" onChange={handleClienteChange} value={IdCliente}>
-                <option value="" disabled hidden>Seleccione</option>
-                {dataCliente && dataCliente.map((cliente) => (
+            <div className="col-sm-8 d-flex flex-column">
+              <input
+                className="form-control"
+                name="Cliente"
+                value={searchQuery}
+                onChange={handleSearch}
+                placeholder="Buscar Cliente (Nombre, Direccion, DNI)"
+                autoComplete="off"
+              />
+              <select
+                className="form-control mt-2"
+                name="IdCliente"
+                onChange={handleClienteChange}
+                value={IdCliente}
+                autoComplete="off"
+              >
+                <option value="" disabled hidden>Selecciona un cliente</option>
+                {filteredClients.map(cliente => (
                   <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                    {cliente.Nombre}
+                    {cliente.Nombre} - {cliente.Direccion} - {cliente.DNI}
                   </option>
                 ))}
               </select>
-              <button type="button"
-                className="btn btn-primary ms-2"
+              <button
+                type="button"
+                className="btn btn-primary ms-2 mt-2"
                 onClick={handleShowModal}
-                style={{ borderRadius: '35%', fontSize: '25px', width: '40px', height: '40px', padding: '0', display: 'flex', justifyContent: 'center' }}>+
+                style={{
+                  borderRadius: '35%', fontSize: '25px', width: '40px',
+                  height: '40px', padding: '0', display: 'flex', justifyContent: 'center'
+                }}
+              >+
               </button>
             </div>
             <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
+  
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
-              <input className="form-control" name="Ciudad" value={Ciudad} onChange={(e) => setCiudad(e.target.value)} />
+              <input
+                className="form-control"
+                name="Ciudad"
+                value={Ciudad}
+                onChange={(e) => setCiudad(e.target.value)}
+                autoComplete="off"
+              />
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Dirección</label>
             <div className="col-sm-8">
-              <input className="form-control" name="Direccion" value={Direccion} onChange={(e) => setDireccion(e.target.value)} />
+              <input
+                className="form-control"
+                name="Direccion"
+                value={Direccion}
+                onChange={(e) => setDireccion(e.target.value)}
+                autoComplete="off"
+              />
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Descripcion</label>
             <div className="col-sm-8">
-              <textarea className="form-control" name="Descripcion" onChange={e => setDescripcion(e.target.value)} />
+              <textarea
+                className="form-control"
+                name="Descripcion"
+                onChange={e => setDescripcion(e.target.value)}
+                autoComplete="off"
+              />
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Equipamiento</label>
             <div className="col-sm-8">
-              <select className="form-control" name="Equipamiento" multiple>
+              <select
+                className="form-control"
+                name="Equipamiento"
+                multiple
+                autoComplete="off"
+              >
                 {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
                   <option key={equipamiento.IdEquipamiento}>
                     {equipamiento.Nombre}
@@ -273,10 +342,15 @@ export function DatosForm(props) {
                 ))}
               </select>
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Estado</label>
             <div className="col-sm-8">
-              <select className="form-control" name="IdEstado" onChange={e => setIdEstado(e.target.value)}>
+              <select
+                className="form-control"
+                name="IdEstado"
+                onChange={e => setIdEstado(e.target.value)}
+                autoComplete="off"
+              >
                 <option value="" disabled hidden>Seleccione</option>
                 {dataEstado && dataEstado.map((estado) => (
                   <option key={estado.IdEstado} value={estado.IdEstado}>
@@ -286,12 +360,17 @@ export function DatosForm(props) {
                 {dataEstado && dataEstado.length === 0 && <option value="">No clients available</option>}
               </select>
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Precio</label>
             <div className="col-sm-8">
-              <input className="form-control" name="Precio" onChange={e => setPrecio(e.target.value)} />
+              <input
+                className="form-control"
+                name="Precio"
+                onChange={e => setPrecio(e.target.value)}
+                autoComplete="off"
+              />
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Garantia</label>
             <div className="col-sm-8">
               <div className="form-check form-check-inline">
@@ -323,7 +402,7 @@ export function DatosForm(props) {
                 </label>
               </div>
             </div>
-
+  
             <label className="col-sm-4 col-form-label">Fecha</label>
             <div className="col-sm-8">
               <input
@@ -331,9 +410,10 @@ export function DatosForm(props) {
                 type="date"
                 name="Fecha"
                 onChange={e => setFecha(e.target.value)}
+                autoComplete="off"
               />
             </div>
-
+  
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -361,7 +441,7 @@ export function DatosForm(props) {
               )}
             </div>
             <br />
-
+  
             <div className="row">
               <div className="offset-sm-4 col-sm-4 d-grid">
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
@@ -370,10 +450,10 @@ export function DatosForm(props) {
                 <Link to={`../equipo`} type="button" className="btn btn-danger me-2">Cancelar</Link>
               </div>
             </div>
-
+  
           </form>
         </div>
       </div>
     </>
-  );
+  );  
 }

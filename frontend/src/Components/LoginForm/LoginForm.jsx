@@ -12,12 +12,8 @@ export function LoginForm({ setAuthenticated }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setAuthenticated(true);
-      navigate('/');
-    }
-  }, [navigate, setAuthenticated]);
+    localStorage.removeItem('token');
+  }, []);
 
   const handleLogin = async () => {
   try {
@@ -30,11 +26,12 @@ export function LoginForm({ setAuthenticated }) {
 
     if (token) {
       localStorage.setItem('token', token);
-      console.log('Token guardado:', token); // Agrega este console.log para verificar el token guardado en la consola
       setAuthenticated(true);
       toast.success('Inicio de sesión exitoso');
       navigate('/');
     } else {
+      localStorage.removeItem('token'); 
+      setAuthenticated(false); 
       toast.error('Token de autenticación no recibido');
     }
   } catch (error) {
@@ -122,6 +119,7 @@ export function LoginForm({ setAuthenticated }) {
               placeholder='Nombre de usuario'
               required
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="off"  // Agregar esta línea para desactivar el autocompletado
               style={{
                 width: '100%',
                 height: '50px',
