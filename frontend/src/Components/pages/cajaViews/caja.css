@@ -1,0 +1,62 @@
+.caja-container {
+    padding: 20px;
+}
+
+.caja-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.caja-table th, .caja-table td {
+    border: 1px solid #ddd;
+    padding: 4px; /* Reducir el padding para achicar los espacios */
+    text-align: left;
+}
+
+.caja-table th {
+    background-color: #f2f2f2;
+}
+
+.caja-table td:nth-child(2) {
+    width: 50%; /* Hacer que la columna de detalle ocupe más espacio */
+}
+
+.caja-table th, .caja-table td:not(:nth-child(2)) {
+    width: 10%; /* Hacer que las otras columnas ocupen menos espacio */
+}
+
+.caja-form {
+    margin-top: 20px;
+}
+
+.caja-form label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.caja-form input {
+    margin-bottom: 10px;
+}
+
+.caja-form button {
+    margin-right: 10px;
+}
+
+.caja-form button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.caja-form button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.caja-form button[type="button"] {
+    background-color: #f44336;
+    color: white;
+}
+
+.caja-form button[type="button"]:hover {
+    background-color: #e53935;
+}

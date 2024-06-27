@@ -43,8 +43,7 @@ function DatosList(props) {
 
     try{
       await axios.delete('http://localhost:8081/equipamiento/'+id)
-      window.location.reload()
-
+      fetchEquipo()
     }catch(error){
       console.log(error);
     }

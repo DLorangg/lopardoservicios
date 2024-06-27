@@ -96,3 +96,16 @@
 .navbar-nav .nav-item.active .nav-link::after {
     opacity: 1; /* Hace que la línea sea visible cuando la pestaña está activa */
 }
+
+body {
+    background-color: #acafb1;
+    margin: 0; 
+    padding: 0; 
+    height: 100%; 
+    width: 100%; 
+}
+  
+html {
+    height: 100%;
+    width: 100%;
+}

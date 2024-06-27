@@ -213,6 +213,93 @@ app.post('/clientepost', (req, res) => {
     });
 });
 
+// Ruta caja
+app.get('/caja', (req, res) => {
+    const sql = 'SELECT * FROM caja';
+    db.query(sql, (err, result) => {
+        if (err) return res.status(500).json({ message: "Error en server" });
+        return res.json(result);
+    });
+});
+
+app.get('/caja/:id', (req, res) => {
+    const sql = 'SELECT * FROM caja WHERE id = ?';
+    db.query(sql, [req.params.id], (err, result) => {
+        if (err) {
+            console.error("Error en la consulta SQL:", err);
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
+        return res.json(result);
+    });
+});
+
+app.post('/caja', (req, res) => {
+    const { fecha, detalle, ingreso, egreso } = req.body;
+
+    // Obtener el último saldo de la tabla
+    const getLastSaldoQuery = "SELECT saldo FROM caja ORDER BY id DESC LIMIT 1";
+    
+    db.query(getLastSaldoQuery, (err, result) => {
+        if (err) {
+            console.error("Error al obtener el último saldo:", err);
+            return res.status(500).json({ error: "Error interno del servidor" });
+        }
+
+        // Si no hay registros previos, el saldo inicial es 0
+        const lastSaldo = result.length > 0 ? result[0].saldo : 0;
+        
+        // Calcular el nuevo saldo
+        const newSaldo = lastSaldo + ingreso - egreso;
+
+        const insertQuery = "INSERT INTO caja (fecha, detalle, ingreso, egreso, saldo) VALUES (?, ?, ?, ?, ?)";
+        const values = [fecha, detalle, ingreso, egreso, newSaldo];
+
+        db.query(insertQuery, values, (err, data) => {
+            if (err) {
+                console.error("Error al insertar el registro en caja:", err);
+                return res.status(500).json({ error: "Error interno del servidor" });
+            }
+            return res.json({ success: true, message: "Registro creado exitosamente", data });
+        });
+    });
+});
+
+app.put('/caja/:id', (req, res) => {
+    const { fecha, detalle, ingreso, egreso } = req.body;
+    const sqlGetPreviousData = 'SELECT ingreso, egreso, saldo FROM caja WHERE id = ?';
+    const sqlUpdate = 'UPDATE caja SET fecha = ?, detalle = ?, ingreso = ?, egreso = ?, saldo = ? WHERE id = ?';
+
+    db.query(sqlGetPreviousData, [req.params.id], (err, result) => {
+        if (err) {
+            console.error("Error al obtener los datos anteriores:", err);
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
+
+        const previousIngreso = result[0].ingreso;
+        const previousEgreso = result[0].egreso;
+        const previousSaldo = result[0].saldo;
+
+        const newSaldo = previousSaldo - previousIngreso + ingreso - (egreso - previousEgreso);
+
+        db.query(sqlUpdate, [fecha, detalle, ingreso, egreso, newSaldo, req.params.id], (err, result) => {
+            if (err) {
+                console.error("Error al actualizar el registro:", err);
+                return res.status(500).json({ message: "Error en el servidor" });
+            }
+            return res.json({ success: true, message: "Registro actualizado exitosamente", data: result });
+        });
+    });
+});
+
+app.delete('/caja/:id', (req, res) => {
+    const sql = 'DELETE FROM caja WHERE id = ?';
+    db.query(sql, [req.params.id], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error en server" });
+        return res.json({ success: true, message: "Registro eliminado exitosamente", data: result });
+    });
+});
+
+
 app.listen(8081, () => {
     console.log('Escuchando en el puerto 8081')
 })
