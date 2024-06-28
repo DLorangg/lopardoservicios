@@ -21,15 +21,25 @@ app.post('/login', (req, res) => {
     db.query(sql, [username, password], (err, data) => {
         if (err) return res.status(500).json({ error: "Error en el servidor" });
         if (data.length === 1) {
-            // Generar un token JWT
+            const { Nombre } = data[0];
             const token = jwt.sign({ username: username }, 'secreto', { expiresIn: '1h' });
-            // Enviar el token junto con la respuesta
-            return res.json({ token: token, message: "Inicio de sesión exitoso" });
+            // Enviar el token y el nombre de usuario junto con la respuesta
+            return res.json({ token: token, userName: Nombre, message: "Inicio de sesión exitoso" });
         } else {
             return res.status(401).json({ error: "Credenciales incorrectas" });
         }
     });
 });
+
+
+//Ruta para obtener usuario loggeado
+app.get('/user', (req, res) => {
+    const sql = 'SELECT * FROM usuarios'
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Message: "Error en server"})
+        return res.json(result)
+    })
+})
 
 //Ruta CRUD
 app.get('/visita', (req, res) =>{

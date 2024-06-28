@@ -1,17 +1,22 @@
 import React from 'react';
 import LogoutIcon from '../../Assets/logout.png';
 import CirculoLogo from '../../Assets/Circulo_Logo.png';
-import { Link, useNavigate } from "react-router-dom";
-import './layout.css'
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import './layout.css';
 
 export function Navbar({ setAuthenticated }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userName'); // Limpiar nombre de usuario al hacer logout
     setAuthenticated(false);
     navigate('/login');
   };
+
+  // Obtener nombre de usuario desde localStorage
+  const userName = localStorage.getItem('userName');
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light border-bottom box-shadow py-3 mb-3" style={{ backgroundColor: '#acafb1' }}>
@@ -38,22 +43,17 @@ export function Navbar({ setAuthenticated }) {
             </li>
           </ul>
         </div>
-        <img
-          src={LogoutIcon}
-          alt="Cerrar sesión"
-          className="logout-icon"
-          style={{ width: '32px', height: '32px', cursor: 'pointer' }}
-          onClick={handleLogout}
-        />
+        <div className="d-flex align-items-center">
+          <span className="text-dark me-3">{userName}</span> {/* Mostrar nombre de usuario */}
+          <img
+            src={LogoutIcon}
+            alt="Cerrar sesión"
+            className="logout-icon"
+            style={{ width: '32px', height: '32px', cursor: 'pointer' }}
+            onClick={handleLogout}
+          />
+        </div>
       </div>
     </nav>
-  );
-}
-
-export function Footer() {
-  return (
-    <footer style={{ backgroundColor: '#acafb1' }}>
-        <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
-    </footer>
   );
 }

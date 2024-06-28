@@ -16,29 +16,31 @@ export function LoginForm({ setAuthenticated }) {
   }, []);
 
   const handleLogin = async () => {
-  try {
-    const response = await axios.post('http://localhost:8081/login', {
-      username: username,
-      password: password,
-    });
-
-    const { token } = response.data;
-
-    if (token) {
-      localStorage.setItem('token', token);
-      setAuthenticated(true);
-      toast.success('Inicio de sesión exitoso');
-      navigate('/');
-    } else {
-      localStorage.removeItem('token'); 
-      setAuthenticated(false); 
-      toast.error('Token de autenticación no recibido');
+    try {
+      const response = await axios.post('http://localhost:8081/login', {
+        username: username,
+        password: password,
+      });
+  
+      const { token, userName } = response.data;
+  
+      if (token) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('userName', userName); 
+        setAuthenticated(true);
+        toast.success('Inicio de sesión exitoso');
+        navigate('/');
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName'); 
+        setAuthenticated(false);
+        toast.error('Token de autenticación no recibido');
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      toast.error('Error al iniciar sesión. Verifica tus credenciales.');
     }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    toast.error('Error al iniciar sesión. Verifica tus credenciales.');
-  }
-};
+  };
 
   return (
     <div

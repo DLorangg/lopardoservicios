@@ -44,7 +44,7 @@ function DatosList(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">Tabla de Ingresos/Egresos</h2>
+      <h2 className="text-center mb-3">Flujo de caja</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
       <button onClick={() => fetchCaja()} type="button" className="btn btn-outline-primary me-2">Actualizar</button>
       <table className="table caja-table">
