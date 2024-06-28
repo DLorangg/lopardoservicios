@@ -44,7 +44,7 @@ export function Navbar({ setAuthenticated }) {
           </ul>
         </div>
         <div className="d-flex align-items-center">
-          <span className="text-dark me-3">{userName}</span> {/* Mostrar nombre de usuario */}
+          <span className="text-dark me-3">{userName}</span> 
           <img
             src={LogoutIcon}
             alt="Cerrar sesión"
@@ -55,5 +55,11 @@ export function Navbar({ setAuthenticated }) {
         </div>
       </div>
     </nav>
+  );
+}
+
+export function Footer() {
+  return (
+          <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
   );
 }

@@ -53,7 +53,7 @@ function DatosList(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">Equipo List</h2>
+      <h2 className="text-center mb-3">Equipos</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
       <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2">Actualizar</button>
       <table className="table">
