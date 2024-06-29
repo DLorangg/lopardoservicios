@@ -80,13 +80,15 @@ export function DatosList(props) {
         }
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
+      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">
         <thead>
           <tr>
-            <th>Cliente</th>
-            <th>Dirección</th>
-            <th>Precio</th>
-            <th>
+            <th style={{ width: '15%' }}>Cliente</th>
+            <th style={{ width: '25%' }}>Dirección</th>
+            <th style={{ width: '10%' }}>Precio</th>
+            <th style={{ width: '10%' }}>
               Fecha{' '}
               <button
                 type="button"
@@ -96,17 +98,17 @@ export function DatosList(props) {
                 {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
               </button>
             </th>
-            <th>Acciones</th>
+            <th style={{ width: '40%', paddingRight: '50px' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {sortedDataVisita.map((dato, index) => (
             <tr key={index}>
-              <td>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
-              <td>{dato.Direccion}</td>
-              <td>{`$ ` + dato.Precio}</td>
-              <td>{formatFecha(dato.Fecha)}</td>
-              <td style={{ width: "10px", whiteSpace: "nowrap" }}>
+              <td style={{ width: '15%' }}>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
+              <td style={{ width: '25%' }}>{dato.Direccion}</td>
+              <td style={{ width: '10%' }}>{`$ ` + dato.Precio}</td>
+              <td style={{ width: '40%' }}>{formatFecha(dato.Fecha)}</td>
+              <td style={{ width: '40%', whiteSpace: "nowrap" }}>
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
                   Detalle
                 </Link>
@@ -124,6 +126,7 @@ export function DatosList(props) {
     </>
   );
 }
+
 
 export function DatosForm(props) {
   const [dataCliente, setDataCliente] = useState([]);
