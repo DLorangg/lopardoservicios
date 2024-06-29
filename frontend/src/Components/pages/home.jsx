@@ -21,7 +21,7 @@ export function Home() {
         <Link to="/datos" style={buttonStyle('#001461')}>Visitas</Link>
         <Link to="/equipo" style={buttonStyle('#140097')}>Equipos</Link>
         <Link to="/caja" style={buttonStyle('#140097')}>Caja</Link>
-        <Link to="/busqueda" style={buttonStyle('#001461')}>Busqueda</Link>
+        <Link to="/busqueda" style={buttonStyle('#001461')}>Búsqueda</Link>
       </div>
     </div>
   );

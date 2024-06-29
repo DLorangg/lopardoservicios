@@ -72,7 +72,7 @@ export function DatosUpdate() {
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
               </div>
               <div className="col-sm-4 d-grid">
-                <Link to={`../equipo`} type="button" className="btn btn-danger me-2">Cancelar</Link>
+                <Link to={`../datos`} type="button" className="btn btn-danger me-2">Cancelar</Link>
               </div>
             </div>
           </form>

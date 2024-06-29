@@ -80,7 +80,7 @@ function DatosList(props) {
                 <Link  to={`/update/${dato.IdEquipamiento}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
-                <button type="button" className="btn btn-danger btn-sm" onClick={e => handleDelete(dato.IdEquipamiento)}>
+                <button type="button" className="btn btn-danger btn-sm" onClick={e => handleDelete(dato.IdEquipamiento)} style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}>
                   Borrar
                 </button>
               </td>

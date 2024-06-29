@@ -1,67 +1,45 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
-import { ModalComponent } from "../modal";
+import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import Rouben from '../../../Assets/Rouben.otf';
-
-export function Datos() {
-  const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
-
-  function ShowList() {
-    setContent(<DatosList ShowForm={ShowForm} />);
-  }
-
-  function ShowForm() {
-    setContent(<DatosForm ShowList={ShowList} />);
-  }
-
-  return (
-    <div className="container my-5" style={{border: '1px solid #001461'}}>
-      {content}
-    </div>
-  );
-}
 
 export function DatosList(props) {
   const [dataVisita, setDataVisita] = useState([]);
   const [dataCliente, setDataCliente] = useState([]);
+  const [sortBy, setSortBy] = useState('IdVisita'); // Columna por defecto para ordenar
+  const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto para ordenar
 
+  // Función para obtener datos de visitas desde el servidor
   function fetchVisita() {
-    fetch("http://localhost:8081/visita")
+    axios.get("http://localhost:8081/visita")
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error con la respuesta del servidor");
-        }
-        return response.json();
+        setDataVisita(response.data);
       })
-      .then((data) => {
-        setDataVisita(data);
-      })
-      .catch((error) => console.log("Error: ", error));
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
 
+  // Función para obtener datos de clientes desde el servidor
   function fetchCliente() {
-    fetch("http://localhost:8081/cliente")
+    axios.get("http://localhost:8081/cliente")
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error con la respuesta del servidor");
-        }
-        return response.json();
+        setDataCliente(response.data);
       })
-      .then((data) => {
-        setDataCliente(data);
-      })
-      .catch((error) => console.log("Error: ", error));
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
 
+  // Función que se ejecuta al montar el componente para cargar datos iniciales
   useEffect(() => {
     fetchVisita();
     fetchCliente();
   }, []);
 
-   // Función para formatear la fecha
-   const formatFecha = (fecha) => {
+  // Función para formatear la fecha
+  const formatFecha = (fecha) => {
     if (!fecha) return "-";
     const fechaISO = parseISO(fecha);
     if (isNaN(fechaISO.getTime())) {
@@ -71,36 +49,65 @@ export function DatosList(props) {
     }
   };
 
+  // Función para cambiar la dirección del ordenamiento
+  const toggleSortDirection = () => {
+    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  };
+
+  // Función para ordenar los datos por la columna seleccionada
+  const sortByColumn = (columnName) => {
+    setSortBy(columnName);
+    toggleSortDirection(); // Cambia automáticamente la dirección del ordenamiento al cambiar la columna
+  };
+
+  // Función para ordenar los datos basados en sortBy y sortDirection
+  const sortedDataVisita = [...dataVisita].sort((a, b) => {
+    const columnA = a[sortBy];
+    const columnB = b[sortBy];
+    if (sortDirection === 'asc') {
+      return columnA < columnB ? -1 : 1;
+    } else {
+      return columnA > columnB ? -1 : 1;
+    }
+  });
+
   return (
     <>
-    <style>{`
+      <style>{`
         @font-face {
           font-family: 'Rouben';
           src: url(${Rouben}) format('opentype');
         }
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
-      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">
         <thead>
           <tr>
             <th>Cliente</th>
             <th>Dirección</th>
             <th>Precio</th>
-            <th>Fecha</th>
+            <th>
+              Fecha{' '}
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => sortByColumn('Fecha')}
+              >
+                {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
+              </button>
+            </th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {dataVisita.map((dato, index) => (
+          {sortedDataVisita.map((dato, index) => (
             <tr key={index}>
               <td>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
               <td>{dato.Direccion}</td>
               <td>{`$ ` + dato.Precio}</td>
               <td>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                <Link to={`/datosdetalle/${dato.IdVisita}`} type="buttom" className="btn btn-secondary btn-sm me-2">
+                <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
                   Detalle
                 </Link>
                 <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
