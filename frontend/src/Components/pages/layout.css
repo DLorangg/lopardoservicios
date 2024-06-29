@@ -68,14 +68,8 @@
     position: relative; /* Establece posición relativa para la pestaña */
 }
 
-/* Navbar Link Hover */
-.navbar-nav .nav-link:hover {
-    color: blue; /* Color del texto al pasar el mouse sobre el enlace */
-}
-
 /* Navbar Active Link */
 .navbar-nav .nav-item.active .nav-link {
-    color: blue; /* Color del texto para la pestaña activa */
     font-weight: bold; /* Estilo del texto para la pestaña activa */
 }
 
@@ -88,7 +82,7 @@
     left: 0; /* Inicia la línea desde el borde izquierdo */
     width: 100%; /* Establece la longitud de la línea al 100% del ancho de la pestaña */
     height: 2px; /* Establece la altura de la línea */
-    background-color: blue; /* Color de la línea */
+    background-color: #140097; /* Color de la línea */
     opacity: 0; /* Hace que la línea no sea visible inicialmente */
     transition: opacity 0.3s ease; /* Añade transición para suavizar el efecto */
 }
@@ -112,4 +106,8 @@ html {
 
 .footer-bg {
     background-color: #acafb1 !important; 
+}
+
+#custom-navbar {
+    border: 1px solid red;
 }

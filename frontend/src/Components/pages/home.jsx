@@ -1,14 +1,44 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import Rouben from '../../Assets/Rouben.otf';
 
 export function Home() {
-    useEffect(() => {
-        const isLoggedIn = localStorage.getItem('loggedIn');
-        console.log('Is logged in:', isLoggedIn === 'true');
-    }, []);
-
-    return (
-        <div className="container my-5">
-            <h2 className="text-center mb-3">Home Page</h2>
-        </div>
-    );
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('loggedIn');
+    console.log('Is logged in:', isLoggedIn === 'true');
+  }, []);
+  
+  return (
+    <div className="container my-5" style={{border: '1px solid #001461'}}>
+        <style>{`
+        @font-face {
+          font-family: 'Rouben';
+          src: url(${Rouben}) format('opentype');
+        }
+      `}</style>
+      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>Lopardo Servicios</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Link to="/datos" style={buttonStyle('#140097')}>Datos</Link>
+        <Link to="/equipo" style={buttonStyle('#140097')}>Equipo</Link>
+        <Link to="/caja" style={buttonStyle('#140097')}>Caja</Link>
+        <Link to="/busqueda" style={buttonStyle('#140097')}>Busqueda</Link>
+      </div>
+    </div>
+  );
 }
+
+const buttonStyle = (bgColor) => ({
+  width: '260px',
+  height: '180px',
+  backgroundColor: bgColor,
+  color: '#fff',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textDecoration: 'none',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  borderRadius: '10px',
+  margin: '0 10px',
+  marginTop: '30px'
+});

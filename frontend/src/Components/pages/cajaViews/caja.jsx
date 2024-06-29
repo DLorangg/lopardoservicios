@@ -16,7 +16,7 @@ export function Caja() {
   }
 
   return (
-    <div className="container my-5 caja-container">
+    <div className="container my-5 caja-container" style={{border: '1px solid #001461'}}>
       {content}
     </div>
   );

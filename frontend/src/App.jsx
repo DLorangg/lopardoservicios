@@ -9,7 +9,8 @@ import { Equipo } from './Components/pages/equipoViews/equipo';
 import { EquipoUpdate } from './Components/pages/equipoViews/equipoUpdate';
 import { LoginForm } from './Components/LoginForm/LoginForm';
 import { Caja } from './Components/pages/cajaViews/caja';
-import CajaUpdate from './Components/pages/cajaViews/cajaUpdate';
+import { CajaUpdate } from './Components/pages/cajaViews/cajaUpdate';
+import { Busqueda } from './Components/pages/busquedaViews/busqueda';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -33,6 +34,7 @@ function App() {
         <Route path='/datosdetalle/:id' element={authenticated ? <DatosDetalle /> : <Navigate to='/login' replace />} />
         <Route path='/caja' element={authenticated ? <Caja /> : <Navigate to='/login' replace />} />
         <Route path="/cajaUpdate/:id" element={authenticated ? <CajaUpdate /> : <Navigate to='/login' replace />} />
+        <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/busqueda' replace />} />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
       </Routes>
       {authenticated && <Footer />}

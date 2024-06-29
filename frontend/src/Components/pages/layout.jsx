@@ -10,17 +10,16 @@ export function Navbar({ setAuthenticated }) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userName'); // Limpiar nombre de usuario al hacer logout
+    localStorage.removeItem('userName');
     setAuthenticated(false);
     navigate('/login');
   };
 
-  // Obtener nombre de usuario desde localStorage
   const userName = localStorage.getItem('userName');
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light border-bottom box-shadow py-3 mb-3" style={{ backgroundColor: '#acafb1' }}>
-      <div className="container">
+    <nav className="navbar navbar-expand-lg navbar-light box-shadow py-3 mb-3">
+      <div className="container" id='custom-navbar'>
         <Link className="navbar-brand" to="/">
           <img src={CirculoLogo} alt="Logo Completo" className="rotate-animation" style={{ width: '80px' }} />
         </Link>
@@ -29,11 +28,8 @@ export function Navbar({ setAuthenticated }) {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-              <Link className="nav-link text-dark" aria-current="page" to="/" id="home">Home</Link>
-            </li>
             <li className={`nav-item ${location.pathname === '/datos' ? 'active' : ''}`}>
-              <Link className="nav-link text-dark" to="/datos" id="datos">Datos</Link>
+              <Link className="nav-link text-dark" to="/datos" id="datos">Visita</Link>
             </li>
             <li className={`nav-item ${location.pathname === '/equipo' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/equipo" id="equipo">Equipo</Link>
@@ -41,10 +37,13 @@ export function Navbar({ setAuthenticated }) {
             <li className={`nav-item ${location.pathname === '/caja' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/caja" id="caja">Caja</Link>
             </li>
+            <li className={`nav-item ${location.pathname === '/busqueda' ? 'active' : ''}`}>
+              <Link className="nav-link text-dark" to="/busqueda" id="busqueda">Búsqueda</Link>
+            </li>
           </ul>
         </div>
         <div className="d-flex align-items-center">
-          <span className="text-dark me-3">{userName}</span> 
+          <span className="text-dark me-3" style={{ fontWeight: 'bold' }}>{userName}</span> 
           <img
             src={LogoutIcon}
             alt="Cerrar sesión"
@@ -60,6 +59,8 @@ export function Navbar({ setAuthenticated }) {
 
 export function Footer() {
   return (
-          <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
+    <footer style={{ backgroundColor: '#acafb1' }}>
+      <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
+    </footer>
   );
 }

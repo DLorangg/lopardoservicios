@@ -16,7 +16,7 @@ export function Equipo() {
   
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" >
       {content}
     </div>
   );
@@ -54,8 +54,8 @@ function DatosList(props) {
   return (
     <>
       <h2 className="text-center mb-3">Equipos</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
-      <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2">Actualizar</button>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
+      <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">
         <thead>
           <tr>
@@ -70,7 +70,7 @@ function DatosList(props) {
               <td>{dato.Nombre}</td>
            
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                <Link  to={`/update/${dato.IdEquipamiento}`} type="button" className="btn btn-primary btn-sm me-2">
+                <Link  to={`/update/${dato.IdEquipamiento}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
                 <button type="button" className="btn btn-danger btn-sm" onClick={e => handleDelete(dato.IdEquipamiento)}>

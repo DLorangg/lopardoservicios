@@ -112,11 +112,10 @@ if (fechaVisita === null) {
 
   return (
     <div className="container">
-      <h1 className="mt-4">Detalles del Dato</h1>
+      <h1 className="mt-4">Detalles de la Visita</h1>
       <p>ID: {id}</p>
       <div className="form-group detalle-item fecha-estado fecha-visita">
-        <label className="font-weight-bold">Fecha de la visita:    </label>
-        <span className="ml-2">{fechaFormateada}</span>
+        <label className="font-weight-bold">Fecha: {fechaFormateada} </label>
       </div>
       <div className={`form-group detalle-item estado-texto ${getClassForEstado(estadoVisita)} fecha-estado`}>
         <label className="font-weight-bold label">ESTADO: <span className="">{estadoVisita.toUpperCase()}</span></label>

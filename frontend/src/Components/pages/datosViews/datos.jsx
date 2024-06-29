@@ -16,7 +16,7 @@ export function Datos() {
   }
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" style={{border: '1px solid #001461'}}>
       {content}
     </div>
   );
@@ -73,8 +73,8 @@ export function DatosList(props) {
   return (
     <>
       <h2 className="text-center mb-3">Visitas</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
-      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2">Actualizar</button>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
+      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">
         <thead>
           <tr>
@@ -96,10 +96,10 @@ export function DatosList(props) {
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="buttom" className="btn btn-secondary btn-sm me-2">
                   Detalle
                 </Link>
-                <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2">
+                <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
-                <button type="button" className="btn btn-danger btn-sm">
+                <button type="button" className="btn btn-danger btn-sm" style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}>
                   Borrar
                 </button>
               </td>
