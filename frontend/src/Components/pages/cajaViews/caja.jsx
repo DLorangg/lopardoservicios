@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import './caja.css';
+import Rouben from '../../../Assets/Rouben.otf';
 
 export function Caja() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -44,7 +45,13 @@ function DatosList(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">Flujo de caja</h2>
+    <style>{`
+        @font-face {
+          font-family: 'Rouben';
+          src: url(${Rouben}) format('opentype');
+        }
+      `}</style>
+      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>FLUJO DE CAJA</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
       <button onClick={() => fetchCaja()} type="button" className="btn btn-outline-primary me-2">Actualizar</button>
       <table className="table caja-table">

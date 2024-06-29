@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ModalComponent } from "../modal";
 import { parseISO, format } from 'date-fns';
+import Rouben from '../../../Assets/Rouben.otf';
 
 export function Datos() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -72,7 +73,13 @@ export function DatosList(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">Visitas</h2>
+    <style>{`
+        @font-face {
+          font-family: 'Rouben';
+          src: url(${Rouben}) format('opentype');
+        }
+      `}</style>
+      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
       <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">

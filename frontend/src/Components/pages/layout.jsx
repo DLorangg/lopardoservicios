@@ -1,6 +1,7 @@
 import React from 'react';
 import LogoutIcon from '../../Assets/logout.png';
 import CirculoLogo from '../../Assets/Circulo_Logo.png';
+import SearchIcon from '../../Assets/search.png';  
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './layout.css';
 
@@ -38,7 +39,9 @@ export function Navbar({ setAuthenticated }) {
               <Link className="nav-link text-dark" to="/caja" id="caja">Caja</Link>
             </li>
             <li className={`nav-item ${location.pathname === '/busqueda' ? 'active' : ''}`}>
-              <Link className="nav-link text-dark" to="/busqueda" id="busqueda">Búsqueda</Link>
+              <Link className="nav-link text-dark" to="/busqueda" id="busqueda">
+                <img src={SearchIcon} alt="Búsqueda" style={{ width: '24px', marginRight: '8px' }} />
+              </Link>
             </li>
           </ul>
         </div>

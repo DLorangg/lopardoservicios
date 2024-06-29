@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import {Link, useNavigate, useParams} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import Rouben from '../../../Assets/Rouben.otf';
 
 export function Equipo() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm}  />);
@@ -53,7 +54,13 @@ function DatosList(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">Equipos</h2>
+    <style>{`
+        @font-face {
+          font-family: 'Rouben';
+          src: url(${Rouben}) format('opentype');
+        }
+      `}</style>
+      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>EQUIPOS</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
       <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
       <table className="table">

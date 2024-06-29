@@ -16,12 +16,12 @@ export function Home() {
           src: url(${Rouben}) format('opentype');
         }
       `}</style>
-      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>Lopardo Servicios</h2>
+      <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>LOPARDO SERVICIOS</h2>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Link to="/datos" style={buttonStyle('#140097')}>Datos</Link>
-        <Link to="/equipo" style={buttonStyle('#140097')}>Equipo</Link>
+        <Link to="/datos" style={buttonStyle('#001461')}>Visitas</Link>
+        <Link to="/equipo" style={buttonStyle('#140097')}>Equipos</Link>
         <Link to="/caja" style={buttonStyle('#140097')}>Caja</Link>
-        <Link to="/busqueda" style={buttonStyle('#140097')}>Busqueda</Link>
+        <Link to="/busqueda" style={buttonStyle('#001461')}>Busqueda</Link>
       </div>
     </div>
   );
