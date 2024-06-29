@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 export function LoginForm({ setAuthenticated }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,24 +23,49 @@ export function LoginForm({ setAuthenticated }) {
         username: username,
         password: password,
       });
-  
+
       const { token, userName } = response.data;
-  
+
       if (token) {
         localStorage.setItem('token', token);
-        localStorage.setItem('userName', userName); 
+        localStorage.setItem('userName', userName);
         setAuthenticated(true);
         toast.success('Inicio de sesión exitoso');
-        navigate('/');
+        
+        // Verificar si la contraseña es "1234" y mostrar opción de cambiar contraseña
+        if (password === '1234') {
+          setShowChangePassword(true);
+        } else {
+          setShowChangePassword(false);
+          navigate('/'); // Redirigir al home después de iniciar sesión
+        }
       } else {
         localStorage.removeItem('token');
-        localStorage.removeItem('userName'); 
+        localStorage.removeItem('userName');
         setAuthenticated(false);
         toast.error('Token de autenticación no recibido');
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       toast.error('Error al iniciar sesión. Verifica tus credenciales.');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      const response = await axios.put('http://localhost:8081/updatePassword', {
+        username: username,
+        currentPassword: password,
+        newPassword: newPassword,
+      });
+
+      toast.success(response.data.message);
+      setNewPassword('');
+      setShowChangePassword(false); // Ocultar el formulario después de cambiar la contraseña
+      navigate('/'); // Redirigir al home después de cambiar la contraseña
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+      toast.error('Error al cambiar la contraseña. Verifica tus datos.');
     }
   };
 
@@ -121,7 +148,7 @@ export function LoginForm({ setAuthenticated }) {
               placeholder='Nombre de usuario'
               required
               onChange={(e) => setUsername(e.target.value)}
-              autoComplete="off"  // Agregar esta línea para desactivar el autocompletado
+              autoComplete="off"
               style={{
                 width: '100%',
                 height: '50px',
@@ -204,6 +231,49 @@ export function LoginForm({ setAuthenticated }) {
           >
             Iniciar sesión
           </button>
+
+          {showChangePassword && (
+            <div style={{ marginTop: '20px' }}>
+              <label htmlFor='newPassword' style={{ color: '#fff', fontSize: '16px' }}>Nueva contraseña:</label>
+              <input
+                type='password'
+                name='newPassword'
+                id='newPassword'
+                placeholder='Ingresa tu nueva contraseña'
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '50px',
+                  background: 'transparent',
+                  border: '2px solid rgba(255, 255, 255, .2)',
+                  outline: 'none',
+                  borderRadius: '40px',
+                  fontSize: '16px',
+                  color: '#fff',
+                  padding: '0 45px 0 20px',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <button
+                type='button'
+                onClick={handleChangePassword}
+                style={{
+                  marginTop: '10px',
+                  background: '#FFFFFF',
+                  border: '2px solid #FFFFFF',
+                  color: '#333',
+                  fontWeight: '700',
+                  borderRadius: '40px',
+                  padding: '10px 20px',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                }}
+              >
+                Cambiar contraseña
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

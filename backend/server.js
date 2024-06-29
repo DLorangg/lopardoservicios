@@ -31,6 +31,23 @@ app.post('/login', (req, res) => {
     });
 });
 
+// Ruta para modificar contraseña si es igual a 1234
+app.put('/updatePassword', (req, res) => {
+    const { username, currentPassword, newPassword } = req.body;
+    
+    if (currentPassword !== '1234') {
+      return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+    }
+  
+    const sql = 'UPDATE usuarios SET Contraseña = ? WHERE Nombre = ?';
+    db.query(sql, [newPassword, username], (err, result) => {
+      if (err) {
+        console.error('Error al actualizar la contraseña:', err);
+        return res.status(500).json({ error: 'Error en el servidor al actualizar la contraseña' });
+      }
+      return res.json({ message: 'Contraseña actualizada correctamente' });
+    });
+  });
 
 //Ruta para obtener usuario loggeado
 app.get('/user', (req, res) => {
