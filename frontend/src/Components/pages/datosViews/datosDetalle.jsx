@@ -10,9 +10,11 @@ function getClassForEstado(estado) {
     case 'Pendiente':
       return 'estado-pendiente';
     case 'Completado':
-    case 'Facturado':
-    case 'Pegado':
       return 'estado-completado';
+    case 'Facturado':
+      return 'estado-facturado';
+    case 'Pagado':
+      return 'estado-pagado';
     case 'Incompleto':
       return 'estado-incompleto';
     default:
@@ -83,6 +85,8 @@ function DatosDetalle() {
   const ciudadCliente = clienteActual ? clienteActual.Ciudad: '';
   const telefonoCliente= clienteActual ? clienteActual.Telefono: '';
   const equipaminetoCliente = clienteActual ? clienteActual.Equipamiento: '';
+
+  const garantiaVisita = visitaActual.Garantia = 1 ? "Si" : "No";
 
   const precioVisita = visitaActual ? visitaActual.Precio: '';
   const descripcionVisita = visitaActual ? visitaActual.Descripcion: '';
@@ -160,6 +164,10 @@ if (fechaVisita === null) {
             <label className="font-weight-bold">Descripción de la Visita:</label>
             <span>{descripcionVisita}</span>
           </div>      
+          <div className="form-group detalle-item">
+            <label className="font-weight-bold">Garantia: </label>
+            <span>{garantiaVisita}</span>
+          </div>
           <div className="form-group detalle-item">
             <label
             className="font-weight-bold">Precio de la Visita: </label>

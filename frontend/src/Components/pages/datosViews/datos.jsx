@@ -1,8 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
+import { useNavigate } from "react-router-dom";
+import {ModalComponent} from "../modal"
 import Rouben from '../../../Assets/Rouben.otf';
+
+export function Datos() {
+  const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
+
+  function ShowList() {
+    setContent(<DatosList ShowForm={ShowForm} />);
+  }
+
+  function ShowForm() {
+    setContent(<DatosForm ShowList={ShowList} />);
+  }
+
+  return (
+    <div className="container my-5" style={{border: '1px solid #001461'}}>
+      {content}
+    </div>
+  );
+}
 
 export function DatosList(props) {
   const [dataVisita, setDataVisita] = useState([]);
@@ -163,6 +183,16 @@ export function DatosForm(props) {
 
   useEffect(() => fetchEstado(), []);
 
+  const [dataPersonal, setDataPersonal] = useState([]);
+
+  function fetchPersonal() {
+    axios.get("http://localhost:8081/personal")
+      .then(res => setDataPersonal(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  useEffect(() => fetchPersonal(), []);
+
   const [IdCliente, setIdCliente] = useState('');
   const [Ciudad, setCiudad] = useState('');
   const [Direccion, setDireccion] = useState('');
@@ -174,6 +204,7 @@ export function DatosForm(props) {
   const [Precio, setPrecio] = useState('');
   const [Garantia, setGarantia] = useState('');
   const [Fecha, setFecha] = useState('');
+  const [IdPersonal, setIdPersonal] = useState('');
   const navigate = useNavigate();
 
   function handleSubmit(event) {
@@ -182,7 +213,7 @@ export function DatosForm(props) {
     // Formatear la fecha
     const formattedDate = new Date(Fecha).toISOString().split('T')[0];
 
-    axios.post('http://localhost:8081/visitapost', { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha: formattedDate })
+    axios.post('http://localhost:8081/visitapost', { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, IdPersonal, Precio, Garantia, Fecha: formattedDate })
       .then(res => {
         console.log(res);
         console.log(IdCliente);
@@ -375,6 +406,19 @@ export function DatosForm(props) {
                   </option>
                 ))}
                 {dataEstado && dataEstado.length === 0 && <option value="">No clients available</option>}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Personal</label>
+            <div className="col-sm-8">
+              <select className="form-control" name="IdPersonal" onChange={e => setIdPersonal(e.target.value)}>
+                <option value="" disabled hidden>Seleccione</option>
+                {dataPersonal && dataPersonal.map((personal) => (
+                  <option key={personal.IdPersonal} value={personal.IdPersonal}>
+                    {personal.Nombre}
+                  </option>
+                ))}
+
               </select>
             </div>
   

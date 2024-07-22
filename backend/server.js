@@ -146,7 +146,7 @@ app.put('/equipamientoupdate/:id', (req, res) => {
 
 
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE equipamiento SET `IdCliente` = ? ,`Ciudad` = ?,`Direccion`  = ?,`Descripcion`  = ?,`IdEquipamiento`  = ?,`IdEstado`  = ?,`Precio`  = ?, `Garantia`  = ?, `Fecha` = ? WHERE `IdVisita` = ?";
+    const sql = "UPDATE equipamiento SET IdCliente = ? ,Ciudad = ?,Direccion  = ?,Descripcion  = ?,IdEquipamiento  = ?,IdEstado  = ?,IdPersonal  = ?,Precio  = ?, Garantia  = ?, Fecha = ? WHERE IdVisita = ?";
     const values = [
         req.body.IdCliente,
         req.body.Ciudad,
@@ -154,6 +154,7 @@ app.put('/visitaupdate/:id', (req, res) => {
         req.body.Descripcion,
         req.body.IdEquipamiento,
         req.body.IdEstado,
+        req.body.IdPersonal,
         req.body.Precio,
         req.body.Garantia,
         req.body.Fecha,
@@ -194,7 +195,7 @@ app.post('/visitapost', (req, res) => {
     // Asigna un valor predeterminado a IdEquipamiento si está vacío
     const idEquipamiento = visitaData.IdEquipamiento || null;
 
-    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado`, `Precio`, `Garantia`, `Fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado` ,`IdPersonal`, `Precio`, `Garantia`, `Fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
         visitaData.IdCliente,
         visitaData.Ciudad,
@@ -202,6 +203,7 @@ app.post('/visitapost', (req, res) => {
         visitaData.Descripcion,
         idEquipamiento,
         visitaData.IdEstado,
+        visitaData.IdPersonal,
         visitaData.Precio,
         visitaData.Garantia,
         visitaData.Fecha
@@ -326,6 +328,13 @@ app.delete('/caja/:id', (req, res) => {
     });
 });
 
+app.get('/personal', (req, res) =>{
+    const sql =  'SELECT * FROM personal';
+    db.query(sql, (err, result) => {
+        if(err) return res.json({Message: "Error en server"})
+        return res.json(result)
+    })
+})
 
 app.listen(8081, () => {
     console.log('Escuchando en el puerto 8081')
