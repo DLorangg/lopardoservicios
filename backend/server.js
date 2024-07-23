@@ -146,7 +146,7 @@ app.put('/equipamientoupdate/:id', (req, res) => {
 
 
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE equipamiento SET IdCliente = ? ,Ciudad = ?,Direccion  = ?,Descripcion  = ?,IdEquipamiento  = ?,IdEstado  = ?,IdPersonal  = ?,Precio  = ?, Garantia  = ?, Fecha = ? WHERE IdVisita = ?";
+    const sql = "UPDATE equipamiento SET IdCliente = ? ,Ciudad = ?,Direccion  = ?,Descripcion  = ?,IdEquipamiento  = ?,IdEstado  = ?,IdPersonal  = ?,Precio  = ?, Garantia  = ?, Fecha = ? WHERE IdVisita = ?, FormaPago = ?, FechaCobro = ?";
     const values = [
         req.body.IdCliente,
         req.body.Ciudad,
@@ -158,6 +158,9 @@ app.put('/visitaupdate/:id', (req, res) => {
         req.body.Precio,
         req.body.Garantia,
         req.body.Fecha,
+        req.body.FormaPago,
+        req.body.FechaCobro
+        
     ];
     const id = req.params.id;
     db.query(sql, [...values, id], (err, data) => {
@@ -195,7 +198,7 @@ app.post('/visitapost', (req, res) => {
     // Asigna un valor predeterminado a IdEquipamiento si está vacío
     const idEquipamiento = visitaData.IdEquipamiento || null;
 
-    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado` ,`IdPersonal`, `Precio`, `Garantia`, `Fecha`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado` ,`IdPersonal`, `Precio`, `Garantia`, `Fecha`, `FormaPago`, `FechaCobro`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
         visitaData.IdCliente,
         visitaData.Ciudad,
@@ -206,7 +209,10 @@ app.post('/visitapost', (req, res) => {
         visitaData.IdPersonal,
         visitaData.Precio,
         visitaData.Garantia,
-        visitaData.Fecha
+        visitaData.Fecha,
+        visitaData.FormaPago,
+        visitaData.FechaCobro
+
     ];
 
     db.query(sql, values, (err, data) => {
