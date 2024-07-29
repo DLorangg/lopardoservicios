@@ -83,6 +83,66 @@ app.get('/cliente', (req, res) =>{
     })
 })
 
+app.post('/clientepost', (req, res) => {
+    const clienteData = req.body; // Asegúrate de que los datos lleguen correctamente desde el cliente
+
+    const equipamiento = clienteData.Equipamiento.join(', ');
+
+    const sql = "INSERT INTO cliente (Nombre, DNI, Ciudad, Direccion, Equipamiento, Telefono) VALUES (?, ?, ?, ?, ?, ?)";
+    const values = [
+        clienteData.Nombre,
+        clienteData.DNI,
+        clienteData.Ciudad,
+        clienteData.Direccion,
+        equipamiento,
+        clienteData.Telefono
+    ];
+
+    db.query(sql, values, (err, data) => {
+        if (err) {
+            console.error("Error al insertar cliente:", err);
+            return res.status(500).json({ error: "Error interno del servidor al crear cliente" });
+        }
+        return res.json({ success: true, message: "Cliente creado exitosamente" });
+    });
+});
+
+app.put('/cliente/:id', (req, res) => {
+    const clienteId = req.params.id;
+    const clienteData = req.body; 
+
+    // Convertir el arreglo de equipamientos en una cadena
+    const equipamiento = clienteData.Equipamiento.join(', ');
+    
+    const sql = `
+        UPDATE cliente
+        SET Nombre = ?, DNI = ?, Ciudad = ?, Direccion = ?, Equipamiento = ?, Telefono = ?
+        WHERE IdCliente = ?
+    `;
+
+    const values = [
+        clienteData.Nombre,
+        clienteData.DNI,
+        clienteData.Ciudad,
+        clienteData.Direccion,
+        equipamiento,
+        clienteData.Telefono,
+        clienteId
+    ];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error("Error al actualizar cliente:", err);
+            return res.status(500).json({ error: "Error interno del servidor al actualizar cliente" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Cliente no encontrado" });
+        }
+        return res.json({ success: true, message: "Cliente actualizado exitosamente" });
+    });
+});
+
+
 app.get('/equipamiento', (req, res) =>{
     const sql =  'SELECT * FROM equipamiento';
     db.query(sql, (err, result) => {
@@ -185,68 +245,39 @@ app.delete('/equipamiento/:id', (req, res) => {
     });
 });
 
-
-
-
-
 app.post('/visitapost', (req, res) => {
     const visitaData = req.body;
-
+  
     // Log para verificar los datos recibidos
     console.log("Datos recibidos para crear visita:", visitaData);
-
+  
     // Asigna un valor predeterminado a IdEquipamiento si está vacío
     const idEquipamiento = visitaData.IdEquipamiento || null;
-
-    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado` ,`IdPersonal`, `Precio`, `Garantia`, `Fecha`, `FormaPago`, `FechaCobro`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  
+    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado`, `IdPersonal`, `Precio`, `Garantia`, `Fecha`, `FormaPago`, `FechaCobro`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
-        visitaData.IdCliente,
-        visitaData.Ciudad,
-        visitaData.Direccion,
-        visitaData.Descripcion,
-        idEquipamiento,
-        visitaData.IdEstado,
-        visitaData.IdPersonal,
-        visitaData.Precio,
-        visitaData.Garantia,
-        visitaData.Fecha,
-        visitaData.FormaPago,
-        visitaData.FechaCobro
-
+      visitaData.IdCliente,
+      visitaData.Ciudad,
+      visitaData.Direccion,
+      visitaData.Descripcion,
+      idEquipamiento,
+      visitaData.IdEstado,
+      visitaData.IdPersonal, // `IdPersonal` debería ser una cadena separada por comas
+      visitaData.Precio,
+      visitaData.Garantia,
+      visitaData.Fecha,
+      visitaData.FormaPago,
+      visitaData.FechaCobro
     ];
-
+  
     db.query(sql, values, (err, data) => {
-        if (err) {
-            console.error("Error al insertar visita:", err);
-            return res.status(500).json({ error: "Error interno del servidor al crear visita", details: err });
-        }
-        return res.json({ success: true, message: "Visita creada exitosamente", data });
+      if (err) {
+        console.error("Error al insertar visita:", err);
+        return res.status(500).json({ error: "Error interno del servidor al crear visita", details: err });
+      }
+      return res.json({ success: true, message: "Visita creada exitosamente", data });
     });
-});
-
-app.post('/clientepost', (req, res) => {
-    const clienteData = req.body; // Asegúrate de que los datos lleguen correctamente desde el cliente
-
-    const equipamiento = clienteData.Equipamiento.join(', ');
-
-    const sql = "INSERT INTO cliente (Nombre, DNI, Ciudad, Direccion, Equipamiento, Telefono) VALUES (?, ?, ?, ?, ?, ?)";
-    const values = [
-        clienteData.Nombre,
-        clienteData.DNI,
-        clienteData.Ciudad,
-        clienteData.Direccion,
-        equipamiento,
-        clienteData.Telefono
-    ];
-
-    db.query(sql, values, (err, data) => {
-        if (err) {
-            console.error("Error al insertar cliente:", err);
-            return res.status(500).json({ error: "Error interno del servidor al crear cliente" });
-        }
-        return res.json({ success: true, message: "Cliente creado exitosamente" });
-    });
-});
+  });  
 
 // Ruta caja
 app.get('/caja', (req, res) => {

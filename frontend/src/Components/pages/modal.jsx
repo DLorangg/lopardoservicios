@@ -49,7 +49,12 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
   };
 
   const handleGuardar = () => {
-    axios.post('http://localhost:8081/clientepost', clienteData)
+    const clienteDataToSend = {
+      ...clienteData,
+      Telefono: clienteData.Telefono.toString(),
+    };
+
+    axios.post('http://localhost:8081/clientepost', clienteDataToSend)
       .then(response => {
         console.log('Cliente creado:', response.data);
         alert('Cliente creado exitosamente');
@@ -97,8 +102,8 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formTelefono">
             <Form.Label>Teléfono</Form.Label>
-            <Form.Control type="number" name="Telefono" value={clienteData.Telefono} onChange={handleChange} />
-            </Form.Group>
+            <Form.Control type="text" name="Telefono" value={clienteData.Telefono} onChange={handleChange} />
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>

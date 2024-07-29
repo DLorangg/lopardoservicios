@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import './datosDetalle.css'; // Importa el archivo CSS
-import { format, parseISO } from 'date-fns'; // Importa las funciones format y parseISO de date-fns
+import './datosDetalle.css';
+import { format, parseISO } from 'date-fns';
 
-// Función para obtener la clase CSS según el estado
 function getClassForEstado(estado) {
   switch (estado) {
     case 'Pendiente':
@@ -27,10 +26,10 @@ function DatosDetalle() {
   const [dataEstado, setDataEstado] = useState([]);
   const [dataVisita, setDataVisita] = useState([]);
   const [dataEquipamiento, setDataEquipamiento] = useState([]);
+  const [dataPersonal, setDataPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Obtener el id de la visita de las props
   const { id } = useParams();
 
   useEffect(() => {
@@ -52,7 +51,7 @@ function DatosDetalle() {
     
     axios.get("http://localhost:8081/equipamiento")
       .then(res => {
-        setDataEquipamiento(res.data); // Establece los datos del equipamiento
+        setDataEquipamiento(res.data);
       })
       .catch(error => {
         setError("Error al cargar datos de equipamiento");
@@ -65,6 +64,14 @@ function DatosDetalle() {
       })
       .catch(error => {
         setError("Error al cargar datos de visita");
+      });
+
+    axios.get("http://localhost:8081/personal")
+      .then(res => {
+        setDataPersonal(res.data);
+      })
+      .catch(error => {
+        setError("Error al cargar datos de personal");
       });
   }, []);
 
@@ -86,25 +93,54 @@ function DatosDetalle() {
   const telefonoCliente= clienteActual ? clienteActual.Telefono: '';
   const equipaminetoCliente = clienteActual ? clienteActual.Equipamiento: '';
 
-  const garantiaVisita = visitaActual.Garantia = 1 ? "Si" : "No";
+  const garantiaVisita = visitaActual ? (visitaActual.Garantia === 1 ? "Si" : "No") : '';
 
   const precioVisita = visitaActual ? visitaActual.Precio: '';
   const descripcionVisita = visitaActual ? visitaActual.Descripcion: '';
-  
+  const formaPago = visitaActual ? (visitaActual.FormaPago === 1 ? "Transferencia" : "Efectivo") : '';
+
+  const getPersonalNames = (idPersonalString) => {
+    if (!idPersonalString) return '';
+    const idPersonalArray = idPersonalString.split(','); // Convierte la cadena en un array
+    const names = idPersonalArray.map(id => {
+      const personal = dataPersonal.find(p => p.IdPersonal.toString() === id.trim());
+      return personal ? personal.Nombre : '';
+    }).filter(name => name !== '');
+    
+    if (names.length === 0) return '';
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(', ') + ' y ' + names[names.length - 1];
+  };
+
+  const nombresPersonalFormateados = getPersonalNames(visitaActual ? visitaActual.IdPersonal : '');
+
   const fechaVisita = visitaActual ? visitaActual.Fecha: '';
   let fechaFormateada;
 
-if (fechaVisita === null) {
-  fechaFormateada = "-";
-} else {
-  const fechaISO = parseISO(fechaVisita);
-  if (isNaN(fechaISO.getTime())) {
+  if (fechaVisita === null) {
     fechaFormateada = "-";
   } else {
-    fechaFormateada = format(fechaISO, 'dd-MM-yyyy');
+    const fechaISO = parseISO(fechaVisita);
+    if (isNaN(fechaISO.getTime())) {
+      fechaFormateada = "-";
+    } else {
+      fechaFormateada = format(fechaISO, 'dd-MM-yyyy');
+    }
   }
-}
 
+  const fechaCobro = visitaActual ? visitaActual.FechaCobro: '';
+  let fechaCobroFormateada
+
+  if (fechaCobro === null) {
+    fechaCobroFormateada = "-";
+  } else {
+    const fechaISO = parseISO(fechaCobro);
+    if (isNaN(fechaISO.getTime())) {
+      fechaCobroFormateada = "-";
+    } else {
+      fechaCobroFormateada = format(fechaISO, 'dd-MM-yyyy');
+    }
+  }
 
   const IdEstadoVisitaActual = visitaActual ? visitaActual.IdEstado: '';
   const estadoActual = dataEstado.find(estado => estado.IdEstado === IdEstadoVisitaActual);
@@ -149,8 +185,8 @@ if (fechaVisita === null) {
             <span className="ml-2">{direccionCliente}</span>
           </div>
           <div className="form-group detalle-item">
-            <label className="font-weight-bold">Equipamiento del Cliente:</label>
-            <span className="ml-2">{equipaminetoCliente}</span>
+            <label className="font-weight-bold">Personal que asistió:</label>
+            <span className="ml-2">{nombresPersonalFormateados}</span>
           </div>
           
         </div>
@@ -172,6 +208,16 @@ if (fechaVisita === null) {
             <label
             className="font-weight-bold">Precio de la Visita: </label>
             <span>${precioVisita}</span>
+          </div>
+          <div className="form-group detalle-item">
+            <label
+            className="font-weight-bold">Forma de pago: </label>
+            <span>{formaPago}</span>
+          </div>
+          <div className="form-group detalle-item">
+            <label
+            className="font-weight-bold">Fecha de cobro: </label>
+            <span>{fechaCobroFormateada}</span>
           </div>
         </div>
       </div> 

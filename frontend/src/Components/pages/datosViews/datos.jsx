@@ -205,15 +205,37 @@ export function DatosForm(props) {
   const [Garantia, setGarantia] = useState('');
   const [Fecha, setFecha] = useState('');
   const [IdPersonal, setIdPersonal] = useState('');
+  const [FormaPago, setFormaPago] = useState('');
+  const [FechaCobro, setFechaCobro] = useState('');
+
   const navigate = useNavigate();
 
   function handleSubmit(event) {
     event.preventDefault();
-
+  
+    // Verificar que IdPersonal no esté vacío
+    if (IdPersonal.length === 0) {
+      alert('Por favor, selecciona al menos un personal.');
+      return;
+    }
+  
     // Formatear la fecha
     const formattedDate = new Date(Fecha).toISOString().split('T')[0];
-
-    axios.post('http://localhost:8081/visitapost', { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, IdPersonal, Precio, Garantia, Fecha: formattedDate })
+  
+    axios.post('http://localhost:8081/visitapost', {
+      IdCliente,
+      Ciudad,
+      Direccion,
+      Descripcion,
+      IdEquipamiento,
+      IdEstado,
+      IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
+      Precio,
+      Garantia,
+      Fecha: formattedDate,
+      FormaPago,
+      FechaCobro: formattedDate
+    })    
       .then(res => {
         console.log(res);
         console.log(IdCliente);
@@ -298,6 +320,7 @@ export function DatosForm(props) {
   const handleOpenFileDialog = () => {
     fileInputRef.current.click();
   };
+
 
   return (
     <>
@@ -411,15 +434,19 @@ export function DatosForm(props) {
 
             <label className="col-sm-4 col-form-label">Personal</label>
             <div className="col-sm-8">
-              <select className="form-control" name="IdPersonal" onChange={e => setIdPersonal(e.target.value)}>
-                <option value="" disabled hidden>Seleccione</option>
-                {dataPersonal && dataPersonal.map((personal) => (
-                  <option key={personal.IdPersonal} value={personal.IdPersonal}>
-                    {personal.Nombre}
-                  </option>
-                ))}
+            <select className="form-control" name="IdPersonal" multiple onChange={e => {
+              const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+              setIdPersonal(selectedOptions);  // Almacenar array de IDs
+              console.log("ID Personal seleccionados:", selectedOptions);
+            }}>
+              <option value="" disabled hidden>Seleccione</option>
+              {dataPersonal && dataPersonal.map((personal) => (
+                <option key={personal.IdPersonal} value={personal.IdPersonal}>
+                  {personal.Nombre}
+                </option>
+              ))}
+            </select>
 
-              </select>
             </div>
   
             <label className="col-sm-4 col-form-label">Precio</label>
@@ -474,6 +501,49 @@ export function DatosForm(props) {
                 autoComplete="off"
               />
             </div>
+
+            <label className="col-sm-4 col-form-label">Forma de pago</label>
+            <div className="col-sm-8">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="transferenciaRadio"
+                  value={1}
+                  checked={FormaPago === 1}
+                  onChange={() => setFormaPago(1)}
+                />
+                <label className="form-check-label" htmlFor="transferenciaRadio">
+                  Transferencia
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="efectivoRadio"
+                  value={0}
+                  checked={FormaPago === 0}
+                  onChange={() => setFormaPago(0)}
+                />
+                <label className="form-check-label" htmlFor="efectivoRadio">
+                  Efectivo
+                </label>
+              </div>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Fecha de cobro</label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                type="date"
+                name="FechaCobro"
+                onChange={e => setFechaCobro(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
   
             <div
               onDrop={handleDrop}
@@ -508,7 +578,7 @@ export function DatosForm(props) {
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
               </div>
               <div className="col-sm-4 d-grid">
-                <Link to={`../equipo`} type="button" className="btn btn-danger me-2">Cancelar</Link>
+                <Link to={`../`} type="button" className="btn btn-danger me-2">Cancelar</Link>
               </div>
             </div>
   
