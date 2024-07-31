@@ -3,28 +3,17 @@ import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export function DatosUpdate() {
-
   const [dataCliente, setDataCliente] = useState([]);
   const [dataVisita, setDataVisita] = useState([]);
+  const [dataPersonal, setDataPersonal] = useState([]);
+  const [dataEstado, setDataEstado] = useState([]);
+  const [dataEquipamiento, setDataEquipamiento] = useState([]);
 
-  // Obtener el id de la visita de las props
   const { id } = useParams();
-
-  useEffect(() => {
-    axios.get("http://localhost:8081/cliente")
-      .then(res => setDataCliente(res.data))
-      .catch((error) => console.log("Error: ", error));
-
-    axios.get("http://localhost:8081/visita")
-      .then(res => setDataVisita(res.data))
-      .catch((error) => console.log("Error: ", error));
-  }, []);
-
-  // Obtener el IdCliente de la visita actual
-  const visitaActual = dataVisita.find(visita => visita.id === id);
-  const IdClienteVisitaActual = visitaActual ? visitaActual.IdCliente : ''; 
-
-  const [IdCliente, setIdCliente] = useState(IdClienteVisitaActual);
+  const navigate = useNavigate();
+  
+  // Estado para los campos del formulario
+  const [IdCliente, setIdCliente] = useState('');
   const [Ciudad, setCiudad] = useState('');
   const [Direccion, setDireccion] = useState('');
   const [Descripcion, setDescripcion] = useState('');
@@ -33,13 +22,73 @@ export function DatosUpdate() {
   const [Precio, setPrecio] = useState('');
   const [Garantia, setGarantia] = useState('');
   const [Fecha, setFecha] = useState('');
+  const [IdPersonal, setIdPersonal] = useState('');
 
-  const navigate = useNavigate();
+  // Fetching data functions
+  function fetchPersonal() {
+    axios.get("http://localhost:8081/personal")
+      .then(res => setDataPersonal(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  function fetchEstado() {
+    axios.get("http://localhost:8081/estado")
+      .then(res => setDataEstado(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  function fetchEquipamiento() {
+    axios.get("http://localhost:8081/equipamiento")
+      .then(res => setDataEquipamiento(res.data))
+      .catch((error) => console.log("Error: ", error));
+  }
+
+  useEffect(() => {
+    fetchPersonal();
+    fetchEstado();
+    fetchEquipamiento();
+  }, []);
+
+  useEffect(() => {
+    // Obtener clientes
+    axios.get("http://localhost:8081/cliente")
+      .then(res => setDataCliente(res.data))
+      .catch(error => console.log("Error: ", error));
+
+    // Obtener visitas
+    axios.get("http://localhost:8081/visita")
+      .then(res => {
+        setDataVisita(res.data);
+        // Buscar la visita actual y actualizar el estado
+        const currentVisit = res.data.find(visita => visita.IdVisita === parseInt(id));
+        if (currentVisit) {
+          setIdCliente(currentVisit.IdCliente);
+          setCiudad(currentVisit.Ciudad);
+          setDireccion(currentVisit.Direccion);
+          setDescripcion(currentVisit.Descripcion);
+          setIdEquipamiento(currentVisit.IdEquipamiento);
+          setIdEstado(currentVisit.IdEstado);
+          setPrecio(currentVisit.Precio);
+          setGarantia(currentVisit.Garantia);
+          // Convertir la fecha al formato YYYY-MM-DD
+          const fechaFormateada = new Date(currentVisit.Fecha).toISOString().split('T')[0];
+          setFecha(fechaFormateada);
+          setIdPersonal(currentVisit.IdPersonal);
+        }
+      })
+      .catch(error => console.log("Error: ", error));
+  }, [id]);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    axios.put(`http://localhost:8081/visitaupdate/` + id, { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha })
+      // Imprime los datos que se enviarán
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+      console.log({
+        IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal
+      });
+
+    axios.put(`http://localhost:8081/visitaupdate/` + id, { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal })
       .then(res => {
         console.log(res);
         navigate('../equipo');
@@ -55,7 +104,6 @@ export function DatosUpdate() {
       <div className="row bm-3">
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
-
             <label className="col-sm-4 col-form-label">Cliente</label>
             <div className="col-sm-8">
               <select className="form-control" name="IdCliente" onChange={e => setIdCliente(e.target.value)} value={IdCliente}>
@@ -65,6 +113,152 @@ export function DatosUpdate() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Ciudad</label>
+            <div className="col-sm-8">
+              <select className="form-control" name="Ciudad" onChange={e => setCiudad(e.target.value)} value={Ciudad}>
+                {dataCliente && dataCliente.map((cliente) => (
+                  <option key={cliente.Ciudad} value={cliente.Ciudad}>
+                    {cliente.Ciudad}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Direccion</label>
+            <div className="col-sm-8">
+              <select className="form-control" name="Direccion" onChange={e => setDireccion(e.target.value)} value={Direccion}>
+                {dataCliente && dataCliente.map((cliente) => (
+                  <option key={cliente.Direccion} value={cliente.Direccion}>
+                    {cliente.Direccion}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Descripción</label>
+            <div className="col-sm-8">
+              <textarea
+                className="form-control"
+                name="Descripcion"
+                onChange={e => setDescripcion(e.target.value)}
+                value={Descripcion}
+                autoComplete="off"
+              />
+            </div>
+
+            <label className="col-sm-4 col-form-label">Equipamiento</label>
+            <div className="col-sm-8">
+              <select
+                className="form-control"
+                name="Equipamiento"
+                multiple
+                autoComplete="off"
+                value={IdEquipamiento} // Asegúrate de que IdEquipamiento tenga el valor correcto
+                onChange={e => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                  setIdEquipamiento(selectedOptions);
+                }}
+              >
+                {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
+                  <option key={equipamiento.IdEquipamiento} value={equipamiento.IdEquipamiento}>
+                    {equipamiento.Nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Estado</label>
+            <div className="col-sm-8">
+              <select
+                className="form-control"
+                name="IdEstado"
+                onChange={e => setIdEstado(e.target.value)}
+                value={IdEstado}
+                autoComplete="off"
+              >
+                <option value="" disabled hidden>Seleccione</option>
+                {dataEstado && dataEstado.map((estado) => (
+                  <option key={estado.IdEstado} value={estado.IdEstado}>
+                    {estado.Estado}
+                  </option>
+                ))}
+                {dataEstado && dataEstado.length === 0 && <option value="">No hay estados disponibles</option>}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Personal</label>
+            <div className="col-sm-8">
+              <select
+                className="form-control"
+                name="IdPersonal"
+                onChange={e => setIdPersonal(e.target.value)}
+                value={IdPersonal}
+              >
+                <option value="" disabled hidden>Seleccione</option>
+                {dataPersonal && dataPersonal.map((personal) => (
+                  <option key={personal.IdPersonal} value={personal.IdPersonal}>
+                    {personal.Nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Precio</label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                name="Precio"
+                type="number"
+                onChange={e => setPrecio(e.target.value)}
+                value={Precio}
+                autoComplete="off"
+              />
+            </div>
+
+            <label className="col-sm-4 col-form-label">Garantía</label>
+            <div className="col-sm-8">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="Garantia"
+                  id="siRadio"
+                  value={1}
+                  checked={Garantia === 1}
+                  onChange={() => setGarantia(1)}
+                />
+                <label className="form-check-label" htmlFor="siRadio">
+                  Sí
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="Garantia"
+                  id="noRadio"
+                  value={0}
+                  checked={Garantia === 0}
+                  onChange={() => setGarantia(0)}
+                />
+                <label className="form-check-label" htmlFor="noRadio">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Fecha</label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                type="date"
+                name="Fecha"
+                onChange={e => setFecha(e.target.value)}
+                value={Fecha} // Asegúrate de que Fecha esté en formato YYYY-MM-DD
+                autoComplete="off"
+              />
             </div>
 
             <div className="row">

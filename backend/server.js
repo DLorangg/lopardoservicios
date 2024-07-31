@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "lopardo" //   CAMBIAR DB
+    database: "lopardo_v1" //   CAMBIAR DB
 })
 
 // Ruta para login
@@ -146,7 +146,7 @@ app.put('/equipamientoupdate/:id', (req, res) => {
 
 
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE equipamiento SET IdCliente = ? ,Ciudad = ?,Direccion  = ?,Descripcion  = ?,IdEquipamiento  = ?,IdEstado  = ?,IdPersonal  = ?,Precio  = ?, Garantia  = ?, Fecha = ? WHERE IdVisita = ?";
+    const sql = "UPDATE visita SET IdCliente = ?, Ciudad = ?, Direccion = ?, Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, IdPersonal = ?, Precio = ?, Garantia = ?, Fecha = ? WHERE IdVisita = ?";
     const values = [
         req.body.IdCliente,
         req.body.Ciudad,
@@ -162,12 +162,13 @@ app.put('/visitaupdate/:id', (req, res) => {
     const id = req.params.id;
     db.query(sql, [...values, id], (err, data) => {
         if (err) {
-            console.error("Error al actualizar el equipamiento:", err);
-            return res.status(500).json({ error: "Error al actualizar el equipamiento" });
+            console.error("Error al actualizar la visita:", err);
+            return res.status(500).json({ error: "Error al actualizar la visita" });
         }
         return res.json(data);
     });
 });
+
 
 app.delete('/equipamiento/:id', (req, res) => {
     const sql = "DELETE FROM equipamiento WHERE IdEquipamiento = ?";
