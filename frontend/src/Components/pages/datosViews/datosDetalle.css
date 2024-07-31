@@ -104,15 +104,12 @@
 }
 
 /* Imagenes */
-.imagenes {
-  margin-top: 20px;
-}
 
-.imagen-item {
+.image-container {
   margin-bottom: 10px;
 }
 
-.imagen-visita {
+.img-thumbnail {
   max-width: 100%;
   height: auto;
 }

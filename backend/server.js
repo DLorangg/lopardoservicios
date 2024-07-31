@@ -2,6 +2,8 @@ const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+const multer = require('multer');
+const path = require('path');
 
 const app = express()
 
@@ -13,6 +15,18 @@ const db = mysql.createConnection({
     password: "",
     database: "lopardo" //   CAMBIAR DB
 })
+
+// Configurar almacenamiento de multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Guardar archivos con timestamp
+    }
+  });
+  
+  const upload = multer({ storage: storage });
 
 // Ruta para login
 app.post('/login', (req, res) => {
@@ -168,14 +182,27 @@ app.get('/visita', (req, res) =>{
 })
 
 app.get('/visitadetalle', (req, res) => {
-    const idDato = req.query.idDato; // Obtener el idDato del query string
-    const sql = `SELECT * FROM visita WHERE IdVisita = ?`; // Consulta SQL con la cláusula WHERE
-    db.query(sql, [idDato], (err, result) => {
-        if (err) return res.json({ Message: "Error en server" });
-        return res.json(result);
+    const idDato = req.query.idDato;
+  
+    const sqlVisita = `
+      SELECT v.*, GROUP_CONCAT(a.URL) AS Adjuntos
+      FROM visita v
+      LEFT JOIN adjunto a ON FIND_IN_SET(a.IdAdjunto, v.IdAdjunto) > 0
+      WHERE v.IdVisita = ?
+      GROUP BY v.IdVisita
+    `;
+  
+    db.query(sqlVisita, [idDato], (err, result) => {
+      if (err) return res.status(500).json({ Message: "Error en el servidor", error: err });
+  
+      if (result.length === 0) {
+        return res.status(404).json({ Message: "Visita no encontrada" });
+      }
+  
+      console.log(result[0]); // Añade esto para verificar la respuesta
+      return res.json(result[0]);
     });
-});
-
+  });
 
 app.post('/equipamientopost', (req, res) => {
     const sql = "INSERT INTO equipamiento (`Nombre`) VALUES (?)";
@@ -206,7 +233,7 @@ app.put('/equipamientoupdate/:id', (req, res) => {
 
 
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE equipamiento SET IdCliente = ? ,Ciudad = ?,Direccion  = ?,Descripcion  = ?,IdEquipamiento  = ?,IdEstado  = ?,IdPersonal  = ?,Precio  = ?, Garantia  = ?, Fecha = ? WHERE IdVisita = ?, FormaPago = ?, FechaCobro = ?";
+    const sql = "UPDATE visita SET IdCliente = ?, Ciudad = ?, Direccion = ?, Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, IdPersonal = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ? WHERE IdVisita = ?";
     const values = [
         req.body.IdCliente,
         req.body.Ciudad,
@@ -220,13 +247,12 @@ app.put('/visitaupdate/:id', (req, res) => {
         req.body.Fecha,
         req.body.FormaPago,
         req.body.FechaCobro
-        
     ];
     const id = req.params.id;
     db.query(sql, [...values, id], (err, data) => {
         if (err) {
-            console.error("Error al actualizar el equipamiento:", err);
-            return res.status(500).json({ error: "Error al actualizar el equipamiento" });
+            console.error("Error al actualizar la visita:", err);
+            return res.status(500).json({ error: "Error al actualizar la visita" });
         }
         return res.json(data);
     });
@@ -246,36 +272,82 @@ app.delete('/equipamiento/:id', (req, res) => {
 });
 
 app.post('/visitapost', (req, res) => {
-    const visitaData = req.body;
-  
+    const visitaData = req.body;    
+    
     // Log para verificar los datos recibidos
     console.log("Datos recibidos para crear visita:", visitaData);
   
     // Asigna un valor predeterminado a IdEquipamiento si está vacío
-    const idEquipamiento = visitaData.IdEquipamiento || null;
+    const idEquipamiento = visitaData.IdEquipamiento || null;   
   
-    const sql = "INSERT INTO visita (`IdCliente`, `Ciudad`, `Direccion`, `Descripcion`, `IdEquipamiento`, `IdEstado`, `IdPersonal`, `Precio`, `Garantia`, `Fecha`, `FormaPago`, `FechaCobro`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [
-      visitaData.IdCliente,
-      visitaData.Ciudad,
-      visitaData.Direccion,
-      visitaData.Descripcion,
-      idEquipamiento,
-      visitaData.IdEstado,
-      visitaData.IdPersonal, 
-      visitaData.Precio,
-      visitaData.Garantia,
-      visitaData.Fecha,
-      visitaData.FormaPago,
-      visitaData.FechaCobro
-    ];
+    // Procesa los adjuntos
+    const insertAdjuntoPromises = visitaData.IdAdjunto.split(',').map((fileName, index) => {
+      return new Promise((resolve, reject) => {
+        const idAdjunto = `ADJ${Date.now() + index}`; // Generar un ID único
+        const sqlAdjunto = "INSERT INTO adjunto (IdAdjunto, URL) VALUES (?, ?)";
+        db.query(sqlAdjunto, [idAdjunto, fileName.trim()], (err, result) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(idAdjunto);
+        });
+      });
+    });
   
-    db.query(sql, values, (err, data) => {
+    Promise.all(insertAdjuntoPromises)
+      .then(idAdjuntos => {
+        const idAdjuntosString = idAdjuntos.join(',');
+        const sqlVisita = `
+          INSERT INTO visita (IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, IdPersonal, Precio, Garantia, Fecha, FormaPago, FechaCobro, IdAdjunto)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const values = [
+          visitaData.IdCliente,
+          visitaData.Ciudad,
+          visitaData.Direccion,
+          visitaData.Descripcion,
+          idEquipamiento,
+          visitaData.IdEstado,
+          visitaData.IdPersonal,
+          visitaData.Precio,
+          visitaData.Garantia,
+          visitaData.Fecha,
+          visitaData.FormaPago,
+          visitaData.FechaCobro,
+          idAdjuntosString
+        ];
+  
+        db.query(sqlVisita, values, (err, data) => {
+          if (err) {
+            console.error("Error al insertar visita:", err);
+            return res.status(500).json({ error: "Error interno del servidor al crear visita", details: err });
+          }
+          return res.json({ success: true, message: "Visita creada exitosamente", data });
+        });
+      })
+      .catch(err => {
+        console.error("Error al insertar adjuntos:", err);
+        return res.status(500).json({ error: "Error interno del servidor al crear adjuntos", details: err });
+      });
+  });
+
+
+app.delete('/deletevisita/:id', (req, res) => {
+    const visitaId = req.params.id;
+  
+    const sql = "DELETE FROM visita WHERE IdVisita = ?";
+  
+    db.query(sql, [visitaId], (err, result) => {
       if (err) {
-        console.error("Error al insertar visita:", err);
-        return res.status(500).json({ error: "Error interno del servidor al crear visita", details: err });
+        console.error("Error al eliminar la visita:", err);
+        return res.status(500).json({ error: "Error interno del servidor al eliminar la visita", details: err });
       }
-      return res.json({ success: true, message: "Visita creada exitosamente", data });
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Visita no encontrada" });
+      }
+  
+      return res.json({ message: "Visita eliminada exitosamente" });
     });
   });
   
@@ -373,6 +445,20 @@ app.get('/personal', (req, res) =>{
         return res.json(result)
     })
 })
+
+app.post('/upload', upload.array('files'), (req, res) => {
+    if (!req.files) {
+      return res.status(400).json({ message: 'No files uploaded' });
+    }
+  
+    // Crear las URLs de los archivos subidos
+    const fileURLs = req.files.map(file => `/uploads/${file.filename}`);
+  
+    res.json({ files: fileURLs });
+  });
+  
+  // Agrega ruta estática para servir archivos subidos
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(8081, () => {
     console.log('Escuchando en el puerto 8081')

@@ -95,7 +95,7 @@ export function DatosList(props) {
     axios.delete(`http://localhost:8081/deletevisita/${id}`)
       .then((response) => {
         console.log(response.data.message);
-        fetchVisita(); // Refrescar la lista de visitas después de la eliminación
+        fetchVisita();
       })
       .catch((error) => {
         console.error("Error al eliminar la visita:", error);
@@ -225,43 +225,6 @@ export function DatosForm(props) {
   const [FechaCobro, setFechaCobro] = useState('');
 
   const navigate = useNavigate();
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    
-    // Verificar que IdPersonal no esté vacío
-    if (IdPersonal.length === 0) {
-      alert('Por favor, selecciona al menos un personal.');
-      return;
-    }
-  
-    // Formatear la fecha
-    const formattedDate = new Date(Fecha).toISOString().split('T')[0];
-  
-    // Log de IdEstado
-    console.log("IdEstado seleccionado:", IdEstado);
-  
-    // Enviar los datos de la visita
-    axios.post('http://localhost:8081/visitapost', {
-        IdCliente,
-        Ciudad,
-        Direccion,
-        Descripcion,
-        IdEquipamiento: IdEquipamiento || null,
-        IdEstado,
-        IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
-        Precio,
-        Garantia,
-        Fecha: formattedDate,
-        FormaPago,
-        FechaCobro: formattedDate,
-      })
-      .then(visitaResponse => {
-        console.log(visitaResponse);
-        navigate(props.ShowList());
-      })
-      .catch(error => console.error('Error:', error));
-  }  
   
   const handleSearch = (event) => {
     const query = event.target.value;
@@ -307,6 +270,7 @@ export function DatosForm(props) {
   }
 
   const [files, setFiles] = useState([]);
+  const [fileURLs, setFileURLs] = useState([]);
   const fileInputRef = useRef(null);
 
   const handleDrop = (e) => {
@@ -314,31 +278,87 @@ export function DatosForm(props) {
     const droppedFiles = e.dataTransfer.files;
     handleFiles(droppedFiles);
   };
-
+  
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-
+  
   const handleFiles = (selectedFiles) => {
     const newFiles = [...files];
-
+  
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
       newFiles.push(file);
     }
-
+  
     setFiles(newFiles);
   };
-
+  
   const handleFileInputChange = (e) => {
     const selectedFiles = e.target.files;
     handleFiles(selectedFiles);
   };
-
+  
   const handleOpenFileDialog = () => {
     fileInputRef.current.click();
   };
+  
+  const handleUploadFiles = () => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return axios.post('http://localhost:8081/upload', formData)
+    .then(response => {
+      const fileURLs = response.data.files;
+      setFileURLs(fileURLs);
+      return fileURLs;
+    })
+    .catch(error => console.error('Error uploading files:', error));
+  };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    
+    // Verificar que IdPersonal no esté vacío
+    if (IdPersonal.length === 0) {
+      alert('Por favor, selecciona al menos un personal.');
+      return;
+    }
+  
+    // Formatear las fechas
+    const formattedFecha = new Date(Fecha).toISOString().split('T')[0];
+    const formattedFechaCobro = new Date(FechaCobro).toISOString().split('T')[0];
+  
+    // Log de IdEstado
+    console.log("IdEstado seleccionado:", IdEstado);
+  
+    // Subir archivos primero
+    handleUploadFiles().then(uploadedFileURLs => {
+      // Luego enviar los datos de la visita
+      axios.post('http://localhost:8081/visitapost', {
+        IdCliente,
+        Ciudad,
+        Direccion,
+        Descripcion,
+        IdEquipamiento: IdEquipamiento || null,
+        IdEstado,
+        IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
+        Precio,
+        Garantia,
+        Fecha: formattedFecha,
+        FormaPago,
+        FechaCobro: formattedFechaCobro, // Asegúrate de que FechaCobro tenga el formato correcto
+        IdAdjunto: uploadedFileURLs.join(','), // Asegúrate de que IdAdjunto sea una cadena separada por comas
+      })
+      .then(visitaResponse => {
+        console.log(visitaResponse);
+        navigate(props.ShowList());
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  };
+  
 
   return (
     <>
