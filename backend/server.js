@@ -13,7 +13,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "lopardo" //   CAMBIAR DB
+    database: "lopardo_v1" //   CAMBIAR DB
 })
 
 // Configurar almacenamiento de multer
@@ -257,6 +257,7 @@ app.put('/visitaupdate/:id', (req, res) => {
         return res.json(data);
     });
 });
+
 
 app.delete('/equipamiento/:id', (req, res) => {
     const sql = "DELETE FROM equipamiento WHERE IdEquipamiento = ?";
