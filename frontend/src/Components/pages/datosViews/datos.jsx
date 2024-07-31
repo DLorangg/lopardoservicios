@@ -91,6 +91,17 @@ export function DatosList(props) {
     }
   });
 
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:8081/deletevisita/${id}`)
+      .then((response) => {
+        console.log(response.data.message);
+        fetchVisita(); // Refrescar la lista de visitas después de la eliminación
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la visita:", error);
+      });
+  };
+
   return (
     <>
       <style>{`
@@ -135,7 +146,12 @@ export function DatosList(props) {
                 <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
-                <button type="button" className="btn btn-danger btn-sm" style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}
+                  onClick={() => handleDelete(dato.IdVisita)}
+                >
                   Borrar
                 </button>
               </td>
@@ -212,7 +228,7 @@ export function DatosForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-  
+    
     // Verificar que IdPersonal no esté vacío
     if (IdPersonal.length === 0) {
       alert('Por favor, selecciona al menos un personal.');
@@ -222,29 +238,31 @@ export function DatosForm(props) {
     // Formatear la fecha
     const formattedDate = new Date(Fecha).toISOString().split('T')[0];
   
+    // Log de IdEstado
+    console.log("IdEstado seleccionado:", IdEstado);
+  
+    // Enviar los datos de la visita
     axios.post('http://localhost:8081/visitapost', {
-      IdCliente,
-      Ciudad,
-      Direccion,
-      Descripcion,
-      IdEquipamiento,
-      IdEstado,
-      IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
-      Precio,
-      Garantia,
-      Fecha: formattedDate,
-      FormaPago,
-      FechaCobro: formattedDate
-    })    
-      .then(res => {
-        console.log(res);
-        console.log(IdCliente);
-        console.log("result");
+        IdCliente,
+        Ciudad,
+        Direccion,
+        Descripcion,
+        IdEquipamiento: IdEquipamiento || null,
+        IdEstado,
+        IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
+        Precio,
+        Garantia,
+        Fecha: formattedDate,
+        FormaPago,
+        FechaCobro: formattedDate,
+      })
+      .then(visitaResponse => {
+        console.log(visitaResponse);
         navigate(props.ShowList());
       })
       .catch(error => console.error('Error:', error));
-  }
-
+  }  
+  
   const handleSearch = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -557,7 +575,7 @@ export function DatosForm(props) {
                 style={{ display: 'none' }}
                 onChange={handleFileInputChange}
                 multiple
-                accept=".jpg,.jpeg,.png,.pdf"
+                accept=".jpg,.jpeg,.png,.pdf" 
               />
               <p>Arrastra y suelta archivos aquí o haz clic para seleccionar archivos</p>
               {files.length > 0 && (

@@ -102,3 +102,17 @@
 .ml-2 {
   color: black !important;
 }
+
+/* Imagenes */
+.imagenes {
+  margin-top: 20px;
+}
+
+.imagen-item {
+  margin-bottom: 10px;
+}
+
+.imagen-visita {
+  max-width: 100%;
+  height: auto;
+}

@@ -262,7 +262,7 @@ app.post('/visitapost', (req, res) => {
       visitaData.Descripcion,
       idEquipamiento,
       visitaData.IdEstado,
-      visitaData.IdPersonal, // `IdPersonal` debería ser una cadena separada por comas
+      visitaData.IdPersonal, 
       visitaData.Precio,
       visitaData.Garantia,
       visitaData.Fecha,
@@ -277,7 +277,8 @@ app.post('/visitapost', (req, res) => {
       }
       return res.json({ success: true, message: "Visita creada exitosamente", data });
     });
-  });  
+  });
+  
 
 // Ruta caja
 app.get('/caja', (req, res) => {

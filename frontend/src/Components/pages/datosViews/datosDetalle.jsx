@@ -73,7 +73,7 @@ function DatosDetalle() {
       .catch(error => {
         setError("Error al cargar datos de personal");
       });
-  }, []);
+  }, );
 
   if (loading) {
     return <div>Cargando...</div>;
@@ -222,7 +222,7 @@ function DatosDetalle() {
         </div>
       </div> 
     </div>
-  ); 
+  );
 }
 
 export default DatosDetalle;
