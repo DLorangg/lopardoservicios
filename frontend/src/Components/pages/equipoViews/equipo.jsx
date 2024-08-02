@@ -17,7 +17,7 @@ export function Equipo() {
   
 
   return (
-    <div className="container my-5" >
+    <div className="container my-5" style={{border: '1px solid #001461'}} >
       {content}
     </div>
   );

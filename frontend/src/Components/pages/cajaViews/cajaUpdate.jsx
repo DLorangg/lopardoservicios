@@ -54,6 +54,7 @@ export function CajaUpdate() {
 
     return (
         <>
+        <div className="container my-5" style={{border: '1px solid #001461'}} >
             <h2 className="text-center mb-3">Editar Registro de Caja</h2>
             <div className="row bm-3">
                 <div className="col-lg-6 mx-auto">
@@ -116,6 +117,7 @@ export function CajaUpdate() {
                         </div>
                     </form>
                 </div>
+            </div>
             </div>
         </>
     );

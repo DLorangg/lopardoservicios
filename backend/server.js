@@ -233,11 +233,8 @@ app.put('/equipamientoupdate/:id', (req, res) => {
 
 
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE visita SET IdCliente = ?, Ciudad = ?, Direccion = ?, Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, IdPersonal = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ? WHERE IdVisita = ?";
+    const sql = "UPDATE visita SET Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, IdPersonal = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ? WHERE IdVisita = ?";
     const values = [
-        req.body.IdCliente,
-        req.body.Ciudad,
-        req.body.Direccion,
         req.body.Descripcion,
         req.body.IdEquipamiento,
         req.body.IdEstado,

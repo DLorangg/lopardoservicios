@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Form, Link, useNavigate, useParams } from 'react-router-dom';
 
 export function DatosUpdate() {
   const [dataCliente, setDataCliente] = useState([]);
@@ -13,9 +13,6 @@ export function DatosUpdate() {
   const navigate = useNavigate();
   
   // Estado para los campos del formulario
-  const [IdCliente, setIdCliente] = useState('');
-  const [Ciudad, setCiudad] = useState('');
-  const [Direccion, setDireccion] = useState('');
   const [Descripcion, setDescripcion] = useState('');
   const [IdEquipamiento, setIdEquipamiento] = useState('');
   const [IdEstado, setIdEstado] = useState('');
@@ -23,6 +20,8 @@ export function DatosUpdate() {
   const [Garantia, setGarantia] = useState('');
   const [Fecha, setFecha] = useState('');
   const [IdPersonal, setIdPersonal] = useState('');
+  const [FormaPago, setFormaPago] = useState('');
+  const [FechaCobro, setFechaCobro] = useState('');
 
   // Fetching data functions
   function fetchPersonal() {
@@ -62,9 +61,6 @@ export function DatosUpdate() {
         // Buscar la visita actual y actualizar el estado
         const currentVisit = res.data.find(visita => visita.IdVisita === parseInt(id));
         if (currentVisit) {
-          setIdCliente(currentVisit.IdCliente);
-          setCiudad(currentVisit.Ciudad);
-          setDireccion(currentVisit.Direccion);
           setDescripcion(currentVisit.Descripcion);
           setIdEquipamiento(currentVisit.IdEquipamiento);
           setIdEstado(currentVisit.IdEstado);
@@ -73,6 +69,9 @@ export function DatosUpdate() {
           // Convertir la fecha al formato YYYY-MM-DD
           const fechaFormateada = new Date(currentVisit.Fecha).toISOString().split('T')[0];
           setFecha(fechaFormateada);
+          setFormaPago(currentVisit.FormaPago);
+          const fechaCobroFormateada = new Date(currentVisit.FechaCobro).toISOString().split('T')[0];
+          setFechaCobro(fechaCobroFormateada);
           setIdPersonal(currentVisit.IdPersonal);
         }
       })
@@ -83,15 +82,14 @@ export function DatosUpdate() {
     event.preventDefault();
 
       // Imprime los datos que se enviarán
-      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
       console.log({
-        IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal
+        Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal, FormaPago, FechaCobro
       });
 
-    axios.put(`http://localhost:8081/visitaupdate/` + id, { IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal })
+    axios.put(`http://localhost:8081/visitaupdate/` + id, { Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal, FormaPago, FechaCobro })
       .then(res => {
         console.log(res);
-        navigate('../equipo');
+        navigate('../datos');
       })
       .catch(error => {
         console.error('Error al actualizar el equipamiento:', error);
@@ -100,42 +98,11 @@ export function DatosUpdate() {
 
   return (
     <>
+    <div className="container my-5" style={{border: '1px solid #001461'}}>
       <h2 className="text-center mb-3">Editar Visita</h2>
-      <div className="row bm-3">
+      <div className="row">
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
-            <label className="col-sm-4 col-form-label">Cliente</label>
-            <div className="col-sm-8">
-              <select className="form-control" name="IdCliente" onChange={e => setIdCliente(e.target.value)} value={IdCliente}>
-                {dataCliente && dataCliente.map((cliente) => (
-                  <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                    {cliente.Nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <label className="col-sm-4 col-form-label">Ciudad</label>
-            <div className="col-sm-8">
-              <select className="form-control" name="Ciudad" onChange={e => setCiudad(e.target.value)} value={Ciudad}>
-                {dataCliente && dataCliente.map((cliente) => (
-                  <option key={cliente.Ciudad} value={cliente.Ciudad}>
-                    {cliente.Ciudad}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <label className="col-sm-4 col-form-label">Direccion</label>
-            <div className="col-sm-8">
-              <select className="form-control" name="Direccion" onChange={e => setDireccion(e.target.value)} value={Direccion}>
-                {dataCliente && dataCliente.map((cliente) => (
-                  <option key={cliente.Direccion} value={cliente.Direccion}>
-                    {cliente.Direccion}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <label className="col-sm-4 col-form-label">Descripción</label>
             <div className="col-sm-8">
@@ -155,7 +122,7 @@ export function DatosUpdate() {
                 name="Equipamiento"
                 multiple
                 autoComplete="off"
-                value={IdEquipamiento} // Asegúrate de que IdEquipamiento tenga el valor correcto
+                value={IdEquipamiento} 
                 onChange={e => {
                   const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
                   setIdEquipamiento(selectedOptions);
@@ -193,6 +160,7 @@ export function DatosUpdate() {
               <select
                 className="form-control"
                 name="IdPersonal"
+                multiple
                 onChange={e => setIdPersonal(e.target.value)}
                 value={IdPersonal}
               >
@@ -256,11 +224,57 @@ export function DatosUpdate() {
                 type="date"
                 name="Fecha"
                 onChange={e => setFecha(e.target.value)}
-                value={Fecha} // Asegúrate de que Fecha esté en formato YYYY-MM-DD
+                value={Fecha} 
                 autoComplete="off"
               />
             </div>
 
+            <label className="col-sm-4 col-form-label">Forma de pago</label>
+            <div className="col-sm-8">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="transferenciaRadio"
+                  value={FormaPago}
+                  checked={FormaPago === 1}
+                  onChange={() => setFormaPago(1)}
+                />
+                <label className="form-check-label" htmlFor="transferenciaRadio">
+                  Transferencia
+                </label>
+              </div>
+              
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="efectivoRadio"
+                  value={FormaPago}
+                  checked={FormaPago === 0}
+                  onChange={() => setFormaPago(0)}
+                />
+                <label className="form-check-label" htmlFor="efectivoRadio">
+                  Efectivo
+                </label>
+              </div>
+            </div>
+
+            <label className="col-sm-4 col-form-label">Fecha de cobro</label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                type="date"
+                name="FechaCobro"
+                value={FechaCobro}
+                onChange={e => setFechaCobro(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+
+                <br />
             <div className="row">
               <div className="offset-sm-4 col-sm-4 d-grid">
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
@@ -272,6 +286,7 @@ export function DatosUpdate() {
           </form>
         </div>
       </div>
+    </div>
     </>
   );
 }

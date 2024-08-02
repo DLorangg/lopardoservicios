@@ -10,7 +10,7 @@ export function Busqueda() {
           src: url(${Rouben}) format('opentype');
         }
       `}</style>
-    <div className="container my-5">
+    <div className="container my-5" style={{border: '1px solid #001461'}} >
         <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>BÚSQUEDA</h2>
     </div>
     </>
