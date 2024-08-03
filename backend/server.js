@@ -101,15 +101,19 @@ app.post('/clientepost', (req, res) => {
     const clienteData = req.body; // Asegúrate de que los datos lleguen correctamente desde el cliente
 
     const equipamiento = clienteData.Equipamiento.join(', ');
+    const Email2 = clienteData.Email2 || null;  
 
-    const sql = "INSERT INTO cliente (Nombre, DNI, Ciudad, Direccion, Equipamiento, Telefono) VALUES (?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO cliente (Nombre, DNI, Ciudad, Direccion, Equipamiento, Telefono, RazonSocial, Email, Email2) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
         clienteData.Nombre,
         clienteData.DNI,
         clienteData.Ciudad,
         clienteData.Direccion,
         equipamiento,
-        clienteData.Telefono
+        clienteData.Telefono,
+        clienteData.RazonSocial,
+        clienteData.Email,
+        Email2
     ];
 
     db.query(sql, values, (err, data) => {
@@ -123,36 +127,34 @@ app.post('/clientepost', (req, res) => {
 
 app.put('/cliente/:id', (req, res) => {
     const clienteId = req.params.id;
-    const clienteData = req.body; 
+    const clienteData = req.body;
 
-    // Convertir el arreglo de equipamientos en una cadena
-    const equipamiento = clienteData.Equipamiento.join(', ');
-    
-    const sql = `
-        UPDATE cliente
-        SET Nombre = ?, DNI = ?, Ciudad = ?, Direccion = ?, Equipamiento = ?, Telefono = ?
-        WHERE IdCliente = ?
-    `;
+    // Verifica que Equipamiento es un array antes de usar join
+    const equipamiento = Array.isArray(clienteData.Equipamiento) ? clienteData.Equipamiento.join(', ') : '';
 
+    // Asegúrate de que 'Telefono' se maneje como una cadena
+    const telefono = clienteData.Telefono ? clienteData.Telefono.toString() : '';
+
+    const sql = "UPDATE cliente SET Nombre = ?, DNI = ?, Ciudad = ?, Direccion = ?, Equipamiento = ?, Telefono = ?, RazonSocial = ?, Email = ?, Email2 = ? WHERE IdCliente = ?";
     const values = [
         clienteData.Nombre,
         clienteData.DNI,
         clienteData.Ciudad,
         clienteData.Direccion,
         equipamiento,
-        clienteData.Telefono,
+        telefono,
+        clienteData.RazonSocial,
+        clienteData.Email,
+        clienteData.Email2,
         clienteId
     ];
 
-    db.query(sql, values, (err, result) => {
+    db.query(sql, values, (err, data) => {
         if (err) {
             console.error("Error al actualizar cliente:", err);
             return res.status(500).json({ error: "Error interno del servidor al actualizar cliente" });
         }
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Cliente no encontrado" });
-        }
-        return res.json({ success: true, message: "Cliente actualizado exitosamente" });
+        return res.json({ success: true, message: "Cliente actualizado exitosamente", data });
     });
 });
 
@@ -164,6 +166,24 @@ app.get('/equipamiento', (req, res) =>{
         return res.json(result)
     })
 })
+
+app.get('/equipamiento/:id', (req, res) => {
+    const sql = 'SELECT * FROM equipamiento WHERE IdEquipamiento = ?';
+    const id = req.params.id;
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error en la consulta SQL:", err);
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Equipamiento no encontrado" });
+        }
+
+        return res.json(result[0]);
+    });
+});
 
 app.get('/estado', (req, res) =>{
     const sql =  'SELECT * FROM estados';

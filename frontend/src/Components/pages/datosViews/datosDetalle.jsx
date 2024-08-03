@@ -74,11 +74,14 @@ function DatosDetalle() {
   const IdClienteVisitaActual = visitaActual.IdCliente || '';
   const clienteActual = dataCliente.find(cliente => cliente.IdCliente === IdClienteVisitaActual) || {};
   const nombreCliente = clienteActual.Nombre || '';
+  const razonSocial = clienteActual.RazonSocial || '';
   const direccionCliente = clienteActual.Direccion || '';
   const dniCliente = clienteActual.DNI || '';
   const ciudadCliente = clienteActual.Ciudad || '';
   const telefonoCliente = clienteActual.Telefono || '';
   const equipamientoCliente = clienteActual.Equipamiento || '';
+  const emailCliente = clienteActual.Email || '';
+  const emailCliente2 = clienteActual.Email2 || '';
 
   const garantiaVisita = visitaActual.Garantia === 1 ? "Si" : "No";
   const precioVisita = visitaActual.Precio || '';
@@ -147,11 +150,15 @@ function DatosDetalle() {
             <span className="ml-2">{nombreCliente}</span>
           </div>
           <div className="form-group detalle-item">
+            <label className="font-weight-bold">Razón social:</label>
+            <span className="ml-2">{razonSocial}</span>
+          </div>
+          <div className="form-group detalle-item">
             <label className="font-weight-bold">Teléfono del Cliente:</label>
             <span className="ml-2">{telefonoCliente}</span>
           </div>
           <div className="form-group detalle-item">
-            <label className="font-weight-bold">Ciudad del Cliente:</label>
+            <label className="font-weight-bold">Ciudad:</label>
             <span className="ml-2">{ciudadCliente}</span>
           </div>
           <div className="form-group detalle-item">
@@ -159,15 +166,21 @@ function DatosDetalle() {
             <span className="ml-2">{direccionCliente}</span>
           </div>
           <div className="form-group detalle-item">
+            <label className="font-weight-bold">Email:</label>
+            <span className="ml-2">{emailCliente}</span>
+          </div>
+          <div className="form-group detalle-item">
+            <label className="font-weight-bold">Email 2:</label>
+            <span className="ml-2">{emailCliente2}</span>
+          </div>
+          
+          
+        </div>
+        <div className="col-md-6 detalle-div">
+          <div className="form-group detalle-item">
             <label className="font-weight-bold">Personal que asistió:</label>
             <span className="ml-2">{nombresPersonalFormateados}</span>
           </div>
-          <div className="form-group detalle-item">
-            <label className="font-weight-bold">Fecha de cobro:</label>
-            <span className="ml-2">{fechaCobroFormateada}</span>
-          </div>
-        </div>
-        <div className="col-md-6 detalle-div">
           <div className="form-group detalle-item">
             <label className="font-weight-bold">Equipamiento: </label>
             <span>{equipamientoVisitaNombre}</span>
@@ -205,6 +218,10 @@ function DatosDetalle() {
                 <p>No hay adjuntos.</p>
               )}
             </div>
+          </div>
+          <div className="form-group detalle-item">
+            <label className="font-weight-bold">Fecha de cobro:</label>
+            <span className="ml-2">{fechaCobroFormateada}</span>
           </div>
         </div>
       </div>

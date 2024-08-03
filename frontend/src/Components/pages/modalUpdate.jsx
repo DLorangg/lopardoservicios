@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
-export function ModalComponent({ show, handleClose, updateClientes }) {
+export function ModalUpdateComponent({ show, handleClose, updateClientes, clienteData: initialClienteData }) {
   const [clienteData, setClienteData] = useState({
     Nombre: '',
     DNI: '',
@@ -16,10 +16,10 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
     Email: '',
     Email2: ''
   });
+
   const [equipamientoOptions, setEquipamientoOptions] = useState([]);
 
   useEffect(() => {
-    // Cargar opciones de equipamiento al cargar el componente
     axios.get('http://localhost:8081/equipamiento')
       .then(response => {
         setEquipamientoOptions(response.data);
@@ -28,6 +28,15 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
         console.error('Error al obtener equipamiento:', error);
       });
   }, []);
+
+  useEffect(() => {
+    if (initialClienteData) {
+      setClienteData({
+        ...initialClienteData,
+        Equipamiento: initialClienteData.Equipamiento ? initialClienteData.Equipamiento.split(', ') : [],
+      });
+    }
+  }, [initialClienteData]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -52,28 +61,26 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
   };
 
   const handleGuardar = () => {
-    const clienteDataToSend = {
-      ...clienteData,
-      Telefono: clienteData.Telefono.toString(),
-    };
-
-    axios.post('http://localhost:8081/clientepost', clienteDataToSend)
+    console.log('Datos del cliente antes de enviar:', clienteData);
+    console.log('ID del cliente:', initialClienteData.IdCliente);
+  
+    axios.put(`http://localhost:8081/cliente/${initialClienteData.IdCliente}`, clienteData)
       .then(response => {
-        console.log('Cliente creado:', response.data);
-        alert('Cliente creado exitosamente');
+        console.log('Cliente actualizado:', response.data);
+        alert('Cliente actualizado exitosamente');
         handleClose();
         updateClientes(); 
       })
       .catch(error => {
-        console.error('Error al crear cliente:', error);
-        alert('Error al crear cliente');
+        console.error('Error al actualizar cliente:', error);
+        alert('Error al actualizar cliente');
       });
   };
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Crear Cliente</Modal.Title>
+        <Modal.Title>Editar Cliente</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -95,9 +102,9 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formEquipamiento">
             <Form.Label>Equipamiento</Form.Label>
-            <Form.Control as="select" name="Equipamiento" multiple onChange={handleEquipamientoChange}>
+            <Form.Control as="select" name="Equipamiento" multiple value={clienteData.Equipamiento} onChange={handleEquipamientoChange}>
               {equipamientoOptions.map(equipamiento => (
-                <option key={equipamiento.IdEquipamiento} >
+                <option key={equipamiento.IdEquipamiento} value={equipamiento.Nombre}>
                   {equipamiento.Nombre}
                 </option>
               ))}
@@ -108,10 +115,9 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
             <Form.Control type="text" name="Telefono" value={clienteData.Telefono} onChange={handleChange} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formRazonSocial">
-            <Form.Label>Razón social</Form.Label>
+            <Form.Label>Razon Social</Form.Label>
             <Form.Control type="text" name="RazonSocial" value={clienteData.RazonSocial} onChange={handleChange} />
           </Form.Group>
-
           <Form.Group className="mb-3" controlId="formEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control type="email" name="Email" value={clienteData.Email} onChange={handleChange} />
@@ -120,7 +126,6 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
             <Form.Label>Email 2</Form.Label>
             <Form.Control type="email" name="Email2" value={clienteData.Email2} onChange={handleChange} />
           </Form.Group>
-
         </Form>
       </Modal.Body>
       <Modal.Footer>

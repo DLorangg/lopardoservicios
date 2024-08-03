@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import { useNavigate } from "react-router-dom";
 import {ModalComponent} from "../modal"
+import { ModalUpdateComponent } from '../modalUpdate';
 import Rouben from '../../../Assets/Rouben.otf';
 
 export function Datos() {
@@ -167,11 +168,15 @@ export function DatosList(props) {
 export function DatosForm(props) {
   const [dataCliente, setDataCliente] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredClients, setFilteredClients] = useState([]);
+  const [selectedClienteData, setSelectedClienteData] = useState(null);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
+  const handleCloseUpdateModal = () => setShowUpdateModal(false);
+  const handleShowUpdateModal = () => setShowUpdateModal(true);
 
   function fetchCliente() {
     axios.get("http://localhost:8081/cliente")
@@ -244,6 +249,7 @@ export function DatosForm(props) {
       setIdCliente(clienteId);
       setCiudad(clienteSeleccionado.Ciudad);
       setDireccion(clienteSeleccionado.Direccion);
+      setSelectedClienteData(clienteSeleccionado);
 
       // Actualizar equipamientos seleccionados según el cliente
       const equipamientosCliente = clienteSeleccionado.Equipamiento.split(',').map(e => e.trim());
@@ -367,33 +373,34 @@ export function DatosForm(props) {
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
   
-            <label className="col-sm-4 col-form-label">Cliente</label>
-            <div className="col-sm-8 d-flex flex-column">
-              <input
-                className="form-control"
-                name="Cliente"
-                value={searchQuery}
-                onChange={handleSearch}
-                placeholder="Buscar Cliente (Nombre, Direccion, DNI)"
-                autoComplete="off"
-              />
-              <select
-                className="form-control mt-2"
-                name="IdCliente"
-                onChange={handleClienteChange}
-                value={IdCliente}
-                autoComplete="off"
-              >
-                <option value="" disabled hidden>Selecciona un cliente</option>
-                {filteredClients.map(cliente => (
-                  <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                    {cliente.Nombre} - {cliente.Direccion} - {cliente.DNI}
-                  </option>
-                ))}
-              </select>
+          <label className="col-sm-4 col-form-label">Cliente</label>
+          <div className="col-sm-8 d-flex flex-column">
+            <input
+              className="form-control"
+              name="Cliente"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Buscar Cliente (Nombre, Direccion, DNI)"
+              autoComplete="off"
+            />
+            <select
+              className="form-control mt-2"
+              name="IdCliente"
+              onChange={handleClienteChange}
+              value={IdCliente}
+              autoComplete="off"
+            >
+              <option value="" disabled hidden>Selecciona un cliente</option>
+              {filteredClients.map(cliente => (
+                <option key={cliente.IdCliente} value={cliente.IdCliente}>
+                  {cliente.Nombre} - {cliente.Direccion} - {cliente.DNI}
+                </option>
+              ))}
+            </select>
+            <div className="d-flex mt-2">
               <button
                 type="button"
-                className="btn btn-primary ms-2 mt-2"
+                className="btn btn-primary ms-2"
                 onClick={handleShowModal}
                 style={{
                   borderRadius: '35%', fontSize: '25px', width: '40px',
@@ -401,8 +408,22 @@ export function DatosForm(props) {
                 }}
               >+
               </button>
+              <button
+                type="button"
+                className="btn btn-secondary ms-2"
+                onClick={handleShowUpdateModal}
+                disabled={!selectedClienteData}
+                style={{
+                  borderRadius: '35%', fontSize: '25px', width: '40px',
+                  height: '40px', padding: '0', display: 'flex', justifyContent: 'center'
+                }}
+              >
+                ✎
+              </button>
             </div>
-            <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
+          </div>
+          <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
+          <ModalUpdateComponent show={showUpdateModal} handleClose={handleCloseUpdateModal} updateClientes={updateClientes} clienteData={selectedClienteData} />
   
             <label className="col-sm-4 col-form-label">Ciudad</label>
             <div className="col-sm-8">
