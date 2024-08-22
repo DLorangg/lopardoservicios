@@ -1,7 +1,6 @@
 const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
-const jwt = require('jsonwebtoken')
 const multer = require('multer');
 const path = require('path');
 
@@ -35,15 +34,43 @@ app.post('/login', (req, res) => {
     db.query(sql, [username, password], (err, data) => {
         if (err) return res.status(500).json({ error: "Error en el servidor" });
         if (data.length === 1) {
-            const { Nombre } = data[0];
-            const token = jwt.sign({ username: username }, 'secreto', { expiresIn: '1h' });
-            // Enviar el token y el nombre de usuario junto con la respuesta
-            return res.json({ token: token, userName: Nombre, message: "Inicio de sesión exitoso" });
+            const { Nombre, Rol } = data[0];
+            // Enviar el nombre de usuario y el rol junto con la respuesta
+            return res.json({ userName: Nombre, userRole: Rol, message: "Inicio de sesión exitoso" });
         } else {
             return res.status(401).json({ error: "Credenciales incorrectas" });
         }
     });
 });
+
+
+// Ruta para obtener usuario logueado
+app.get('/user', (req, res) => {
+    const { username } = req.query; // Usa el query para obtener el nombre de usuario
+    const sql = 'SELECT * FROM usuarios WHERE Nombre = ?';
+    db.query(sql, [username], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error en el servidor" });
+        if (result.length === 1) {
+            return res.json(result[0]);
+        } else {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+    });
+});
+
+
+
+function verificarRol(req, res, next) {
+    const rolUsuario = req.query.userRole; 
+
+    if (rolUsuario != 2) {
+        next(); 
+    } else {
+        res.status(403).json({ error: "Acceso denegado" });
+    }
+}
+
+
 
 // Ruta para modificar contraseña si es igual a 1234
 app.put('/updatePassword', (req, res) => {
@@ -63,23 +90,84 @@ app.put('/updatePassword', (req, res) => {
     });
   });
 
-//Ruta para obtener usuario loggeado
-app.get('/user', (req, res) => {
-    const sql = 'SELECT * FROM usuarios'
-    db.query(sql, (err, result) => {
-        if(err) return res.json({Message: "Error en server"})
-        return res.json(result)
-    })
-})
 
-//Ruta CRUD
-app.get('/visita', (req, res) =>{
-    const sql =  'SELECT * FROM visita';
+
+// Ruta para obtener visitas
+app.get('/visita', (req, res) => {
+    const { rol } = req.query; 
+
+    const sql = 'SELECT * FROM visita';
     db.query(sql, (err, result) => {
-        if(err) return res.json({Message: "Error en server"})
-        return res.json(result)
-    })
-})
+        if (err) return res.status(500).json({ message: "Error en el servidor" });
+
+        // Si el rol es 2, eliminar el campo Precio de las visitas
+        if (rol === '2') {
+            const filteredResult = result.map(visit => {
+                const { Precio, ...rest } = visit; // Desestructurar para excluir Precio
+                return rest; // Retornar el resto de las propiedades sin Precio
+            });
+            return res.json(filteredResult);
+        } else {
+            return res.json(result);
+        }
+    });
+});
+
+app.get('/visitafiltrada', (req, res) => {
+    const { rol, fechaCobro, fecha, idEstado, idCliente } = req.query;
+
+    let sql = 'SELECT * FROM visita WHERE 1=1';
+    const params = [];
+
+    if (fechaCobro) {
+        sql += ' AND FechaCobro = ?';
+        params.push(fechaCobro);
+    }
+
+    if (fecha) {
+        sql += ' AND Fecha = ?';
+        params.push(fecha);
+    }
+
+    if (idEstado) {
+        sql += ' AND IdEstado = ?';
+        params.push(idEstado);
+    }
+
+    if (idCliente) {
+        sql += ' AND IdCliente = ?';
+        params.push(idCliente);
+    }
+
+    db.query(sql, params, (err, result) => {
+        if (err) return res.status(500).json({ message: "Error en el servidor" });
+
+        if (rol === '2') {
+            const filteredResult = result.map(visit => {
+                const { Precio, ...rest } = visit;
+                return rest;
+            });
+            return res.json(filteredResult);
+        } else {
+            return res.json(result);
+        }
+    });
+});
+  
+
+// Ruta para obtener caja
+app.get('/caja', (req, res) => {
+    const { rol } = req.query; // Obtén el rol del query para la verificación
+    if (rol !== '2') { // Compara el rol como string
+        const sql = 'SELECT * FROM caja';
+        db.query(sql, (err, result) => {
+            if (err) return res.status(500).json({ message: "Error en el servidor" });
+            return res.json(result);
+        });
+    } else {
+        res.status(403).json({ error: "Acceso denegado" });
+    }
+});
 
 app.get('/personal', (req, res) =>{
     const sql =  'SELECT * FROM personal';
@@ -193,14 +281,6 @@ app.get('/estado', (req, res) =>{
     })
 })
 
-app.get('/visita', (req, res) =>{
-    const sql =  'SELECT * FROM visita';
-    db.query(sql, (err, result) => {
-        if(err) return res.json({Message: "Error en server"})
-        return res.json(result)
-    })
-})
-
 app.get('/visitadetalle', (req, res) => {
     const idDato = req.query.idDato;
   
@@ -251,29 +331,44 @@ app.put('/equipamientoupdate/:id', (req, res) => {
     });
 });
 
-
 app.put('/visitaupdate/:id', (req, res) => {
-    const sql = "UPDATE visita SET Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, IdPersonal = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ? WHERE IdVisita = ?";
+    const visitaData = req.body;
+    const { id } = req.params;
+  
+    // Log para verificar los datos recibidos
+    console.log("Datos recibidos para actualizar visita:", visitaData);
+  
+    // Asigna un valor predeterminado a IdEquipamiento si está vacío
+    const idEquipamiento = visitaData.IdEquipamiento || null;
+  
+    const sqlVisita = `
+        UPDATE visita
+        SET Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ?, IdPersonal = ?
+        WHERE IdVisita = ?
+    `;
+  
     const values = [
-        req.body.Descripcion,
-        req.body.IdEquipamiento,
-        req.body.IdEstado,
-        req.body.IdPersonal,
-        req.body.Precio,
-        req.body.Garantia,
-        req.body.Fecha,
-        req.body.FormaPago,
-        req.body.FechaCobro
+        visitaData.Descripcion,
+        idEquipamiento,
+        visitaData.IdEstado,
+        visitaData.Precio,
+        visitaData.Garantia,
+        visitaData.Fecha,
+        visitaData.FormaPago,
+        visitaData.FechaCobro,
+        visitaData.IdPersonal,
+        id
     ];
-    const id = req.params.id;
-    db.query(sql, [...values, id], (err, data) => {
+  
+    db.query(sqlVisita, values, (err, data) => {
         if (err) {
-            console.error("Error al actualizar la visita:", err);
-            return res.status(500).json({ error: "Error al actualizar la visita" });
+            console.error("Error al actualizar visita:", err);
+            return res.status(500).json({ error: "Error interno del servidor al actualizar visita", details: err });
         }
-        return res.json(data);
+        return res.json({ success: true, message: "Visita actualizada exitosamente", data });
     });
-});
+  });
+  
 
 app.delete('/equipamiento/:id', (req, res) => {
     const sql = "DELETE FROM equipamiento WHERE IdEquipamiento = ?";
@@ -367,16 +462,7 @@ app.delete('/deletevisita/:id', (req, res) => {
       return res.json({ message: "Visita eliminada exitosamente" });
     });
   });
-  
 
-// Ruta caja
-app.get('/caja', (req, res) => {
-    const sql = 'SELECT * FROM caja';
-    db.query(sql, (err, result) => {
-        if (err) return res.status(500).json({ message: "Error en server" });
-        return res.json(result);
-    });
-});
 
 app.get('/caja/:id', (req, res) => {
     const sql = 'SELECT * FROM caja WHERE id = ?';

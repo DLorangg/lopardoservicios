@@ -6,7 +6,14 @@ import './caja.css';
 import Rouben from '../../../Assets/Rouben.otf';
 
 export function Caja() {
-  const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
+  const [content, setContent] = useState(null);
+  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
+
+  useEffect(() => {
+    if (userRole != 2) {
+      setContent(<DatosList ShowForm={ShowForm} />);
+    }
+  }, [userRole]);
 
   function ShowList() {
     setContent(<DatosList ShowForm={ShowForm} />);
@@ -25,14 +32,17 @@ export function Caja() {
 
 function DatosList(props) {
   const [dataCaja, setDataCaja] = useState([]);
+  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
 
   function fetchCaja() {
-    axios.get("http://localhost:8081/caja")
-      .then(res => setDataCaja(res.data))
-      .catch((error) => console.log("Error: ", error));
+    axios.get("http://localhost:8081/caja", {
+      params: { rol: userRole } // Pasar el rol como parámetro de la consulta
+    })
+    .then(res => setDataCaja(res.data))
+    .catch((error) => console.log("Error: ", error));
   }
 
-  useEffect(() => fetchCaja(), []);
+  useEffect(() => fetchCaja(), [userRole]);
 
   const handleDelete = async (id) => {
     try {

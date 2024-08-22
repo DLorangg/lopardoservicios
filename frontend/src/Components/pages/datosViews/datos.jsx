@@ -32,15 +32,20 @@ export function DatosList(props) {
   const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto para ordenar
 
   // Función para obtener datos de visitas desde el servidor
-  function fetchVisita() {
-    axios.get("http://localhost:8081/visita")
-      .then((response) => {
+  const fetchVisita = () => {
+    const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
+    axios.get("http://localhost:8081/visita", {
+        params: { rol: userRole } // Pasar el rol como parámetro de la consulta
+    })
+    .then((response) => {
         setDataVisita(response.data);
-      })
-      .catch((error) => {
+    })
+    .catch((error) => {
         console.error("Error fetching data:", error);
-      });
-  }
+    });
+  };
+
+
 
   // Función para obtener datos de clientes desde el servidor
   function fetchCliente() {
@@ -138,7 +143,7 @@ export function DatosList(props) {
             <tr key={index}>
               <td style={{ width: '15%' }}>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
               <td style={{ width: '25%' }}>{dato.Direccion}</td>
-              <td style={{ width: '10%' }}>{`$ ` + dato.Precio}</td>
+              <td style={{ width: '10%' }}>{dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}</td> {/* Mostrar vacío si Precio es undefined */}
               <td style={{ width: '40%' }}>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: '40%', whiteSpace: "nowrap" }}>
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">

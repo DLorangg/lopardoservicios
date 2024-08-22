@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Form, Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ export function DatosUpdate() {
   const [Precio, setPrecio] = useState('');
   const [Garantia, setGarantia] = useState('');
   const [Fecha, setFecha] = useState('');
-  const [IdPersonal, setIdPersonal] = useState('');
+  const [IdPersonal, setIdPersonal] = useState([]);
   const [FormaPago, setFormaPago] = useState('');
   const [FechaCobro, setFechaCobro] = useState('');
 
@@ -49,12 +49,7 @@ export function DatosUpdate() {
   }, []);
 
   useEffect(() => {
-    // Obtener clientes
-    axios.get("http://localhost:8081/cliente")
-      .then(res => setDataCliente(res.data))
-      .catch(error => console.log("Error: ", error));
-
-    // Obtener visitas
+    // Obtener visita por ID
     axios.get("http://localhost:8081/visita")
       .then(res => {
         setDataVisita(res.data);
@@ -66,36 +61,38 @@ export function DatosUpdate() {
           setIdEstado(currentVisit.IdEstado);
           setPrecio(currentVisit.Precio);
           setGarantia(currentVisit.Garantia);
-          // Convertir la fecha al formato YYYY-MM-DD
-          const fechaFormateada = new Date(currentVisit.Fecha).toISOString().split('T')[0];
-          setFecha(fechaFormateada);
+          setFecha(new Date(currentVisit.Fecha).toISOString().split('T')[0]);
           setFormaPago(currentVisit.FormaPago);
-          const fechaCobroFormateada = new Date(currentVisit.FechaCobro).toISOString().split('T')[0];
-          setFechaCobro(fechaCobroFormateada);
+          setFechaCobro(new Date(currentVisit.FechaCobro).toISOString().split('T')[0]);
           setIdPersonal(currentVisit.IdPersonal);
         }
       })
       .catch(error => console.log("Error: ", error));
   }, [id]);
 
-  function handleSubmit(event) {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-      // Imprime los datos que se enviarán
-      console.log({
-        Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal, FormaPago, FechaCobro
-      });
-
-    axios.put(`http://localhost:8081/visitaupdate/` + id, { Descripcion, IdEquipamiento, IdEstado, Precio, Garantia, Fecha, IdPersonal, FormaPago, FechaCobro })
-      .then(res => {
+    axios.put(`http://localhost:8081/visitaupdate/${id}`, {
+        Descripcion,
+        IdEquipamiento,
+        IdEstado,
+        Precio,
+        Garantia,
+        Fecha,
+        IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
+        FormaPago,
+        FechaCobro,
+    })
+    .then(res => {
         console.log(res);
         navigate('../datos');
-      })
-      .catch(error => {
-        console.error('Error al actualizar el equipamiento:', error);
-      });
-  }
-
+    })
+    .catch(error => {
+        console.error('Error al actualizar la visita:', error);
+    });
+  };
+  
   return (
     <>
     <div className="container my-5" style={{border: '1px solid #001461'}}>
@@ -161,7 +158,10 @@ export function DatosUpdate() {
                 className="form-control"
                 name="IdPersonal"
                 multiple
-                onChange={e => setIdPersonal(e.target.value)}
+                onChange={e => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                  setIdPersonal(selectedOptions);
+                }}                
                 value={IdPersonal}
               >
                 <option value="" disabled hidden>Seleccione</option>
@@ -274,9 +274,7 @@ export function DatosUpdate() {
               />
             </div>
 
-            
-
-                <br />
+              <br />
             <div className="row">
               <div className="offset-sm-4 col-sm-4 d-grid">
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>

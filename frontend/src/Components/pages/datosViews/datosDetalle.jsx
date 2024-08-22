@@ -34,6 +34,7 @@ function DatosDetalle() {
   const [modalImage, setModalImage] = useState('');
 
   const { id } = useParams();
+  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,11 +113,16 @@ function DatosDetalle() {
   const estadoVisita = dataEstado.find(estado => estado.IdEstado === visitaActual.IdEstado) || {};
   const estadoVisitaNombre = estadoVisita.Estado || '';
 
-  const equipamientoVisita = dataEquipamiento.find(equipamiento => equipamiento.IdEsquipamiento === visitaActual.IdEquipamineto) || {};
+  const equipamientoVisita = dataEquipamiento.find(equipamiento => equipamiento.IdEsquipamiento === visitaActual.IdEquipamiento) || {};
   const equipamientoVisitaNombre = equipamientoVisita.Nombre || '';
 
   // Revisar el valor de `Adjuntos` y formatear como una lista de URLs
-  const adjuntos = visitaActual.Adjuntos ? visitaActual.Adjuntos.split(',').map(url => `http://localhost:8081${url.trim()}`) : [];
+  const adjuntos = visitaActual.Adjuntos ? visitaActual.Adjuntos.split(',').map(url => {
+    const trimmedUrl = url.trim();
+    // Eliminar cualquier ocurrencia inicial de 'uploads/' antes de construir la URL final
+    const cleanedUrl = trimmedUrl.replace(/^\/?uploads\/?/, '');
+    return `http://localhost:8081/uploads/${cleanedUrl}`;
+  }) : [];
 
   const handleImageClick = (url) => {
     setModalImage(url);
@@ -193,40 +199,41 @@ function DatosDetalle() {
             <label className="font-weight-bold">Garantía: </label>
             <span>{garantiaVisita}</span>
           </div>
-          <div className="form-group detalle-item">
-            <label className="font-weight-bold">Precio de la Visita: </label>
-            <span>${precioVisita}</span>
-          </div>
+          {userRole !== '2' && (
+            <div className="form-group detalle-item">
+              <label className="font-weight-bold">Precio de la visita:</label>
+              <span className="ml-2">${precioVisita}</span>
+            </div>
+          )}
           <div className="form-group detalle-item">
             <label className="font-weight-bold">Forma de pago: </label>
             <span>{formaPago}</span>
           </div>
           <div className="form-group detalle-item">
-            <label className="font-weight-bold">Adjuntos: </label>
-            <div>
-              {adjuntos.length > 0 ? (
-                adjuntos.map((url, index) => (
-                  <img
-                    key={index}
-                    src={url}
-                    alt={`Adjunto ${index + 1}`}
-                    style={{ width: '100px', marginRight: '10px', cursor: 'pointer' }}
-                    onClick={() => handleImageClick(url)}
-                  />
-                ))
-              ) : (
-                <p>No hay adjuntos.</p>
-              )}
-            </div>
-          </div>
-          <div className="form-group detalle-item">
-            <label className="font-weight-bold">Fecha de cobro:</label>
-            <span className="ml-2">{fechaCobroFormateada}</span>
+          <label className="font-weight-bold">Adjuntos: </label>
+          <div>
+            {adjuntos.length > 0 ? (
+              adjuntos.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Adjunto ${index + 1}`}
+                  style={{ width: '100px', marginRight: '10px', cursor: 'pointer' }}
+                  onClick={() => handleImageClick(url)}
+                />
+              ))
+            ) : (
+              <p>No hay adjuntos.</p>
+            )}
           </div>
         </div>
+        <div className="form-group detalle-item">
+          <label className="font-weight-bold">Fecha de cobro:</label>
+          <span className="ml-2">{fechaCobroFormateada}</span>
+        </div>
       </div>
+    </div>
 
-      {/* Modal para mostrar imagen grande */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Imagen</Modal.Title>

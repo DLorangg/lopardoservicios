@@ -14,42 +14,46 @@ export function LoginForm({ setAuthenticated }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
   }, []);
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-        username: username,
-        password: password,
-      });
+        const response = await axios.post('http://localhost:8081/login', {
+            username: username,
+            password: password,
+        });
 
-      const { token, userName } = response.data;
+        // Desestructura los datos de la respuesta
+        const { userName, userRole, message } = response.data;
 
-      if (token) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userName', userName);
-        setAuthenticated(true);
-        toast.success('Inicio de sesión exitoso');
-        
-        // Verificar si la contraseña es "1234" y mostrar opción de cambiar contraseña
-        if (password === '1234') {
-          setShowChangePassword(true);
+        // Verifica que se reciban el nombre de usuario y el rol
+        if (userName && userRole) {
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('userRole', userRole); // Guardar el rol como string
+            setAuthenticated(true);
+            toast.success(message); // Mostrar el mensaje de éxito
+
+            // Verifica la contraseña para decidir si mostrar el cambio de contraseña
+            if (password === '1234') {
+                setShowChangePassword(true);
+            } else {
+                setShowChangePassword(false);
+                navigate('/'); // Redirige al home después de iniciar sesión
+            }
         } else {
-          setShowChangePassword(false);
-          navigate('/'); // Redirigir al home después de iniciar sesión
+            // Limpia los datos en caso de que no se reciban los datos esperados
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+            setAuthenticated(false);
+            toast.error('No se recibieron datos de usuario válidos');
         }
-      } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userName');
-        setAuthenticated(false);
-        toast.error('Token de autenticación no recibido');
-      }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      toast.error('Error al iniciar sesión. Verifica tus credenciales.');
+        console.error('Error al iniciar sesión:', error);
+        toast.error('Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
+
 
   const handleChangePassword = async () => {
     try {
