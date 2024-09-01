@@ -36,7 +36,7 @@ export function BusquedaList(props) {
 
   const fetchVisita = () => {
     const userRole = localStorage.getItem('userRole');
-    axios.get("http://localhost:8081/visitafiltrada", {
+    axios.get("https://lopardoservicios.com/backend/routes/getVisitasFiltradas.php", {
         params: { 
           rol: userRole,
           fechaCobro: filters.fechaCobro,
@@ -54,7 +54,7 @@ export function BusquedaList(props) {
   };
 
   function fetchCliente() {
-    axios.get("http://localhost:8081/cliente")
+    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
       .then((response) => {
         setDataCliente(response.data);
       })
@@ -98,7 +98,7 @@ export function BusquedaList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:8081/deletevisita/${id}`)
+    axios.delete(`https://lopardoservicios.com/backend/routes/deleteVisita.php/${id}`)
       .then((response) => {
         console.log(response.data.message);
         fetchVisita();

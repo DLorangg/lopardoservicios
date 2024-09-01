@@ -34,7 +34,7 @@ export function DatosList(props) {
   // Función para obtener datos de visitas desde el servidor
   const fetchVisita = () => {
     const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
-    axios.get("http://localhost:8081/visita", {
+    axios.get("https://lopardoservicios.com/backend/routes/getVisitas.php", {
         params: { rol: userRole } // Pasar el rol como parámetro de la consulta
     })
     .then((response) => {
@@ -49,7 +49,7 @@ export function DatosList(props) {
 
   // Función para obtener datos de clientes desde el servidor
   function fetchCliente() {
-    axios.get("http://localhost:8081/cliente")
+    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
       .then((response) => {
         setDataCliente(response.data);
       })
@@ -98,7 +98,7 @@ export function DatosList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:8081/deletevisita/${id}`)
+    axios.delete(`https://lopardoservicios.com/backend/routes/deleteVisita.php/${id}`)
       .then((response) => {
         console.log(response.data.message);
         fetchVisita();
@@ -184,7 +184,7 @@ export function DatosForm(props) {
   const handleShowUpdateModal = () => setShowUpdateModal(true);
 
   function fetchCliente() {
-    axios.get("http://localhost:8081/cliente")
+    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
       .then(res => setDataCliente(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -192,7 +192,7 @@ export function DatosForm(props) {
   useEffect(() => fetchCliente(), []);
 
   function fetchEquipamiento() {
-    axios.get("http://localhost:8081/equipamiento")
+    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
       .then(res => setDataEquipamiento(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -202,7 +202,7 @@ export function DatosForm(props) {
   const [dataEstado, setDataEstado] = useState([]);
 
   function fetchEstado() {
-    axios.get("http://localhost:8081/estado")
+    axios.get("https://lopardoservicios.com/backend/routes/getEstado.php")
       .then(res => setDataEstado(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -212,7 +212,7 @@ export function DatosForm(props) {
   const [dataPersonal, setDataPersonal] = useState([]);
 
   function fetchPersonal() {
-    axios.get("http://localhost:8081/personal")
+    axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
       .then(res => setDataPersonal(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -223,7 +223,7 @@ export function DatosForm(props) {
   const [Ciudad, setCiudad] = useState('');
   const [Direccion, setDireccion] = useState('');
   const [Descripcion, setDescripcion] = useState('');
-  const [IdEquipamiento, setIdEquipamiento] = useState('');
+  const [IdEquipamiento, setIdEquipamiento] = useState([]);
   const [Equipamiento, setEquipamiento] = useState([]);
   const [dataEquipamiento, setDataEquipamiento] = useState([]);
   const [IdEstado, setIdEstado] = useState('');
@@ -233,6 +233,9 @@ export function DatosForm(props) {
   const [IdPersonal, setIdPersonal] = useState('');
   const [FormaPago, setFormaPago] = useState('');
   const [FechaCobro, setFechaCobro] = useState('');
+  const [NumeroFactura, setNumeroFactura] = useState('');
+  const [NumeroCheque, setNumeroCheque] = useState('');
+
 
   const navigate = useNavigate();
   
@@ -246,6 +249,13 @@ export function DatosForm(props) {
     );
     setFilteredClients(filtered);
   };
+
+  const handleEquipamientoChange = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions);
+    const selectedValues = selectedOptions.map(option => option.value);
+    setIdEquipamiento(selectedValues);
+  };
+
 
   const handleClienteChange = (event) => {
     const clienteId = event.target.value;
@@ -262,18 +272,18 @@ export function DatosForm(props) {
     }
   };
 
-  const handleGuardar = () => {
-    axios.post('http://localhost:8081/clientepost', clienteData)
-      .then(response => {
-        console.log('Cliente creado:', response.data);
-        alert('Cliente creado exitosamente');
-        handleCloseModal();
-        updateClientes(); // Llamar a la función para actualizar la lista de clientes
-      })
-      .catch(error => {
-        console.error('Error al crear cliente:', error);
-        alert('Error al crear cliente');
-      });
+  const handleDeleteCliente = (idCliente) => {
+    console.log(idCliente);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+        axios.delete(`https://lopardoservicios.com/backend/routes/deleteCliente.php?IdCliente=${idCliente}`) // Asegúrate de usar 'IdCliente'
+            .then(response => {
+                console.log(response.data.message);
+                fetchCliente(); // Llama a la función para actualizar la lista de clientes
+            })
+            .catch(error => {
+                console.error("Hubo un error al eliminar el cliente:", error);
+            });
+    }
   };
 
   const updateClientes = () => {
@@ -317,60 +327,82 @@ export function DatosForm(props) {
   const handleUploadFiles = () => {
     const formData = new FormData();
     files.forEach(file => {
-      formData.append('files', file);
+        formData.append('files[]', file); // Importante usar 'files[]' en lugar de 'files' para PHP
     });
-    return axios.post('http://localhost:8081/upload', formData)
-    .then(response => {
-      const fileURLs = response.data.files;
-      setFileURLs(fileURLs);
-      return fileURLs;
-    })
-    .catch(error => console.error('Error uploading files:', error));
+
+    return axios.post('https://lopardoservicios.com/backend/routes/upload.php', formData)
+        .then(response => {
+            const fileURLs = response.data.files; // Asegúrate de que `files` sea el nombre de la propiedad
+            setFileURLs(fileURLs);
+            return fileURLs;
+        })
+        .catch(error => {
+            console.error('Error uploading files:', error);
+            throw error; // Propagar el error para manejarlo en `handleSubmit`
+        });
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
     
+    // Verificar campos obligatorios
+    if (!IdCliente || !Ciudad || !Direccion || !IdEstado || !IdPersonal.length || !Precio || !Fecha) {
+      alert('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+
     // Verificar que IdPersonal no esté vacío
     if (IdPersonal.length === 0) {
       alert('Por favor, selecciona al menos un personal.');
       return;
     }
   
-    // Formatear las fechas
-    const formattedFecha = new Date(Fecha).toISOString().split('T')[0];
-    const formattedFechaCobro = new Date(FechaCobro).toISOString().split('T')[0];
-  
-    // Log de IdEstado
-    console.log("IdEstado seleccionado:", IdEstado);
-  
-    // Subir archivos primero
-    handleUploadFiles().then(uploadedFileURLs => {
-      // Luego enviar los datos de la visita
-      axios.post('http://localhost:8081/visitapost', {
+    // Verificar que las fechas sean válidas
+    const formattedFecha = Fecha ? new Date(Fecha).toISOString().split('T')[0] : null;
+    const formattedFechaCobro = FechaCobro ? new Date(FechaCobro).toISOString().split('T')[0] : null;
+    
+    // Si no hay archivos seleccionados, se salta la subida de archivos
+    const handleFormSubmission = (uploadedFileURLs = []) => {
+      const payload = {
         IdCliente,
         Ciudad,
         Direccion,
         Descripcion,
-        IdEquipamiento: IdEquipamiento || null,
+        IdEquipamiento: IdEquipamiento.length > 0 ? IdEquipamiento.join(',') : null,
         IdEstado,
-        IdPersonal: IdPersonal.join(','), // Asegúrate de que IdPersonal sea una cadena separada por comas
+        IdPersonal: IdPersonal.join(','),
         Precio,
         Garantia,
         Fecha: formattedFecha,
         FormaPago,
-        FechaCobro: formattedFechaCobro, // Asegúrate de que FechaCobro tenga el formato correcto
-        IdAdjunto: uploadedFileURLs.join(','), // Asegúrate de que IdAdjunto sea una cadena separada por comas
-      })
+        FechaCobro: formattedFechaCobro,
+        IdAdjunto: uploadedFileURLs.join(',') || null, // Si no hay imágenes, enviar null
+        NumeroFactura,
+        NumeroCheque  
+      };
+      
+      console.log("Datos que se envían al PHP:", payload);
+      
+      axios.post('https://lopardoservicios.com/backend/routes/createVisita.php', payload)
       .then(visitaResponse => {
         console.log(visitaResponse);
         navigate(props.ShowList());
       })
       .catch(error => console.error('Error:', error));
-    });
-  };
+    };
   
-
+    // Si hay archivos seleccionados, subirlos primero
+    if (files.length > 0) {
+      handleUploadFiles()
+        .then(uploadedFileURLs => handleFormSubmission(uploadedFileURLs))
+        .catch(error => console.error('Error:', error));
+    } else {
+      // Si no hay archivos, proceder directamente a la creación de la visita
+      handleFormSubmission();
+    }
+  };  
+  
   return (
     <>
       <h2 className="text-center mb-3">Crear una nueva Visita</h2>
@@ -378,7 +410,7 @@ export function DatosForm(props) {
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
   
-          <label className="col-sm-4 col-form-label">Cliente</label>
+          <label className="col-sm-4 col-form-label">Cliente <span style={{ color: '#001461' }}>*</span></label>
           <div className="col-sm-8 d-flex flex-column">
             <input
               className="form-control"
@@ -425,29 +457,42 @@ export function DatosForm(props) {
               >
                 ✎
               </button>
+              <button
+                type="button"
+                className="btn btn-secondary ms-2"
+                onClick={() => handleDeleteCliente(selectedClienteData.IdCliente)}
+                disabled={!selectedClienteData}
+                style={{
+                  borderRadius: '35%', fontSize: '25px', width: '40px',
+                  height: '40px', padding: '0', display: 'flex', justifyContent: 'center'
+                }}
+              >
+                🗑️
+              </button>
+
             </div>
           </div>
           <ModalComponent show={showModal} handleClose={handleCloseModal} updateClientes={updateClientes} />
           <ModalUpdateComponent show={showUpdateModal} handleClose={handleCloseUpdateModal} updateClientes={updateClientes} clienteData={selectedClienteData} />
-  
-            <label className="col-sm-4 col-form-label">Ciudad</label>
-            <div className="col-sm-8">
-              <input
-                className="form-control"
-                name="Ciudad"
-                value={Ciudad}
-                onChange={(e) => setCiudad(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-  
-            <label className="col-sm-4 col-form-label">Dirección</label>
+
+          <label className="col-sm-4 col-form-label">Dirección <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
               <input
                 className="form-control"
                 name="Direccion"
                 value={Direccion}
                 onChange={(e) => setDireccion(e.target.value)}
+                autoComplete="off"
+              />
+            </div>      
+          
+          <label className="col-sm-4 col-form-label">Ciudad <span style={{ color: '#001461' }}>*</span></label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                name="Ciudad"
+                value={Ciudad}
+                onChange={(e) => setCiudad(e.target.value)}
                 autoComplete="off"
               />
             </div>
@@ -469,16 +514,17 @@ export function DatosForm(props) {
                 name="Equipamiento"
                 multiple
                 autoComplete="off"
+                onChange={handleEquipamientoChange} 
               >
                 {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
-                  <option key={equipamiento.IdEquipamiento}>
+                  <option key={equipamiento.IdEquipamiento} value={equipamiento.IdEquipamiento}>
                     {equipamiento.Nombre}
                   </option>
                 ))}
               </select>
             </div>
   
-            <label className="col-sm-4 col-form-label">Estado</label>
+            <label className="col-sm-4 col-form-label">Estado <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
               <select
                 className="form-control"
@@ -496,7 +542,7 @@ export function DatosForm(props) {
               </select>
             </div>
 
-            <label className="col-sm-4 col-form-label">Personal</label>
+            <label className="col-sm-4 col-form-label">Personal <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
             <select className="form-control" name="IdPersonal" multiple onChange={e => {
               const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
@@ -513,7 +559,7 @@ export function DatosForm(props) {
 
             </div>
   
-            <label className="col-sm-4 col-form-label">Precio</label>
+            <label className="col-sm-4 col-form-label">Precio <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
               <input
                 className="form-control"
@@ -555,7 +601,7 @@ export function DatosForm(props) {
               </div>
             </div>
   
-            <label className="col-sm-4 col-form-label">Fecha</label>
+            <label className="col-sm-4 col-form-label">Fecha <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
               <input
                 className="form-control"
@@ -565,6 +611,17 @@ export function DatosForm(props) {
                 autoComplete="off"
               />
             </div>
+
+            <label className="col-sm-4 col-form-label">Número de factura</label>
+              <div className="col-sm-8">
+                <input
+                  className="form-control"
+                  name="NumeroFactura"
+                  value={NumeroFactura}
+                  onChange={(e) => setNumeroFactura(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
 
             <label className="col-sm-4 col-form-label">Forma de pago</label>
             <div className="col-sm-8">
@@ -597,7 +654,33 @@ export function DatosForm(props) {
                   Efectivo
                 </label>
               </div>
+
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="chequeRadio"
+                  value={2}
+                  checked={FormaPago === 2}
+                  onChange={() => setFormaPago(2)}
+                />
+                <label className="form-check-label" htmlFor="chequeRadio">
+                  Cheque
+                </label>
+              </div>
             </div>
+
+              <label className="col-sm-4 col-form-label">Número de cheque</label>
+              <div className="col-sm-8">
+                <input
+                  className="form-control"
+                  name="NumeroCheque"
+                  value={NumeroCheque}
+                  onChange={(e) => setNumeroCheque(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
 
             <label className="col-sm-4 col-form-label">Fecha de cobro</label>
             <div className="col-sm-8">
@@ -609,6 +692,8 @@ export function DatosForm(props) {
                 autoComplete="off"
               />
             </div>
+
+
   
             <div
               onDrop={handleDrop}

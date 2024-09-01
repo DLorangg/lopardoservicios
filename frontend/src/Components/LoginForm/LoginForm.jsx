@@ -19,7 +19,7 @@ export function LoginForm({ setAuthenticated }) {
 
   const handleLogin = async () => {
     try {
-        const response = await axios.post('http://localhost:8081/login', {
+        const response = await axios.post('https://lopardoservicios.com/backend/routes/login.php', {
             username: username,
             password: password,
         });
@@ -57,7 +57,7 @@ export function LoginForm({ setAuthenticated }) {
 
   const handleChangePassword = async () => {
     try {
-      const response = await axios.put('http://localhost:8081/updatePassword', {
+      const response = await axios.put('https://lopardoservicios.com/backend/routes/updatePassword.php', {
         username: username,
         currentPassword: password,
         newPassword: newPassword,

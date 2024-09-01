@@ -20,7 +20,7 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
   const [equipamientoOptions, setEquipamientoOptions] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/equipamiento')
+    axios.get('https://lopardoservicios.com/backend/routes/getEquipamiento.php')
       .then(response => {
         setEquipamientoOptions(response.data);
       })
@@ -64,17 +64,18 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
     console.log('Datos del cliente antes de enviar:', clienteData);
     console.log('ID del cliente:', initialClienteData.IdCliente);
   
-    axios.put(`http://localhost:8081/cliente/${initialClienteData.IdCliente}`, clienteData)
-      .then(response => {
-        console.log('Cliente actualizado:', response.data);
-        alert('Cliente actualizado exitosamente');
-        handleClose();
-        updateClientes(); 
-      })
-      .catch(error => {
-        console.error('Error al actualizar cliente:', error);
-        alert('Error al actualizar cliente');
-      });
+    axios.put(`https://lopardoservicios.com/backend/routes/putCliente.php?id=${initialClienteData.IdCliente}`, clienteData)
+    .then(response => {
+      console.log('Cliente actualizado:', response.data);
+      alert('Cliente actualizado exitosamente');
+      handleClose();
+      updateClientes(); 
+    })
+    .catch(error => {
+      console.error('Error al actualizar cliente:', error);
+      alert('Error al actualizar cliente');
+    });
+
   };
 
   return (
@@ -129,11 +130,11 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cerrar
-        </Button>
         <Button variant="primary" onClick={handleGuardar}>
           Guardar
+        </Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Cerrar
         </Button>
       </Modal.Footer>
     </Modal>

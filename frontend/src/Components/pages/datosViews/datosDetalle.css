@@ -61,18 +61,18 @@
   }
   
   .estado-facturado {
-    background-color: #ee9b00; 
+    background-color: #2fa02f; 
   }
   .estado-pagado {
     background-color: #005f73; 
   }
 
   .estado-pendiente {
-    background-color: #9b2226; 
+    background-color: #ae2012; 
   }
 
   .estado-completado {
-    background-color: #e9d8a6; 
+    background-color: #ee9b00; 
   }
 
   .estado-incompleto {
@@ -84,12 +84,8 @@
     top: 10px; /* Ajusta la posición desde la parte superior */
     right: 10px; /* Ajusta la posición desde la derecha */
     padding: 8px 12px; 
-    border-radius: 5px;
-    background-color: #005f73; 
-    color: #fff; 
+    color: #000; 
     font-weight: bold; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.3s; /* Agrega transiciones suaves */
     cursor: pointer; /* Cambia el cursor al pasar sobre la fecha */
     font-size: large;
   }

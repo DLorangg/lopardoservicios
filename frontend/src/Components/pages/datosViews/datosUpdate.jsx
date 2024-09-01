@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Form, Link, useNavigate, useParams } from 'react-router-dom';
 
 export function DatosUpdate() {
-  const [dataCliente, setDataCliente] = useState([]);
   const [dataVisita, setDataVisita] = useState([]);
   const [dataPersonal, setDataPersonal] = useState([]);
   const [dataEstado, setDataEstado] = useState([]);
@@ -22,22 +21,24 @@ export function DatosUpdate() {
   const [IdPersonal, setIdPersonal] = useState([]);
   const [FormaPago, setFormaPago] = useState('');
   const [FechaCobro, setFechaCobro] = useState('');
+  const [NumeroCheque, setNumeroCheque] = useState('');
+  const [NumeroFactura, setNumeroFactura] = useState('');
 
   // Fetching data functions
   function fetchPersonal() {
-    axios.get("http://localhost:8081/personal")
+    axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
       .then(res => setDataPersonal(res.data))
       .catch((error) => console.log("Error: ", error));
   }
 
   function fetchEstado() {
-    axios.get("http://localhost:8081/estado")
+    axios.get("https://lopardoservicios.com/backend/routes/getEstado.php")
       .then(res => setDataEstado(res.data))
       .catch((error) => console.log("Error: ", error));
   }
 
   function fetchEquipamiento() {
-    axios.get("http://localhost:8081/equipamiento")
+    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
       .then(res => setDataEquipamiento(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -50,49 +51,65 @@ export function DatosUpdate() {
 
   useEffect(() => {
     // Obtener visita por ID
-    axios.get("http://localhost:8081/visita")
+    axios.get("https://lopardoservicios.com/backend/routes/getVisitas.php")
       .then(res => {
         setDataVisita(res.data);
         // Buscar la visita actual y actualizar el estado
         const currentVisit = res.data.find(visita => visita.IdVisita === parseInt(id));
         if (currentVisit) {
           setDescripcion(currentVisit.Descripcion);
-          setIdEquipamiento(currentVisit.IdEquipamiento);
+          setIdEquipamiento(currentVisit.IdEquipamiento.split(',')); // Convertir la cadena de IDs en un array
           setIdEstado(currentVisit.IdEstado);
           setPrecio(currentVisit.Precio);
           setGarantia(currentVisit.Garantia);
           setFecha(new Date(currentVisit.Fecha).toISOString().split('T')[0]);
           setFormaPago(currentVisit.FormaPago);
-          setFechaCobro(new Date(currentVisit.FechaCobro).toISOString().split('T')[0]);
-          setIdPersonal(currentVisit.IdPersonal);
+          setNumeroCheque(currentVisit.NumeroCheque);
+          setNumeroFactura(currentVisit.NumeroFactura);
+          const fechaCobro = currentVisit.FechaCobro
+            ? new Date(currentVisit.FechaCobro).toISOString().split('T')[0]
+            : ''; 
+  
+          setFechaCobro(fechaCobro);
+          setIdPersonal(currentVisit.IdPersonal.split(',')); // Convertir la cadena de IDs en un array
         }
       })
       .catch(error => console.log("Error: ", error));
-  }, [id]);
+  }, [id]);  
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    axios.put(`http://localhost:8081/visitaupdate/${id}`, {
-        Descripcion,
-        IdEquipamiento,
-        IdEstado,
-        Precio,
-        Garantia,
-        Fecha,
-        IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
-        FormaPago,
-        FechaCobro,
+  
+    const payload = {
+      Descripcion,
+      IdEquipamiento: Array.isArray(IdEquipamiento) ? IdEquipamiento.join(',') : '',
+      IdEstado,
+      Precio,
+      Garantia,
+      Fecha,
+      IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
+      FormaPago,
+      FechaCobro,
+      NumeroCheque,
+      NumeroFactura,
+    };
+  
+    console.log("Payload para la actualización:", payload);
+  
+    axios.put(`https://lopardoservicios.com/backend/routes/putVisita.php?id=${id}`, payload, {
+      headers: {
+        'Content-Type': 'application/json' // Asegúrate de que el tipo de contenido sea JSON
+      }
     })
     .then(res => {
-        console.log(res);
-        navigate('../datos');
+      console.log("Respuesta del servidor:", res);
+      navigate('../datos');
     })
     .catch(error => {
-        console.error('Error al actualizar la visita:', error);
+      console.error('Error al actualizar la visita:', error);
     });
   };
-  
+
   return (
     <>
     <div className="container my-5" style={{border: '1px solid #001461'}}>
@@ -229,6 +246,17 @@ export function DatosUpdate() {
               />
             </div>
 
+            <label className="col-sm-4 col-form-label">Número de factura</label>
+              <div className="col-sm-8">
+                <input
+                  className="form-control"
+                  name="NumeroFactura"
+                  value={NumeroFactura}
+                  onChange={(e) => setNumeroFactura(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+
             <label className="col-sm-4 col-form-label">Forma de pago</label>
             <div className="col-sm-8">
               <div className="form-check form-check-inline">
@@ -260,7 +288,33 @@ export function DatosUpdate() {
                   Efectivo
                 </label>
               </div>
+
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="FormaPago"
+                  id="chequeRadio"
+                  value={FormaPago}
+                  checked={FormaPago === 2}
+                  onChange={() => setFormaPago(2)}
+                />
+                <label className="form-check-label" htmlFor="chequeRadio">
+                  Cheque
+                </label>
+              </div>
             </div>
+
+            <label className="col-sm-4 col-form-label">Número de cheque</label>
+              <div className="col-sm-8">
+                <input
+                  className="form-control"
+                  name="NumeroCheque"
+                  value={NumeroCheque}
+                  onChange={(e) => setNumeroCheque(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
 
             <label className="col-sm-4 col-form-label">Fecha de cobro</label>
             <div className="col-sm-8">

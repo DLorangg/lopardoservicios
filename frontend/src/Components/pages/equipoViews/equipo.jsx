@@ -31,7 +31,7 @@ function DatosList(props) {
  
 
   function fetchEquipo() {
-    axios.get("http://localhost:8081/equipamiento")
+    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
       .then(res => setDataEquipo(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -43,7 +43,7 @@ function DatosList(props) {
   const handleDelete = async (id) => {
 
     try{
-      await axios.delete('http://localhost:8081/equipamiento/'+id)
+      await axios.delete('https://lopardoservicios.com/backend/routes/deleteEquipamiento.php/'+id)
       fetchEquipo()
     }catch(error){
       console.log(error);
@@ -102,7 +102,7 @@ function DatosForm(props) {
 
       event.preventDefault();
 
-      axios.post('http://localhost:8081/equipamientopost',{Nombre})
+      axios.post('https://lopardoservicios.com/backend/routes/postEquipamiento.php',{Nombre})
       .then(res => {
         console.log(res);
         console.log(Nombre);

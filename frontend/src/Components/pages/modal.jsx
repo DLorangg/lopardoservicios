@@ -20,7 +20,7 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
 
   useEffect(() => {
     // Cargar opciones de equipamiento al cargar el componente
-    axios.get('http://localhost:8081/equipamiento')
+    axios.get('https://lopardoservicios.com/backend/routes/getEquipamiento.php')
       .then(response => {
         setEquipamientoOptions(response.data);
       })
@@ -57,7 +57,7 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
       Telefono: clienteData.Telefono.toString(),
     };
 
-    axios.post('http://localhost:8081/clientepost', clienteDataToSend)
+    axios.post('https://lopardoservicios.com/backend/routes/postCliente.php', clienteDataToSend)
       .then(response => {
         console.log('Cliente creado:', response.data);
         alert('Cliente creado exitosamente');
@@ -124,11 +124,11 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cerrar
-        </Button>
         <Button variant="primary" onClick={handleGuardar}>
           Guardar
+        </Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Cerrar
         </Button>
       </Modal.Footer>
     </Modal>

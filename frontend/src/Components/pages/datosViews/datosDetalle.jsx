@@ -40,11 +40,11 @@ function DatosDetalle() {
     const fetchData = async () => {
       try {
         const [clientes, estados, equipamientos, visitaDetalle, personal] = await Promise.all([
-          axios.get("http://localhost:8081/cliente"),
-          axios.get("http://localhost:8081/estado"),
-          axios.get("http://localhost:8081/equipamiento"),
-          axios.get(`http://localhost:8081/visitadetalle?idDato=${id}`),
-          axios.get("http://localhost:8081/personal")
+          axios.get("https://lopardoservicios.com/backend/routes/getCliente.php"),
+          axios.get("https://lopardoservicios.com/backend/routes/getEstado.php"),
+          axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php"),
+          axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idDato=${id}`),
+          axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
         ]);
 
         setDataCliente(clientes.data);
@@ -72,22 +72,28 @@ function DatosDetalle() {
 
   const visitaActual = dataVisita || {}; // dataVisita es un objeto, no un array
 
-  const IdClienteVisitaActual = visitaActual.IdCliente || '';
+  const IdClienteVisitaActual = visitaActual.IdCliente || '-';
   const clienteActual = dataCliente.find(cliente => cliente.IdCliente === IdClienteVisitaActual) || {};
-  const nombreCliente = clienteActual.Nombre || '';
-  const razonSocial = clienteActual.RazonSocial || '';
-  const direccionCliente = clienteActual.Direccion || '';
-  const dniCliente = clienteActual.DNI || '';
-  const ciudadCliente = clienteActual.Ciudad || '';
-  const telefonoCliente = clienteActual.Telefono || '';
-  const equipamientoCliente = clienteActual.Equipamiento || '';
-  const emailCliente = clienteActual.Email || '';
-  const emailCliente2 = clienteActual.Email2 || '';
+  const nombreCliente = clienteActual.Nombre || '-';
+  const razonSocial = clienteActual.RazonSocial || '-';
+  const direccionCliente = clienteActual.Direccion || '-';
+  const dniCliente = clienteActual.DNI || '-';
+  const ciudadCliente = clienteActual.Ciudad || '-';
+  const telefonoCliente = clienteActual.Telefono || '-';
+  const equipamientoCliente = clienteActual.Equipamiento || '-';
+  const emailCliente = clienteActual.Email || '-';
+  const emailCliente2 = clienteActual.Email2 || '-';
 
   const garantiaVisita = visitaActual.Garantia === 1 ? "Si" : "No";
-  const precioVisita = visitaActual.Precio || '';
+  const precioVisita = visitaActual.Precio || '-';
   const descripcionVisita = visitaActual.Descripcion || '';
-  const formaPago = visitaActual.FormaPago === 1 ? "Transferencia" : "Efectivo";
+  const formaPago = visitaActual.FormaPago === 0 ? "Efectivo" : 
+                  visitaActual.FormaPago === 1 ? "Transferencia" : 
+                  visitaActual.FormaPago === 2 ? "Cheque" : 
+                  "-";
+
+  const NumeroCheque = visitaActual.NumeroCheque || '-';
+  const NumeroFactura = visitaActual.NumeroFactura || '-';
 
   const getPersonalNames = (idPersonalString) => {
     if (!idPersonalString) return '';
@@ -102,7 +108,7 @@ function DatosDetalle() {
     return names.slice(0, -1).join(', ') + ' y ' + names[names.length - 1];
   };
 
-  const nombresPersonalFormateados = getPersonalNames(visitaActual.IdPersonal || '');
+  const nombresPersonalFormateados = getPersonalNames(visitaActual.IdPersonal || '-');
 
   const fechaVisita = visitaActual.Fecha ? parseISO(visitaActual.Fecha) : null;
   const fechaFormateada = fechaVisita && !isNaN(fechaVisita.getTime()) ? format(fechaVisita, 'dd-MM-yyyy') : "-";
@@ -111,18 +117,31 @@ function DatosDetalle() {
   const fechaCobroFormateada = fechaCobro && !isNaN(fechaCobro.getTime()) ? format(fechaCobro, 'dd-MM-yyyy') : "-";
 
   const estadoVisita = dataEstado.find(estado => estado.IdEstado === visitaActual.IdEstado) || {};
-  const estadoVisitaNombre = estadoVisita.Estado || '';
+  const estadoVisitaNombre = estadoVisita.Estado || '-';
 
-  const equipamientoVisita = dataEquipamiento.find(equipamiento => equipamiento.IdEsquipamiento === visitaActual.IdEquipamiento) || {};
-  const equipamientoVisitaNombre = equipamientoVisita.Nombre || '';
+  const getEquipamientoNames = (idEquipamientoString) => {
+    if (typeof idEquipamientoString !== 'string' || !idEquipamientoString.trim()) return ''; 
+    const idEquipamientoArray = idEquipamientoString.split(',');
+    const names = idEquipamientoArray.map(id => {
+      const equipamiento = dataEquipamiento.find(e => e.IdEquipamiento.toString() === id.trim());
+      return equipamiento ? equipamiento.Nombre : '';
+    }).filter(name => name !== '');
+  
+    if (names.length === 0) return '';
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(', ') + ' y ' + names[names.length - 1];
+  };
+  
+  const equipamientoVisitaNombre = getEquipamientoNames(visitaActual.IdEquipamiento || '');
+  
 
   // Revisar el valor de `Adjuntos` y formatear como una lista de URLs
   const adjuntos = visitaActual.Adjuntos ? visitaActual.Adjuntos.split(',').map(url => {
     const trimmedUrl = url.trim();
-    // Eliminar cualquier ocurrencia inicial de 'uploads/' antes de construir la URL final
-    const cleanedUrl = trimmedUrl.replace(/^\/?uploads\/?/, '');
-    return `http://localhost:8081/uploads/${cleanedUrl}`;
+    // No es necesario eliminar 'uploads/' ya que la URL en la base de datos ya está bien formada
+    return `https://lopardoservicios.com${trimmedUrl}`;
   }) : [];
+
 
   const handleImageClick = (url) => {
     setModalImage(url);
@@ -136,7 +155,6 @@ function DatosDetalle() {
 
   return (
     <div className="container">
-      <h1 className="mt-4">Detalles de la Visita</h1>
       <p>ID: {id}</p>
       <div className="form-group detalle-item fecha-estado fecha-visita">
         <label className="font-weight-bold">Fecha: {fechaFormateada} </label>
@@ -205,10 +223,22 @@ function DatosDetalle() {
               <span className="ml-2">${precioVisita}</span>
             </div>
           )}
+
+          <div className="form-group detalle-item">
+            <label className="font-weight-bold">Número de factura: </label>
+            <span>{NumeroFactura}</span>
+          </div>
+
           <div className="form-group detalle-item">
             <label className="font-weight-bold">Forma de pago: </label>
             <span>{formaPago}</span>
           </div>
+
+          <div className="form-group detalle-item">
+            <label className="font-weight-bold">Número de cheque: </label>
+            <span>{NumeroCheque}</span>
+          </div>
+
           <div className="form-group detalle-item">
           <label className="font-weight-bold">Adjuntos: </label>
           <div>

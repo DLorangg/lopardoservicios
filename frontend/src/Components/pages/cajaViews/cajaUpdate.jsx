@@ -17,20 +17,22 @@ export function CajaUpdate() {
     }, []);
 
     const fetchRegistro = () => {
-        axios.get(`http://localhost:8081/caja/${id}`)
-            .then(res => {
-                const { fecha, detalle, ingreso, egreso } = res.data[0];
-                setFormData({
-                    fecha,
-                    detalle,
-                    ingreso,
-                    egreso
-                });
-            })
-            .catch(error => {
-                console.error('Error al obtener el registro:', error);
+        axios.get(`https://lopardoservicios.com/backend/routes/getCajaById.php`, {
+            params: { id: id } 
+        })
+        .then(res => {
+            const { fecha, detalle, ingreso, egreso } = res.data[0];
+            setFormData({
+                fecha,
+                detalle,
+                ingreso,
+                egreso
             });
-    }
+        })
+        .catch(error => {
+            console.error('Error al obtener el registro:', error);
+        });
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,7 +44,7 @@ export function CajaUpdate() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`http://localhost:8081/caja/${id}`, formData)
+        axios.put(`https://lopardoservicios.com/backend/routes/putCaja.php?id=${id}`, formData)
             .then(res => {
                 console.log(res);
                 navigate('/caja');

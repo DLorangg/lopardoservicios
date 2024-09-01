@@ -10,13 +10,13 @@ export function EquipoUpdate() {
   const { id } = useParams();
 
   function fetchEquipamiento() {
-    axios.get("http://localhost:8081/equipamiento")
+    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
       .then(res => setDataEquipamiento(res.data))
       .catch((error) => console.log("Error: ", error));
   }
 
   function fetchEquipamientoDetails() {
-    axios.get(`http://localhost:8081/equipamiento/${id}`)
+    axios.get(`https://lopardoservicios.com/backend/routes/getEquipamientoById/${id}`)
       .then(res => setNombre(res.data.Nombre))
       .catch(error => console.error('Error al obtener los detalles del equipamiento:', error));
   }
@@ -29,7 +29,7 @@ export function EquipoUpdate() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    axios.put(`http://localhost:8081/equipamientoupdate/${id}`, { Nombre })
+    axios.put(`https://lopardoservicios.com/backend/routes/putEquipamiento.php/${id}`, { Nombre })
       .then(res => {
         console.log(res);
         navigate('../equipo');
