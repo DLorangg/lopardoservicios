@@ -24,8 +24,8 @@ export function Clientes() {
 
 export function ClientesList(props) {
   const [dataCliente, setDataCliente] = useState([]);
-  const [sortBy, setSortBy] = useState('IdCliente'); // Columna por defecto para ordenar
-  const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto para ordenar
+  const [sortBy, setSortBy] = useState('Nombre'); // Ordenar por 'Nombre' por defecto
+  const [sortDirection, setSortDirection] = useState('asc'); // Predeterminado a asc
   const [selectedClient, setSelectedClient] = useState(null); // Cliente seleccionado para editar
   const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de edición
   const [showCreateModal, setShowCreateModal] = useState(false); // Estado para mostrar el modal de creación
@@ -58,8 +58,8 @@ export function ClientesList(props) {
 
   // Función para ordenar los datos basados en sortBy y sortDirection
   const sortedDataCliente = [...dataCliente].sort((a, b) => {
-    const columnA = a[sortBy];
-    const columnB = b[sortBy];
+    const columnA = a[sortBy].toLowerCase(); // Convierte a minúsculas para ordenación alfabética
+    const columnB = b[sortBy].toLowerCase();
     if (sortDirection === 'asc') {
       return columnA < columnB ? -1 : 1;
     } else {
@@ -76,7 +76,6 @@ export function ClientesList(props) {
     .catch((error) => {
       console.error("Error al eliminar el cliente:", error);
     });
-
   };
 
   const handleEdit = (cliente) => {
@@ -108,7 +107,12 @@ export function ClientesList(props) {
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '20%' }}>Nombre</th>
+            <th style={{ width: '20%' }}>
+              Nombre{' '}
+              <button onClick={() => sortByColumn('Nombre')} className="btn btn-sm btn-link">
+                {sortDirection === 'asc' ? '⬇️' : '⬆️'} {/* Indicador de dirección de orden */}
+              </button>
+            </th>
             <th style={{ width: '10%' }}>CUIT/CUIL/DNI</th>
             <th style={{ width: '20%' }}>Dirección</th>
             <th style={{ width: '30%' }}>Razón social</th>
@@ -123,7 +127,7 @@ export function ClientesList(props) {
               <td>{cliente.Direccion}</td>
               <td>{cliente.RazonSocial}</td>
               <td>
-                <Link to={`/clientesdetalle/${cliente.IdCliente}`} className="btn btn-secondary btn-sm me-2" >Detalle</Link>
+                <Link to={`/clientesdetalle/${cliente.IdCliente}`} className="btn btn-secondary btn-sm me-2">Detalle</Link>
                 <button onClick={() => handleEdit(cliente)} className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Editar</button>
                 <button
                   className="btn btn-danger btn-sm"
@@ -155,16 +159,5 @@ export function ClientesList(props) {
       />      
       )}
     </>
-  );
-}
-
-export function ClientesForm(props) {
-  // Aquí puedes agregar la lógica para el formulario de creación de clientes
-  return (
-    <div>
-      <h2>Formulario para crear clientes</h2>
-      {/* Implementación del formulario */}
-      <button onClick={() => props.ShowList()} type="button" className="btn btn-outline-primary">Volver a la lista</button>
-    </div>
   );
 }
