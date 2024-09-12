@@ -5,12 +5,13 @@ import { Home } from './Components/pages/home';
 import { Datos } from './Components/pages/datosViews/datos';
 import { DatosUpdate } from './Components/pages/datosViews/datosUpdate';
 import DatosDetalle from './Components/pages/datosViews/datosDetalle';
-import { Equipo } from './Components/pages/equipoViews/equipo';
+import { Clientes } from './Components/pages/clienteViews/cliente';
 import { EquipoUpdate } from './Components/pages/equipoViews/equipoUpdate';
 import { LoginForm } from './Components/LoginForm/LoginForm';
 import { Caja } from './Components/pages/cajaViews/caja';
 import { CajaUpdate } from './Components/pages/cajaViews/cajaUpdate';
 import { Busqueda } from './Components/pages/busquedaViews/busqueda';
+import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -28,7 +29,11 @@ function App() {
       <Routes>
         <Route path='/' element={authenticated ? <Home /> : <Navigate to='/login' replace />} />
         <Route path='/datos' element={authenticated ? <Datos /> : <Navigate to='/login' replace />} />
-        <Route path='/equipo' element={authenticated ? <Equipo /> : <Navigate to='/login' replace />} />
+        <Route path='/cliente' element={authenticated ? <Clientes /> : <Navigate to='/login' replace />} />
+        <Route
+          path='/clientesdetalle/:id'
+          element={authenticated ? <ClienteDetalle /> : <Navigate to='/login' replace />}
+        />
         <Route path='/update/:id' element={authenticated ? <EquipoUpdate /> : <Navigate to='/login' replace />} />
         <Route path='/updatevisita/:id' element={authenticated ? <DatosUpdate /> : <Navigate to='/login' replace />} />
         <Route path='/datosdetalle/:id' element={authenticated ? <DatosDetalle /> : <Navigate to='/login' replace />} />

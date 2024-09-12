@@ -32,8 +32,8 @@ export function Navbar({ setAuthenticated }) {
             <li className={`nav-item ${location.pathname === '/datos' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/datos" id="datos">Visita</Link>
             </li>
-            <li className={`nav-item ${location.pathname === '/equipo' ? 'active' : ''}`}>
-              <Link className="nav-link text-dark" to="/equipo" id="equipo">Equipo</Link>
+            <li className={`nav-item ${location.pathname === '/cliente' ? 'active' : ''}`}>
+              <Link className="nav-link text-dark" to="/cliente" id="cliente">Clientes</Link>
             </li>
             <li className={`nav-item ${location.pathname === '/caja' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/caja" id="caja">Caja</Link>

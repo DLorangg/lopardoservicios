@@ -206,10 +206,6 @@ function DatosDetalle() {
             <span className="ml-2">{nombresPersonalFormateados}</span>
           </div>
           <div className="form-group detalle-item">
-            <label className="font-weight-bold">Equipamiento: </label>
-            <span>{equipamientoVisitaNombre}</span>
-          </div>
-          <div className="form-group detalle-item">
             <label className="font-weight-bold">Descripción de la Visita:</label>
             <span>{descripcionVisita}</span>
           </div>

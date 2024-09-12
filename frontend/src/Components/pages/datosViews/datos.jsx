@@ -122,7 +122,7 @@ export function DatosList(props) {
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '15%' }}>Cliente</th>
+            <th style={{ width: '25%' }}>Cliente</th>
             <th style={{ width: '25%' }}>Dirección</th>
             <th style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '10%' }}>
@@ -135,7 +135,7 @@ export function DatosList(props) {
                 {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
               </button>
             </th>
-            <th style={{ width: '40%', paddingRight: '50px' }}>Acciones</th>
+            <th style={{ width: '30%', paddingRight: '50px' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -294,34 +294,27 @@ export function DatosForm(props) {
   const [fileURLs, setFileURLs] = useState([]);
   const fileInputRef = useRef(null);
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFiles = e.dataTransfer.files;
-    handleFiles(droppedFiles);
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const droppedFiles = Array.from(event.dataTransfer.files);
+    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
   };
   
-  const handleDragOver = (e) => {
-    e.preventDefault();
+  const handleDragOver = (event) => {
+    event.preventDefault();
   };
-  
-  const handleFiles = (selectedFiles) => {
-    const newFiles = [...files];
-  
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      newFiles.push(file);
-    }
-  
-    setFiles(newFiles);
-  };
-  
-  const handleFileInputChange = (e) => {
-    const selectedFiles = e.target.files;
-    handleFiles(selectedFiles);
-  };
-  
+
   const handleOpenFileDialog = () => {
     fileInputRef.current.click();
+  };
+
+  const handleFileInputChange = (event) => {
+    const newFiles = Array.from(event.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  };
+
+  const handleRemoveFile = (fileName) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
   };
   
   const handleUploadFiles = () => {
@@ -409,7 +402,18 @@ export function DatosForm(props) {
       <div className="row">
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
-  
+
+          <label className="col-sm-4 col-form-label">Fecha <span style={{ color: '#001461' }}>*</span></label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                type="date"
+                name="Fecha"
+                onChange={e => setFecha(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            
           <label className="col-sm-4 col-form-label">Cliente <span style={{ color: '#001461' }}>*</span></label>
           <div className="col-sm-8 d-flex flex-column">
             <input
@@ -507,23 +511,6 @@ export function DatosForm(props) {
               />
             </div>
   
-            <label className="col-sm-4 col-form-label">Equipamiento</label>
-            <div className="col-sm-8">
-              <select
-                className="form-control"
-                name="Equipamiento"
-                multiple
-                autoComplete="off"
-                onChange={handleEquipamientoChange} 
-              >
-                {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
-                  <option key={equipamiento.IdEquipamiento} value={equipamiento.IdEquipamiento}>
-                    {equipamiento.Nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-  
             <label className="col-sm-4 col-form-label">Estado <span style={{ color: '#001461' }}>*</span></label>
             <div className="col-sm-8">
               <select
@@ -599,17 +586,6 @@ export function DatosForm(props) {
                   No
                 </label>
               </div>
-            </div>
-  
-            <label className="col-sm-4 col-form-label">Fecha <span style={{ color: '#001461' }}>*</span></label>
-            <div className="col-sm-8">
-              <input
-                className="form-control"
-                type="date"
-                name="Fecha"
-                onChange={e => setFecha(e.target.value)}
-                autoComplete="off"
-              />
             </div>
 
             <label className="col-sm-4 col-form-label">Número de factura</label>
@@ -715,7 +691,10 @@ export function DatosForm(props) {
                   <h2>Archivos seleccionados</h2>
                   <ul>
                     {files.map((file, index) => (
-                      <li key={index}>{file.name}</li>
+                      <li key={index}>
+                        {file.name}
+                        <button onClick={() => handleRemoveFile(file.name)} style={{ marginLeft: '10px', color: 'red' }}>Eliminar</button>
+                      </li>
                     ))}
                   </ul>
                 </div>

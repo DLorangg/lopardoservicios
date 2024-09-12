@@ -31,12 +31,14 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
 
   useEffect(() => {
     if (initialClienteData) {
+      console.log("Datos del cliente a editar:", initialClienteData); // Verifica que los datos están llegando correctamente
       setClienteData({
         ...initialClienteData,
         Equipamiento: initialClienteData.Equipamiento ? initialClienteData.Equipamiento.split(', ') : [],
       });
     }
   }, [initialClienteData]);
+  
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -100,16 +102,6 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
           <Form.Group className="mb-3" controlId="formDireccion">
             <Form.Label>Dirección</Form.Label>
             <Form.Control type="text" name="Direccion" value={clienteData.Direccion} onChange={handleChange} />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formEquipamiento">
-            <Form.Label>Equipamiento</Form.Label>
-            <Form.Control as="select" name="Equipamiento" multiple value={clienteData.Equipamiento} onChange={handleEquipamientoChange}>
-              {equipamientoOptions.map(equipamiento => (
-                <option key={equipamiento.IdEquipamiento} value={equipamiento.Nombre}>
-                  {equipamiento.Nombre}
-                </option>
-              ))}
-            </Form.Control>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formTelefono">
             <Form.Label>Teléfono</Form.Label>

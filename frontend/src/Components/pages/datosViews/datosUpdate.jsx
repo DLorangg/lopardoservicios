@@ -118,6 +118,18 @@ export function DatosUpdate() {
         <div className="col-lg-6 mx-auto">
           <form onSubmit={handleSubmit}>
 
+            <label className="col-sm-4 col-form-label">Fecha</label>
+            <div className="col-sm-8">
+              <input
+                className="form-control"
+                type="date"
+                name="Fecha"
+                onChange={e => setFecha(e.target.value)}
+                value={Fecha} 
+                autoComplete="off"
+              />
+            </div>
+
             <label className="col-sm-4 col-form-label">Descripción</label>
             <div className="col-sm-8">
               <textarea
@@ -127,27 +139,6 @@ export function DatosUpdate() {
                 value={Descripcion}
                 autoComplete="off"
               />
-            </div>
-
-            <label className="col-sm-4 col-form-label">Equipamiento</label>
-            <div className="col-sm-8">
-              <select
-                className="form-control"
-                name="Equipamiento"
-                multiple
-                autoComplete="off"
-                value={IdEquipamiento} 
-                onChange={e => {
-                  const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-                  setIdEquipamiento(selectedOptions);
-                }}
-              >
-                {dataEquipamiento && dataEquipamiento.map((equipamiento) => (
-                  <option key={equipamiento.IdEquipamiento} value={equipamiento.IdEquipamiento}>
-                    {equipamiento.Nombre}
-                  </option>
-                ))}
-              </select>
             </div>
 
             <label className="col-sm-4 col-form-label">Estado</label>
@@ -232,18 +223,6 @@ export function DatosUpdate() {
                   No
                 </label>
               </div>
-            </div>
-
-            <label className="col-sm-4 col-form-label">Fecha</label>
-            <div className="col-sm-8">
-              <input
-                className="form-control"
-                type="date"
-                name="Fecha"
-                onChange={e => setFecha(e.target.value)}
-                value={Fecha} 
-                autoComplete="off"
-              />
             </div>
 
             <label className="col-sm-4 col-form-label">Número de factura</label>

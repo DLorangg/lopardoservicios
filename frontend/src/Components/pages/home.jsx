@@ -19,7 +19,7 @@ export function Home() {
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>LOPARDO SERVICIOS</h2>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Link to="/datos" style={buttonStyle('#001461')}>Visitas</Link>
-        <Link to="/equipo" style={buttonStyle('#140097')}>Equipos</Link>
+        <Link to="/cliente" style={buttonStyle('#140097')}>Clientes</Link>
         <Link to="/caja" style={buttonStyle('#140097')}>Caja</Link>
         <Link to="/busqueda" style={buttonStyle('#001461')}>Búsqueda</Link>
       </div>
