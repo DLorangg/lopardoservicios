@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {ModalComponent} from "../modal"
 import { ModalUpdateComponent } from '../modalUpdate';
 import Rouben from '../../../Assets/Rouben.otf';
+import { useLocation } from  'react-router-dom';
 
 export function Datos() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -28,27 +29,26 @@ export function Datos() {
 export function DatosList(props) {
   const [dataVisita, setDataVisita] = useState([]);
   const [dataCliente, setDataCliente] = useState([]);
-  const [sortBy, setSortBy] = useState('IdVisita'); // Columna por defecto para ordenar
-  const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto para ordenar
+  const [sortBy, setSortBy] = useState('Fecha');
+  const [sortDirection, setSortDirection] = useState('asc');
+  let location = useLocation()
 
   // Función para obtener datos de visitas desde el servidor
   const fetchVisita = () => {
     const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
     axios.get("https://lopardoservicios.com/backend/routes/getVisitas.php", {
-        params: { rol: userRole } // Pasar el rol como parámetro de la consulta
+      params: { rol: userRole } // Pasar el rol como parámetro de la consulta
     })
     .then((response) => {
-        setDataVisita(response.data);
+      setDataVisita(response.data);
     })
     .catch((error) => {
-        console.error("Error fetching data:", error);
+      console.error("Error fetching data:", error);
     });
   };
 
-
-
   // Función para obtener datos de clientes desde el servidor
-  function fetchCliente() {
+  const fetchCliente = () => {
     axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
       .then((response) => {
         setDataCliente(response.data);
@@ -56,40 +56,55 @@ export function DatosList(props) {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }
+  };
 
-  // Función que se ejecuta al montar el componente para cargar datos iniciales
+  // Ejecutar fetch de datos al montar el componente
   useEffect(() => {
     fetchVisita();
     fetchCliente();
   }, []);
 
-  // Función para formatear la fecha
+  // Formatear la fecha para mostrarla en la tabla
   const formatFecha = (fecha) => {
     if (!fecha) return "-";
     const fechaISO = parseISO(fecha);
     if (isNaN(fechaISO.getTime())) {
       return "-";
     } else {
-      return format(fechaISO, 'dd-MM-yyyy'); // Formato deseado para la fecha
+      return format(fechaISO, 'dd-MM-yyyy');
     }
   };
 
-  // Función para cambiar la dirección del ordenamiento
   const toggleSortDirection = () => {
     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  // Función para ordenar los datos por la columna seleccionada
   const sortByColumn = (columnName) => {
-    setSortBy(columnName);
-    toggleSortDirection(); // Cambia automáticamente la dirección del ordenamiento al cambiar la columna
+    if (sortBy === columnName) {
+      toggleSortDirection();
+    } else {
+      setSortBy(columnName);
+      setSortDirection('asc'); // Cada vez que se cambie la columna, el orden comienza desde 'asc' (menor a mayor)
+    }
   };
 
-  // Función para ordenar los datos basados en sortBy y sortDirection
   const sortedDataVisita = [...dataVisita].sort((a, b) => {
     const columnA = a[sortBy];
     const columnB = b[sortBy];
+    
+    if (sortBy === 'Fecha') {
+      const fechaA = parseISO(columnA);
+      const fechaB = parseISO(columnB);
+      
+      if (isNaN(fechaA) || isNaN(fechaB)) return 0; // Si alguna de las fechas es inválida, no ordenar
+      
+      if (sortDirection === 'asc') {
+        return fechaA < fechaB ? -1 : 1;
+      } else {
+        return fechaA > fechaB ? -1 : 1;
+      }
+    }
+  
     if (sortDirection === 'asc') {
       return columnA < columnB ? -1 : 1;
     } else {
@@ -141,15 +156,19 @@ export function DatosList(props) {
         <tbody>
           {sortedDataVisita.map((dato, index) => (
             <tr key={index}>
-              <td style={{ width: '15%' }}>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
+              <td style={{ width: '15%' }}>
+                {dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}
+              </td>
               <td style={{ width: '25%' }}>{dato.Direccion}</td>
-              <td style={{ width: '10%' }}>{dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}</td> {/* Mostrar vacío si Precio es undefined */}
+              <td style={{ width: '10%' }}>
+                {dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}
+              </td>
               <td style={{ width: '40%' }}>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: '40%', whiteSpace: "nowrap" }}>
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
                   Detalle
                 </Link>
-                <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
+                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'datos' }} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
                 <button
@@ -168,7 +187,6 @@ export function DatosList(props) {
     </>
   );
 }
-
 
 export function DatosForm(props) {
   const [dataCliente, setDataCliente] = useState([]);

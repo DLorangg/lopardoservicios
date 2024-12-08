@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
-import { Form, Link, useNavigate, useParams } from 'react-router-dom';
+import { Form, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 export function DatosUpdate() {
   const [dataVisita, setDataVisita] = useState([]);
@@ -9,6 +9,7 @@ export function DatosUpdate() {
   const [dataEquipamiento, setDataEquipamiento] = useState([]);
 
   const { id } = useParams();
+  let location = useLocation();
   const navigate = useNavigate();
   
   // Estado para los campos del formulario
@@ -55,23 +56,21 @@ export function DatosUpdate() {
       .then(res => {
         setDataVisita(res.data);
         // Buscar la visita actual y actualizar el estado
+        console.log("Datos recibidos:", res.data);
         const currentVisit = res.data.find(visita => visita.IdVisita === parseInt(id));
+        console.log("Visita actual:", currentVisit);
         if (currentVisit) {
           setDescripcion(currentVisit.Descripcion);
-          setIdEquipamiento(currentVisit.IdEquipamiento.split(',')); // Convertir la cadena de IDs en un array
+          setIdEquipamiento(currentVisit.IdEquipamiento ? currentVisit.IdEquipamiento.split(',') : []);
           setIdEstado(currentVisit.IdEstado);
           setPrecio(currentVisit.Precio);
           setGarantia(currentVisit.Garantia);
-          setFecha(new Date(currentVisit.Fecha).toISOString().split('T')[0]);
+          setFecha(currentVisit.Fecha ? new Date(currentVisit.Fecha).toISOString().split('T')[0] : '');
           setFormaPago(currentVisit.FormaPago);
           setNumeroCheque(currentVisit.NumeroCheque);
           setNumeroFactura(currentVisit.NumeroFactura);
-          const fechaCobro = currentVisit.FechaCobro
-            ? new Date(currentVisit.FechaCobro).toISOString().split('T')[0]
-            : ''; 
-  
-          setFechaCobro(fechaCobro);
-          setIdPersonal(currentVisit.IdPersonal.split(',')); // Convertir la cadena de IDs en un array
+          setFechaCobro(currentVisit.FechaCobro ? new Date(currentVisit.FechaCobro).toISOString().split('T')[0] : '');
+          setIdPersonal(currentVisit.IdPersonal ? currentVisit.IdPersonal.split(',') : []);
         }
       })
       .catch(error => console.log("Error: ", error));
@@ -79,34 +78,35 @@ export function DatosUpdate() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+   
     const payload = {
-      Descripcion,
-      IdEquipamiento: Array.isArray(IdEquipamiento) ? IdEquipamiento.join(',') : '',
-      IdEstado,
-      Precio,
-      Garantia,
-      Fecha,
-      IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
-      FormaPago,
-      FechaCobro,
-      NumeroCheque,
-      NumeroFactura,
+        // Asegúrate de que estas variables estén definidas
+        Descripcion,
+        IdEquipamiento: Array.isArray(IdEquipamiento) ? IdEquipamiento.join(',') : '',
+        IdEstado,
+        Precio,
+        Garantia,
+        Fecha,
+        IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
+        FormaPago,
+        FechaCobro,
+        NumeroCheque,
+        NumeroFactura,
     };
-  
-    console.log("Payload para la actualización:", payload);
-  
+
     axios.put(`https://lopardoservicios.com/backend/routes/putVisita.php?id=${id}`, payload, {
-      headers: {
-        'Content-Type': 'application/json' // Asegúrate de que el tipo de contenido sea JSON
-      }
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .then(res => {
-      console.log("Respuesta del servidor:", res);
-      navigate('../datos');
+        console.log("Respuesta del servidor:", res);
+        console.log("Estado de la ubicación:", location.state); // Para depuración
+        const redirectTo = location.state?.from === 'busqueda' ? '../busqueda' : '../datos'; 
+        navigate(redirectTo);
     })
     .catch(error => {
-      console.error('Error al actualizar la visita:', error);
+        console.error('Error al actualizar la visita:', error);
     });
   };
 
@@ -313,7 +313,13 @@ export function DatosUpdate() {
                 <button type="submit" className="btn btn-primary btn-sm me-3">Guardar</button>
               </div>
               <div className="col-sm-4 d-grid">
-                <Link to={`../datos`} type="button" className="btn btn-danger me-2">Cancelar</Link>
+              <Link 
+                to={location.state?.from === 'busqueda' ? '../busqueda' : '../datos'} 
+                type="button" 
+                className="btn btn-danger me-2"
+              >
+                Cancelar
+              </Link>
               </div>
             </div>
           </form>

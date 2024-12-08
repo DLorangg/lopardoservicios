@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import Rouben from '../../../Assets/Rouben.otf';
+import { useLocation } from  'react-router-dom';
 
 export function Busqueda() {
   const [content, setContent] = useState(<BusquedaList ShowForm={ShowForm} />);
@@ -23,10 +24,11 @@ export function Busqueda() {
 }
 
 export function BusquedaList(props) {
+  let location = useLocation()
   const [dataVisita, setDataVisita] = useState([]);
   const [dataCliente, setDataCliente] = useState([]);
-  const [sortBy, setSortBy] = useState('IdVisita');
-  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortBy, setSortBy] = useState('Fecha'); // Columna por defecto para ordenar por fecha
+  const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto ascendente (viejas a nuevas)
   const [filters, setFilters] = useState({
     fechaCobro: '',
     fecha: '',
@@ -66,6 +68,8 @@ export function BusquedaList(props) {
   useEffect(() => {
     fetchVisita();
     fetchCliente();
+    setSortBy('Fecha');
+    setSortDirection('asc');
   }, [filters]);
 
   const formatFecha = (fecha) => {
@@ -83,19 +87,38 @@ export function BusquedaList(props) {
   };
 
   const sortByColumn = (columnName) => {
-    setSortBy(columnName);
-    toggleSortDirection();
+    if (sortBy === columnName) {
+      toggleSortDirection();
+    } else {
+      setSortBy(columnName);
+      setSortDirection('asc'); // Cada vez que se cambie la columna, el orden comienza desde 'asc' (menor a mayor)
+    }
   };
 
   const sortedDataVisita = [...dataVisita].sort((a, b) => {
     const columnA = a[sortBy];
     const columnB = b[sortBy];
+    
+    if (sortBy === 'Fecha') {
+      const fechaA = parseISO(columnA);
+      const fechaB = parseISO(columnB);
+      
+      if (isNaN(fechaA) || isNaN(fechaB)) return 0; // Si alguna de las fechas es inválida, no ordenar
+      
+      if (sortDirection === 'asc') {
+        return fechaA < fechaB ? -1 : 1;
+      } else {
+        return fechaA > fechaB ? -1 : 1;
+      }
+    }
+  
     if (sortDirection === 'asc') {
       return columnA < columnB ? -1 : 1;
     } else {
       return columnA > columnB ? -1 : 1;
     }
   });
+  
 
   const handleDelete = (id) => {
     axios.delete(`https://lopardoservicios.com/backend/routes/deleteVisita.php/${id}`)
@@ -200,7 +223,7 @@ export function BusquedaList(props) {
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
                   Detalle
                 </Link>
-                <Link to={`/updatevisita/${dato.IdVisita}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
+                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'busqueda' }} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
                   Editar
                 </Link>
                 <button
@@ -219,3 +242,4 @@ export function BusquedaList(props) {
     </>
   );
 }
+
