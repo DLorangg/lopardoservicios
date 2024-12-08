@@ -62,6 +62,8 @@ export function DatosList(props) {
   useEffect(() => {
     fetchVisita();
     fetchCliente();
+    setSortBy('Fecha');
+    setSortDirection('desc');
   }, []);
 
   // Formatear la fecha para mostrarla en la tabla
@@ -89,26 +91,21 @@ export function DatosList(props) {
   };
 
   const sortedDataVisita = [...dataVisita].sort((a, b) => {
-    const columnA = a[sortBy];
-    const columnB = b[sortBy];
-    
+    const fechaA = parseISO(a[sortBy]);
+    const fechaB = parseISO(b[sortBy]);
+  
     if (sortBy === 'Fecha') {
-      const fechaA = parseISO(columnA);
-      const fechaB = parseISO(columnB);
-      
-      if (isNaN(fechaA) || isNaN(fechaB)) return 0; // Si alguna de las fechas es inválida, no ordenar
-      
-      if (sortDirection === 'asc') {
-        return fechaA < fechaB ? -1 : 1;
-      } else {
-        return fechaA > fechaB ? -1 : 1;
-      }
+      if (isNaN(fechaA) || isNaN(fechaB)) return 0; // Si las fechas son inválidas, no ordenar
+  
+      // Orden descendente: más recientes primero
+      return sortDirection === 'asc' ? fechaA - fechaB : fechaB - fechaA;
     }
   
+    // Para otras columnas, orden estándar
     if (sortDirection === 'asc') {
-      return columnA < columnB ? -1 : 1;
+      return a[sortBy] < b[sortBy] ? -1 : 1;
     } else {
-      return columnA > columnB ? -1 : 1;
+      return a[sortBy] > b[sortBy] ? -1 : 1;
     }
   });
 
