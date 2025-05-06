@@ -134,9 +134,6 @@ export function DatosList(props) {
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '25%' }}>Cliente</th>
-            <th style={{ width: '25%' }}>Dirección</th>
-            <th style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '10%' }}>
               Fecha{' '}
               <button
@@ -147,20 +144,23 @@ export function DatosList(props) {
                 {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
               </button>
             </th>
+            <th style={{ width: '25%' }}>Cliente</th>
+            <th style={{ width: '30%' }}>Dirección</th>
+            <th style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '30%', paddingRight: '50px' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {sortedDataVisita.map((dato, index) => (
             <tr key={index}>
+              <td style={{ width: '10%' }}>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: '15%' }}>
                 {dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}
               </td>
-              <td style={{ width: '25%' }}>{dato.Direccion}</td>
+              <td style={{ width: '30%' }}>{dato.Direccion}</td>
               <td style={{ width: '10%' }}>
                 {dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}
               </td>
-              <td style={{ width: '40%' }}>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: '40%', whiteSpace: "nowrap" }}>
                 <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
                   Detalle

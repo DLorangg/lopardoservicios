@@ -335,39 +335,78 @@ app.put('/visitaupdate/:id', (req, res) => {
     const visitaData = req.body;
     const { id } = req.params;
   
-    // Log para verificar los datos recibidos
     console.log("Datos recibidos para actualizar visita:", visitaData);
   
-    // Asigna un valor predeterminado a IdEquipamiento si está vacío
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ error: "ID inválido" });
+    }
+  
     const idEquipamiento = visitaData.IdEquipamiento || null;
+    const nuevosAdjuntosRaw = visitaData.IdAdjunto?.trim();
+    const nuevosNombresAdjuntos = nuevosAdjuntosRaw ? nuevosAdjuntosRaw.split(',') : [];
   
-    const sqlVisita = `
-        UPDATE visita
-        SET Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ?, IdPersonal = ?
-        WHERE IdVisita = ?
-    `;
-  
-    const values = [
-        visitaData.Descripcion,
-        idEquipamiento,
-        visitaData.IdEstado,
-        visitaData.Precio,
-        visitaData.Garantia,
-        visitaData.Fecha,
-        visitaData.FormaPago,
-        visitaData.FechaCobro,
-        visitaData.IdPersonal,
-        id
-    ];
-  
-    db.query(sqlVisita, values, (err, data) => {
-        if (err) {
-            console.error("Error al actualizar visita:", err);
-            return res.status(500).json({ error: "Error interno del servidor al actualizar visita", details: err });
-        }
-        return res.json({ success: true, message: "Visita actualizada exitosamente", data });
+    // Función para insertar los nuevos adjuntos
+    const insertAdjuntoPromises = nuevosNombresAdjuntos.map((fileName, index) => {
+      return new Promise((resolve, reject) => {
+        const idAdjunto = `ADJ${Date.now() + index}`;
+        const sqlAdjunto = "INSERT INTO adjunto (IdAdjunto, URL) VALUES (?, ?)";
+        db.query(sqlAdjunto, [idAdjunto, fileName.trim()], (err) => {
+          if (err) return reject(err);
+          resolve(idAdjunto);
+        });
+      });
     });
+  
+    // Primero se insertan los nuevos adjuntos (si hay)
+    Promise.all(insertAdjuntoPromises)
+      .then(nuevosIdAdjuntos => {
+        // Buscar los adjuntos ya existentes de la visita
+        const sqlGetAdjuntos = "SELECT IdAdjunto FROM visita WHERE IdVisita = ?";
+        db.query(sqlGetAdjuntos, [id], (err, result) => {
+          if (err) {
+            console.error("Error al obtener adjuntos actuales:", err);
+            return res.status(500).json({ error: "Error al obtener adjuntos actuales", details: err });
+          }
+  
+          const adjuntosExistentes = result[0]?.IdAdjunto || "";
+          const todosAdjuntos = [...adjuntosExistentes.split(','), ...nuevosIdAdjuntos].filter(Boolean).join(',');
+  
+          // Actualizar la visita con todos los campos incluyendo adjuntos
+          const sqlUpdate = `
+            UPDATE visita
+            SET Descripcion = ?, IdEquipamiento = ?, IdEstado = ?, Precio = ?, Garantia = ?, Fecha = ?, FormaPago = ?, FechaCobro = ?, IdPersonal = ?, IdAdjunto = ?
+            WHERE IdVisita = ?
+          `;
+  
+          const values = [
+            visitaData.Descripcion,
+            idEquipamiento,
+            visitaData.IdEstado,
+            visitaData.Precio,
+            visitaData.Garantia,
+            visitaData.Fecha,
+            visitaData.FormaPago,
+            visitaData.FechaCobro,
+            visitaData.IdPersonal,
+            todosAdjuntos,
+            id
+          ];
+  
+          db.query(sqlUpdate, values, (err, data) => {
+            if (err) {
+              console.error("Error al actualizar visita:", err);
+              return res.status(500).json({ error: "Error interno del servidor al actualizar visita", details: err });
+            }
+            return res.json({ success: true, message: "Visita actualizada exitosamente", data });
+          });
+        });
+      })
+      .catch(err => {
+        console.error("Error al insertar nuevos adjuntos:", err);
+        return res.status(500).json({ error: "Error al agregar nuevos adjuntos", details: err });
+      });
   });
+  
   
 
 app.delete('/equipamiento/:id', (req, res) => {
@@ -384,23 +423,25 @@ app.delete('/equipamiento/:id', (req, res) => {
 });
 
 app.post('/visitapost', (req, res) => {
-    const visitaData = req.body;    
-    
-    // Log para verificar los datos recibidos
+    const visitaData = req.body;
+  
     console.log("Datos recibidos para crear visita:", visitaData);
   
-    // Asigna un valor predeterminado a IdEquipamiento si está vacío
-    const idEquipamiento = visitaData.IdEquipamiento || null;   
+    // Validación básica
+    if (!visitaData.IdCliente || !visitaData.Ciudad || !visitaData.Direccion || !visitaData.Fecha || !visitaData.IdPersonal || !visitaData.IdEstado) {
+      return res.status(400).json({ error: "Faltan campos obligatorios (marcados con *)" });
+    }
   
-    // Procesa los adjuntos
-    const insertAdjuntoPromises = visitaData.IdAdjunto.split(',').map((fileName, index) => {
+    const idEquipamiento = visitaData.IdEquipamiento || null;
+    const adjuntoRaw = visitaData.IdAdjunto?.trim();
+    const nombresAdjuntos = adjuntoRaw ? adjuntoRaw.split(',') : [];
+  
+    const insertAdjuntoPromises = nombresAdjuntos.map((fileName, index) => {
       return new Promise((resolve, reject) => {
-        const idAdjunto = `ADJ${Date.now() + index}`; // Generar un ID único
+        const idAdjunto = `ADJ${Date.now() + index}`;
         const sqlAdjunto = "INSERT INTO adjunto (IdAdjunto, URL) VALUES (?, ?)";
-        db.query(sqlAdjunto, [idAdjunto, fileName.trim()], (err, result) => {
-          if (err) {
-            return reject(err);
-          }
+        db.query(sqlAdjunto, [idAdjunto, fileName.trim()], (err) => {
+          if (err) return reject(err);
           resolve(idAdjunto);
         });
       });
@@ -442,6 +483,7 @@ app.post('/visitapost', (req, res) => {
         return res.status(500).json({ error: "Error interno del servidor al crear adjuntos", details: err });
       });
   });
+  
 
 
 app.delete('/deletevisita/:id', (req, res) => {

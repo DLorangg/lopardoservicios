@@ -74,8 +74,8 @@ export function DatosUpdate() {
         }
       })
       .catch(error => console.log("Error: ", error));
-  }, [id]);  
-
+  }, [id]); 
+  
   const handleSubmit = (event) => {
     event.preventDefault();
    

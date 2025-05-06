@@ -96,25 +96,38 @@ export function BusquedaList(props) {
   };
 
   const sortedDataVisita = [...dataVisita].sort((a, b) => {
-    const fechaA = parseISO(a[sortBy]);
-    const fechaB = parseISO(b[sortBy]);
-  
     if (sortBy === 'Fecha') {
-      if (isNaN(fechaA) || isNaN(fechaB)) return 0; // Si las fechas son inválidas, no ordenar
+      const fechaA = parseISO(a.Fecha);
+      const fechaB = parseISO(b.Fecha);
   
-      // Orden descendente: más recientes primero
+      if (isNaN(fechaA) || isNaN(fechaB)) return 0;
+  
       return sortDirection === 'asc' ? fechaA - fechaB : fechaB - fechaA;
     }
   
-    // Para otras columnas, orden estándar
+    if (sortBy === 'Nombre') {
+      const nombreA = (dataCliente.find(cliente => cliente.IdCliente === a.IdCliente)?.Nombre || '').toLowerCase();
+      const nombreB = (dataCliente.find(cliente => cliente.IdCliente === b.IdCliente)?.Nombre || '').toLowerCase();
+  
+      if (nombreA < nombreB) return sortDirection === 'asc' ? -1 : 1;
+      if (nombreA > nombreB) return sortDirection === 'asc' ? 1 : -1;
+  
+      // Si los nombres son iguales, ordenamos por fecha
+      const fechaA = parseISO(a.Fecha);
+      const fechaB = parseISO(b.Fecha);
+  
+      if (isNaN(fechaA) || isNaN(fechaB)) return 0;
+  
+      return sortDirection === 'asc' ? fechaA - fechaB : fechaB - fechaA;
+    }
+  
+    // Otros campos genéricos
     if (sortDirection === 'asc') {
       return a[sortBy] < b[sortBy] ? -1 : 1;
     } else {
       return a[sortBy] > b[sortBy] ? -1 : 1;
     }
   });
-  
-  
   
 
   const handleDelete = (id) => {
@@ -181,19 +194,33 @@ export function BusquedaList(props) {
           <label className="form-label">Cliente</label>
           <select name="idCliente" className="form-select" onChange={handleFilterChange} value={filters.idCliente}>
             <option value="">Todos</option>
-            {dataCliente.map(cliente => (
-              <option key={cliente.IdCliente} value={cliente.IdCliente}>
-                {cliente.Nombre}
-              </option>
+            {[...dataCliente]
+              .sort((a, b) => a.Nombre.trim().toLowerCase().localeCompare(b.Nombre.trim().toLowerCase()))
+              .map(cliente => (
+                <option key={cliente.IdCliente} value={cliente.IdCliente}>
+                  {cliente.Nombre}
+                </option>
             ))}
           </select>
+
         </div>
       </div>
       <button onClick={() => setFilters({ fechaCobro: '', fecha: '', idEstado: '', idCliente: '' })} type="button" className="btn btn-outline-secondary mb-3">Limpiar Filtros</button>
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '15%' }}>Cliente</th>
+          <th style={{ width: '15%' }}>
+            Cliente{' '}
+            <button
+              type="button"
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => sortByColumn('Nombre')}
+            >
+              {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
+            </button>
+          </th>
+
+
             <th style={{ width: '25%' }}>Dirección</th>
             <th style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '10%' }}>
