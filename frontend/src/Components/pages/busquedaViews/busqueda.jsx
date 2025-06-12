@@ -31,22 +31,26 @@ export function BusquedaList(props) {
   const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto ascendente (viejas a nuevas)
   const [filters, setFilters] = useState({
     fechaCobro: '',
-    fecha: '',
+    fechaDesde: '',
+    fechaHasta: '',
     idEstado: '',
     idCliente: ''
   });
 
+
   const fetchVisita = () => {
     const userRole = localStorage.getItem('userRole');
     axios.get("https://lopardoservicios.com/backend/routes/getVisitasFiltradas.php", {
-        params: { 
-          rol: userRole,
-          fechaCobro: filters.fechaCobro,
-          fecha: filters.fecha,
-          idEstado: filters.idEstado,
-          idCliente: filters.idCliente
-        }
+      params: { 
+        rol: userRole,
+        fechaCobro: filters.fechaCobro,
+        fechaDesde: filters.fechaDesde,
+        fechaHasta: filters.fechaHasta,
+        idEstado: filters.idEstado,
+        idCliente: filters.idCliente
+      }
     })
+
     .then((response) => {
         setDataVisita(response.data);
     })
@@ -170,15 +174,26 @@ export function BusquedaList(props) {
           />
         </div>
         <div className="col-md-3">
-          <label className="form-label">Fecha</label>
+          <label className="form-label">Desde</label>
           <input
             type="date"
-            name="fecha"
+            name="fechaDesde"
             className="form-control"
-            value={filters.fecha}
+            value={filters.fechaDesde}
             onChange={handleFilterChange}
           />
         </div>
+        <div className="col-md-3">
+          <label className="form-label">Hasta</label>
+          <input
+            type="date"
+            name="fechaHasta"
+            className="form-control"
+            value={filters.fechaHasta}
+            onChange={handleFilterChange}
+          />
+        </div>
+
         <div className="col-md-3">
           <label className="form-label">Estado</label>
           <select name="idEstado" className="form-select" onChange={handleFilterChange} value={filters.idEstado}>
@@ -205,7 +220,14 @@ export function BusquedaList(props) {
 
         </div>
       </div>
-      <button onClick={() => setFilters({ fechaCobro: '', fecha: '', idEstado: '', idCliente: '' })} type="button" className="btn btn-outline-secondary mb-3">Limpiar Filtros</button>
+      <button
+        onClick={() => setFilters({ fechaCobro: '', fechaDesde: '', fechaHasta: '', idEstado: '', idCliente: '' })}
+        type="button"
+        className="btn btn-outline-secondary mb-3"
+      >
+        Limpiar Filtros
+      </button>
+
       <table className="table">
         <thead>
           <tr>
