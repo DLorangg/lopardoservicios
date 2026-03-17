@@ -306,7 +306,6 @@ export function DatosForm(props) {
   }
 
   const [files, setFiles] = useState([]);
-  const [fileURLs, setFileURLs] = useState([]);
   const fileInputRef = useRef(null);
 
   const handleDrop = (event) => {
@@ -331,29 +330,11 @@ export function DatosForm(props) {
   const handleRemoveFile = (fileName) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
   };
-  
-  const handleUploadFiles = () => {
-    const formData = new FormData();
-    files.forEach(file => {
-        formData.append('files[]', file); // Importante usar 'files[]' en lugar de 'files' para PHP
-    });
 
-    return axios.post('https://lopardoservicios.com/backend/routes/upload.php', formData)
-        .then(response => {
-            const fileURLs = response.data.files; // Asegúrate de que `files` sea el nombre de la propiedad
-            setFileURLs(fileURLs);
-            return fileURLs;
-        })
-        .catch(error => {
-            console.error('Error uploading files:', error);
-            throw error; // Propagar el error para manejarlo en `handleSubmit`
-        });
-  };
-  
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     // Verificar campos obligatorios
     if (!IdCliente || !Ciudad || !Direccion || !IdEstado || !IdPersonal.length || !Precio || !Fecha) {
       alert('Por favor, completa todos los campos obligatorios.');
@@ -365,50 +346,49 @@ export function DatosForm(props) {
       alert('Por favor, selecciona al menos un personal.');
       return;
     }
-  
-    // Verificar que las fechas sean válidas
-    const formattedFecha = Fecha ? new Date(Fecha).toISOString().split('T')[0] : null;
-    const formattedFechaCobro = FechaCobro ? new Date(FechaCobro).toISOString().split('T')[0] : null;
-    
-    // Si no hay archivos seleccionados, se salta la subida de archivos
-    const handleFormSubmission = (uploadedFileURLs = []) => {
-      const payload = {
-        IdCliente,
-        Ciudad,
-        Direccion,
-        Descripcion,
-        IdEquipamiento: IdEquipamiento.length > 0 ? IdEquipamiento.join(',') : null,
-        IdEstado,
-        IdPersonal: IdPersonal.join(','),
-        Precio,
-        Garantia,
-        Fecha: formattedFecha,
-        FormaPago,
-        FechaCobro: formattedFechaCobro,
-        IdAdjunto: uploadedFileURLs.join(',') || null, // Si no hay imágenes, enviar null
-        NumeroFactura,
-        NumeroCheque  
-      };
-      
-      console.log("Datos que se envían al PHP:", payload);
-      
-      axios.post('https://lopardoservicios.com/backend/routes/createVisita.php', payload)
-      .then(visitaResponse => {
-        console.log(visitaResponse);
-        navigate(props.ShowList());
-      })
-      .catch(error => console.error('Error:', error));
-    };
-  
-    // Si hay archivos seleccionados, subirlos primero
-    if (files.length > 0) {
-      handleUploadFiles()
-        .then(uploadedFileURLs => handleFormSubmission(uploadedFileURLs))
-        .catch(error => console.error('Error:', error));
-    } else {
-      // Si no hay archivos, proceder directamente a la creación de la visita
-      handleFormSubmission();
+
+    const formData = new FormData();
+
+    // Append form fields
+    formData.append('IdCliente', IdCliente);
+    formData.append('Ciudad', Ciudad);
+    formData.append('Direccion', Direccion);
+    formData.append('Descripcion', Descripcion);
+    formData.append('IdEquipamiento', IdEquipamiento.length > 0 ? IdEquipamiento.join(',') : '');
+    formData.append('IdEstado', IdEstado);
+    formData.append('IdPersonal', IdPersonal.join(','));
+    formData.append('Precio', Precio);
+    formData.append('Garantia', Garantia);
+    formData.append('Fecha', Fecha ? new Date(Fecha).toISOString().split('T')[0] : '');
+    formData.append('FormaPago', FormaPago);
+    formData.append('FechaCobro', FechaCobro ? new Date(FechaCobro).toISOString().split('T')[0] : '');
+    formData.append('NumeroFactura', NumeroFactura);
+    formData.append('NumeroCheque', NumeroCheque);
+
+    // Append files
+    files.forEach(file => {
+      formData.append('adjuntos[]', file);
+    });
+
+    console.log("Datos que se envían al PHP (FormData):");
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
     }
+    
+    axios.post('https://lopardoservicios.com/backend/routes/createVisita.php', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then(response => {
+      console.log(response);
+      alert('Visita creada exitosamente');
+      props.ShowList(); // Navigate back to the list
+    })
+    .catch(error => {
+      console.error('Error al crear la visita:', error);
+      alert('Error al crear la visita. ' + (error.response?.data?.message || ''));
+    });
   };  
   
   return (

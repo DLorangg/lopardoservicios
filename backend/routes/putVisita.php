@@ -1,257 +1,151 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 include '../db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    // Obtener datos JSON y decodificarlos
-    $input = file_get_contents("php://input");
-    $visitaData = json_decode($input, true);
+// Handle pre-flight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
 
-    $id = $_GET['id'];
+// We use POST to handle multipart/form-data
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['error' => 'Method not allowed.']);
+    exit;
+}
 
-    // Log para verificar los datos recibidos
-    error_log("Datos recibidos para actualizar visita: " . json_encode($visitaData));
-    error_log("ID recibido para actualización: " . $id);
+$idVisita = $_GET['idVisita'] ?? null;
+if (!$idVisita) {
+    http_response_code(400);
+    echo json_encode(['error' => 'ID de visita no proporcionado.']);
+    exit;
+}
 
-    // Preparar la consulta SQL con campos opcionales
-    $sqlVisita = "UPDATE visita SET ";
-    $fields = [];
-    $values = [];
+try {
+    // Begin transaction
+    $pdo->beginTransaction();
 
-    // Construir la consulta dinámica con los campos proporcionados
-    if (isset($visitaData['Descripcion'])) {
-        $fields[] = "Descripcion = :descripcion";
-        $values[':descripcion'] = $visitaData['Descripcion'];
-    }
-    if (isset($visitaData['IdEquipamiento']) && $visitaData['IdEquipamiento'] !== '') {
-        $fields[] = "IdEquipamiento = :idEquipamiento";
-        $values[':idEquipamiento'] = $visitaData['IdEquipamiento'];
-    } else {
-        $fields[] = "IdEquipamiento = NULL";
-    }
-    if (isset($visitaData['IdEstado'])) {
-        $fields[] = "IdEstado = :idEstado";
-        $values[':idEstado'] = $visitaData['IdEstado'];
-    }
-    if (isset($visitaData['Precio'])) {
-        $fields[] = "Precio = :precio";
-        $values[':precio'] = $visitaData['Precio'];
-    }
-    if (isset($visitaData['Garantia'])) {
-        $fields[] = "Garantia = :garantia";
-        $values[':garantia'] = $visitaData['Garantia'];
-    }
-    if (isset($visitaData['Fecha'])) {
-        $fields[] = "Fecha = :fecha";
-        $values[':fecha'] = $visitaData['Fecha'];
-    }
-    if (isset($visitaData['FormaPago'])) {
-        $fields[] = "FormaPago = :formaPago";
-        $values[':formaPago'] = $visitaData['FormaPago'];
-    }
-    if (isset($visitaData['FechaCobro']) && $visitaData['FechaCobro'] !== '') {
-        $fields[] = "FechaCobro = :fechaCobro";
-        $values[':fechaCobro'] = $visitaData['FechaCobro'];
-    } else {
-        $fields[] = "FechaCobro = NULL";
-    }
-    if (isset($visitaData['IdPersonal']) && $visitaData['IdPersonal'] !== '') {
-        $fields[] = "IdPersonal = :idPersonal";
-        $values[':idPersonal'] = $visitaData['IdPersonal'];
-    } else {
-        $fields[] = "IdPersonal = NULL";
-    }
-    // Añadir Número de Factura
-    if (isset($visitaData['NumeroFactura'])) {
-        $fields[] = "NumeroFactura = :numeroFactura";
-        $values[':numeroFactura'] = $visitaData['NumeroFactura'];
-    }
-    // Añadir Número de Cheque
-    if (isset($visitaData['NumeroCheque'])) {
-        $fields[] = "NumeroCheque = :numeroCheque";
-        $values[':numeroCheque'] = $visitaData['NumeroCheque'];
+    // --- 1. Update Visita Details ---
+    $sqlVisita = "
+        UPDATE visita SET 
+            Descripcion = :Descripcion,
+            IdEquipamiento = :IdEquipamiento,
+            IdEstado = :IdEstado,
+            Precio = :Precio,
+            Garantia = :Garantia,
+            Fecha = :Fecha,
+            IdPersonal = :IdPersonal,
+            FormaPago = :FormaPago,
+            FechaCobro = :FechaCobro,
+            NumeroCheque = :NumeroCheque,
+            NumeroFactura = :NumeroFactura
+        WHERE IdVisita = :IdVisita
+    ";
+
+    $stmtVisita = $pdo->prepare($sqlVisita);
+
+    // Bind parameters from $_POST
+    $stmtVisita->bindValue(':Descripcion', $_POST['Descripcion'] ?? null);
+    $stmtVisita->bindValue(':IdEquipamiento', !empty($_POST['IdEquipamiento']) ? $_POST['IdEquipamiento'] : null);
+    $stmtVisita->bindValue(':IdEstado', $_POST['IdEstado'] ?? null);
+    $stmtVisita->bindValue(':Precio', $_POST['Precio'] ?? null);
+    $stmtVisita->bindValue(':Garantia', isset($_POST['Garantia']) ? (int)$_POST['Garantia'] : null);
+    $stmtVisita->bindValue(':Fecha', !empty($_POST['Fecha']) ? $_POST['Fecha'] : null);
+    $stmtVisita->bindValue(':IdPersonal', $_POST['IdPersonal'] ?? null);
+    $stmtVisita->bindValue(':FormaPago', isset($_POST['FormaPago']) ? (int)$_POST['FormaPago'] : null);
+    $stmtVisita->bindValue(':FechaCobro', !empty($_POST['FechaCobro']) ? $_POST['FechaCobro'] : null);
+    $stmtVisita->bindValue(':NumeroCheque', $_POST['NumeroCheque'] ?? null);
+    $stmtVisita->bindValue(':NumeroFactura', $_POST['NumeroFactura'] ?? null);
+    $stmtVisita->bindValue(':IdVisita', $idVisita, PDO::PARAM_INT);
+
+    $stmtVisita->execute();
+
+    // --- 2. Handle Attachments to Delete ---
+    if (isset($_POST['adjuntos_a_eliminar'])) {
+        $adjuntosParaEliminar = json_decode($_POST['adjuntos_a_eliminar'], true);
+
+        if (is_array($adjuntosParaEliminar)) {
+            $sqlSelectAdjunto = "SELECT URL FROM adjunto WHERE IdAdjunto = :IdAdjunto";
+            $stmtSelectAdjunto = $pdo->prepare($sqlSelectAdjunto);
+
+            $sqlDeleteAdjunto = "DELETE FROM adjunto WHERE IdAdjunto = :IdAdjunto";
+            $stmtDeleteAdjunto = $pdo->prepare($sqlDeleteAdjunto);
+
+            foreach ($adjuntosParaEliminar as $idAdjunto) {
+                // Get file path
+                $stmtSelectAdjunto->execute([':IdAdjunto' => $idAdjunto]);
+                $adjunto = $stmtSelectAdjunto->fetch(PDO::FETCH_ASSOC);
+
+                if ($adjunto) {
+                    // Delete file from server
+                    $filePath = '../../' . ltrim($adjunto['URL'], '/');
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+
+                    // Delete from database
+                    $stmtDeleteAdjunto->execute([':IdAdjunto' => $idAdjunto]);
+                }
+            }
+        }
     }
 
-    // Completar la consulta SQL
-    $sqlVisita .= implode(", ", $fields) . " WHERE IdVisita = :id";
-    $values[':id'] = $id;
+    // --- 3. Handle New File Uploads ---
+    if (!empty($_FILES['adjuntos'])) {
+        $uploadDir = '../../uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
 
-    $stmt = $pdo->prepare($sqlVisita);
+        $sqlAdjunto = "
+            INSERT INTO adjunto (IdVisita, URL, NombreOriginal, Tipo)
+            VALUES (:IdVisita, :URL, :NombreOriginal, :Tipo)
+        ";
+        $stmtAdjunto = $pdo->prepare($sqlAdjunto);
 
-    try {
-        $stmt->execute($values);
-        echo json_encode(["success" => true, "message" => "Visita actualizada exitosamente"]);
-    } catch (PDOException $e) {
-        http_response_code(500);
-        echo json_encode(["error" => "Error interno del servidor al actualizar visita", "details" => $e->getMessage()]);
+        $files = $_FILES['adjuntos'];
+        $fileCount = count($files['name']);
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            $fileName = $files['name'][$i];
+            $tmpName = $files['tmp_name'][$i];
+            $fileType = $files['type'][$i];
+            $fileError = $files['error'][$i];
+
+            if ($fileError === UPLOAD_ERR_OK) {
+                $uniqueName = time() . '-' . uniqid('', true) . '-' . basename($fileName);
+                $targetFilePath = $uploadDir . $uniqueName;
+                $urlPath = '/uploads/' . $uniqueName; // Path to be stored in DB
+
+                if (move_uploaded_file($tmpName, $targetFilePath)) {
+                    $stmtAdjunto->execute([
+                        ':IdVisita' => $idVisita,
+                        ':URL' => $urlPath,
+                        ':NombreOriginal' => $fileName,
+                        ':Tipo' => $fileType
+                    ]);
+                } else {
+                    throw new Exception("Error al mover el archivo subido: $fileName");
+                }
+            } else {
+                 throw new Exception("Error al subir el archivo $fileName. Código: $fileError");
+            }
+        }
     }
+    
+    // Commit transaction
+    $pdo->commit();
+
+    echo json_encode(['success' => true, 'message' => 'Visita actualizada exitosamente.']);
+
+} catch (Exception $e) {
+    // Rollback transaction on error
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    http_response_code(500);
+    echo json_encode(['error' => 'Error al actualizar la visita.', 'details' => $e->getMessage()]);
 }
 ?>
-
-El createVisita.php también:
-<?php
-include '../db.php'; 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $visitaData = json_decode(file_get_contents("php://input"), true);
-
-    // Verificar los datos recibidos
-    error_log("Datos recibidos para crear visita: " . print_r($visitaData, true));
-
-    // Validar fechas
-    function validateDate($date) {
-        $d = DateTime::createFromFormat('Y-m-d', $date);
-        return $d && $d->format('Y-m-d') === $date;
-    }
-
-    $fecha = isset($visitaData['Fecha']) && validateDate($visitaData['Fecha']) ? $visitaData['Fecha'] : null;
-    $fechaCobro = isset($visitaData['FechaCobro']) && validateDate($visitaData['FechaCobro']) ? $visitaData['FechaCobro'] : null;
-
-    error_log("Fecha: $fecha, FechaCobro: $fechaCobro");
-
-    // Asigna un valor predeterminado a IdEquipamiento si está vacío
-    $idEquipamiento = isset($visitaData['IdEquipamiento']) && !empty($visitaData['IdEquipamiento']) 
-        ? $visitaData['IdEquipamiento']
-        : null;
-
-    error_log("IdEquipamiento: $idEquipamiento");
-
-    // Procesa los adjuntos solo si hay alguno
-    $idAdjuntosString = null;
-    if (!empty($visitaData['IdAdjunto'])) {
-        $idAdjuntos = [];
-        $adjuntos = explode(',', $visitaData['IdAdjunto']);
-
-        foreach ($adjuntos as $index => $fileName) {
-            $idAdjunto = 'ADJ' . (time() + $index); // Generar un ID único
-            $sqlAdjunto = "INSERT INTO adjunto (IdAdjunto, URL) VALUES (?, ?)";
-            $stmt = $pdo->prepare($sqlAdjunto);
-
-            if (!$stmt->execute([$idAdjunto, trim($fileName)])) {
-                error_log("Error al crear adjunto: " . implode(', ', $stmt->errorInfo()));
-                http_response_code(500);
-                echo json_encode(['error' => 'Error al crear adjuntos']);
-                exit;
-            }
-
-            $idAdjuntos[] = $idAdjunto;
-        }
-        $idAdjuntosString = implode(',', $idAdjuntos);
-    }
-
-    // Inserta la visita con los adjuntos creados (o sin ellos)
-    $sqlVisita = "
-        INSERT INTO visita (IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, IdPersonal, Precio, Garantia, Fecha, FormaPago, FechaCobro, IdAdjunto, NumeroFactura, NumeroCheque)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ";
-
-    $stmt = $pdo->prepare($sqlVisita);
-    $values = [
-        $visitaData['IdCliente'],
-        $visitaData['Ciudad'],
-        $visitaData['Direccion'],
-        $visitaData['Descripcion'],
-        $idEquipamiento ?: null,
-        $visitaData['IdEstado'] ?: null, 
-        $visitaData['IdPersonal'],
-        $visitaData['Precio'],
-        $visitaData['Garantia'],
-        $fecha,
-        $visitaData['FormaPago'] ?: null,
-        $fechaCobro ?: null,
-        $idAdjuntosString ?: null,
-        $visitaData['NumeroFactura'] ?: null, // Nuevo campo
-        $visitaData['NumeroCheque'] ?: null  // Nuevo campo
-    ];
-
-    if ($stmt->execute($values)) {
-        echo json_encode(['success' => true, 'message' => 'Visita creada exitosamente']);
-    } else {
-        error_log("Error al crear visita: " . implode(', ', $stmt->errorInfo()));
-        http_response_code(500);
-        echo json_encode(['error' => 'Error al crear la visita']);
-    }
-}
-?><?php
-include '../db.php'; 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $visitaData = json_decode(file_get_contents("php://input"), true);
-
-    // Verificar los datos recibidos
-    error_log("Datos recibidos para crear visita: " . print_r($visitaData, true));
-
-    // Validar fechas
-    function validateDate($date) {
-        $d = DateTime::createFromFormat('Y-m-d', $date);
-        return $d && $d->format('Y-m-d') === $date;
-    }
-
-    $fecha = isset($visitaData['Fecha']) && validateDate($visitaData['Fecha']) ? $visitaData['Fecha'] : null;
-    $fechaCobro = isset($visitaData['FechaCobro']) && validateDate($visitaData['FechaCobro']) ? $visitaData['FechaCobro'] : null;
-
-    error_log("Fecha: $fecha, FechaCobro: $fechaCobro");
-
-    // Asigna un valor predeterminado a IdEquipamiento si está vacío
-    $idEquipamiento = isset($visitaData['IdEquipamiento']) && !empty($visitaData['IdEquipamiento']) 
-        ? $visitaData['IdEquipamiento']
-        : null;
-
-    error_log("IdEquipamiento: $idEquipamiento");
-
-    // Procesa los adjuntos solo si hay alguno
-    $idAdjuntosString = null;
-    if (!empty($visitaData['IdAdjunto'])) {
-        $idAdjuntos = [];
-        $adjuntos = explode(',', $visitaData['IdAdjunto']);
-
-        foreach ($adjuntos as $index => $fileName) {
-            $idAdjunto = 'ADJ' . (time() + $index); // Generar un ID único
-            $sqlAdjunto = "INSERT INTO adjunto (IdAdjunto, URL) VALUES (?, ?)";
-            $stmt = $pdo->prepare($sqlAdjunto);
-
-            if (!$stmt->execute([$idAdjunto, trim($fileName)])) {
-                error_log("Error al crear adjunto: " . implode(', ', $stmt->errorInfo()));
-                http_response_code(500);
-                echo json_encode(['error' => 'Error al crear adjuntos']);
-                exit;
-            }
-
-            $idAdjuntos[] = $idAdjunto;
-        }
-        $idAdjuntosString = implode(',', $idAdjuntos);
-    }
-
-    // Inserta la visita con los adjuntos creados (o sin ellos)
-    $sqlVisita = "
-        INSERT INTO visita (IdCliente, Ciudad, Direccion, Descripcion, IdEquipamiento, IdEstado, IdPersonal, Precio, Garantia, Fecha, FormaPago, FechaCobro, IdAdjunto, NumeroFactura, NumeroCheque)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ";
-
-    $stmt = $pdo->prepare($sqlVisita);
-    $values = [
-        $visitaData['IdCliente'],
-        $visitaData['Ciudad'],
-        $visitaData['Direccion'],
-        $visitaData['Descripcion'],
-        $idEquipamiento ?: null,
-        $visitaData['IdEstado'] ?: null, 
-        $visitaData['IdPersonal'],
-        $visitaData['Precio'],
-        $visitaData['Garantia'],
-        $fecha,
-        $visitaData['FormaPago'] ?: null,
-        $fechaCobro ?: null,
-        $idAdjuntosString ?: null,
-        $visitaData['NumeroFactura'] ?: null, // Nuevo campo
-        $visitaData['NumeroCheque'] ?: null  // Nuevo campo
-    ];
-
-    if ($stmt->execute($values)) {
-        echo json_encode(['success' => true, 'message' => 'Visita creada exitosamente']);
-    } else {
-        error_log("Error al crear visita: " . implode(', ', $stmt->errorInfo()));
-        http_response_code(500);
-        echo json_encode(['error' => 'Error al crear la visita']);
-    }
-}
-?> 

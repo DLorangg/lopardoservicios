@@ -43,7 +43,7 @@ function DatosDetalle() {
           axios.get("https://lopardoservicios.com/backend/routes/getCliente.php"),
           axios.get("https://lopardoservicios.com/backend/routes/getEstado.php"),
           axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php"),
-          axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idDato=${id}`),
+          axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idVisita=${id}`),
           axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
         ]);
 
@@ -135,13 +135,22 @@ function DatosDetalle() {
   const equipamientoVisitaNombre = getEquipamientoNames(visitaActual.IdEquipamiento || '');
   
 
-  // Revisar el valor de `Adjuntos` y formatear como una lista de URLs
-  const adjuntos = visitaActual.Adjuntos ? visitaActual.Adjuntos.split(',').map(url => {
-    const trimmedUrl = url.trim();
-    // No es necesario eliminar 'uploads/' ya que la URL en la base de datos ya está bien formada
-    return `https://lopardoservicios.com${trimmedUrl}`;
-  }) : [];
+  const getFileType = (url) => {
+    const extension = url.split('.').pop().toLowerCase();
+    if (['pdf'].includes(extension)) {
+      return 'pdf';
+    }
+    if (['png', 'jpg', 'jpeg', 'gif'].includes(extension)) {
+      return 'image';
+    }
+    return 'other';
+  };
 
+  const adjuntos = visitaActual.adjuntos ? visitaActual.adjuntos.map(adjunto => ({
+    url: `https://lopardoservicios.com${adjunto.URL}`,
+    nombre: adjunto.NombreOriginal,
+    type: getFileType(`https://lopardoservicios.com${adjunto.URL}`)
+  })) : [];
 
   const handleImageClick = (url) => {
     setModalImage(url);
@@ -239,14 +248,24 @@ function DatosDetalle() {
           <label className="font-weight-bold">Adjuntos: </label>
           <div>
             {adjuntos.length > 0 ? (
-              adjuntos.map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  alt={`Adjunto ${index + 1}`}
-                  style={{ width: '100px', marginRight: '10px', cursor: 'pointer' }}
-                  onClick={() => handleImageClick(url)}
-                />
+              adjuntos.map((adjunto, index) => (
+                <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}>
+                  {adjunto.type === 'image' ? (
+                    <img
+                      src={adjunto.url}
+                      alt={`Adjunto ${index + 1}`}
+                      title={adjunto.nombre}
+                      style={{ width: '100px', cursor: 'pointer' }}
+                      onClick={() => handleImageClick(adjunto.url)}
+                    />
+                  ) : adjunto.type === 'pdf' ? (
+                    <a href={adjunto.url} target="_blank" rel="noopener noreferrer" title={adjunto.nombre}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </a>
+                  ) : (
+                    <a href={adjunto.url} target="_blank" rel="noopener noreferrer" title={adjunto.nombre}>Ver adjunto</a>
+                  )}
+                </div>
               ))
             ) : (
               <p>No hay adjuntos.</p>

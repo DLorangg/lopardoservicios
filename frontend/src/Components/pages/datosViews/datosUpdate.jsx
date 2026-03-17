@@ -25,6 +25,31 @@ export function DatosUpdate() {
   const [NumeroCheque, setNumeroCheque] = useState('');
   const [NumeroFactura, setNumeroFactura] = useState('');
 
+  const fileInputRef = useRef(null);
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const droppedFiles = Array.from(event.dataTransfer.files);
+    setNewFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
+  };
+  
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleOpenFileDialog = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileInputChange = (event) => {
+    const addedFiles = Array.from(event.target.files);
+    setNewFiles((prevFiles) => [...prevFiles, ...addedFiles]);
+  };
+
+  const handleRemoveFile = (fileName) => {
+    setNewFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+  };
+
   // Fetching data functions
   function fetchPersonal() {
     axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
@@ -44,69 +69,83 @@ export function DatosUpdate() {
       .catch((error) => console.log("Error: ", error));
   }
 
+  const [adjuntos, setAdjuntos] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
+  const [adjuntosParaEliminar, setAdjuntosParaEliminar] = useState([]);
+
+  const handleRemoveExistingFile = (idAdjunto) => {
+    setAdjuntosParaEliminar(prev => [...prev, idAdjunto]);
+    setAdjuntos(prev => prev.filter(adj => adj.IdAdjunto !== idAdjunto));
+  };
+
   useEffect(() => {
     fetchPersonal();
     fetchEstado();
     fetchEquipamiento();
-  }, []);
 
-  useEffect(() => {
-    // Obtener visita por ID
-    axios.get("https://lopardoservicios.com/backend/routes/getVisitas.php")
+    // Obtener visita por ID con detalle de adjuntos
+    axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idVisita=${id}`)
       .then(res => {
-        setDataVisita(res.data);
-        // Buscar la visita actual y actualizar el estado
-        console.log("Datos recibidos:", res.data);
-        const currentVisit = res.data.find(visita => visita.IdVisita === parseInt(id));
-        console.log("Visita actual:", currentVisit);
+        const currentVisit = res.data;
         if (currentVisit) {
           setDescripcion(currentVisit.Descripcion);
           setIdEquipamiento(currentVisit.IdEquipamiento ? currentVisit.IdEquipamiento.split(',') : []);
           setIdEstado(currentVisit.IdEstado);
           setPrecio(currentVisit.Precio);
-          setGarantia(currentVisit.Garantia);
+          setGarantia(parseInt(currentVisit.Garantia));
           setFecha(currentVisit.Fecha ? new Date(currentVisit.Fecha).toISOString().split('T')[0] : '');
-          setFormaPago(currentVisit.FormaPago);
+          setFormaPago(parseInt(currentVisit.FormaPago));
           setNumeroCheque(currentVisit.NumeroCheque);
           setNumeroFactura(currentVisit.NumeroFactura);
           setFechaCobro(currentVisit.FechaCobro ? new Date(currentVisit.FechaCobro).toISOString().split('T')[0] : '');
           setIdPersonal(currentVisit.IdPersonal ? currentVisit.IdPersonal.split(',') : []);
+          setAdjuntos(currentVisit.adjuntos || []);
         }
       })
-      .catch(error => console.log("Error: ", error));
+      .catch(error => console.log("Error fetching visit details: ", error));
   }, [id]); 
   
   const handleSubmit = (event) => {
     event.preventDefault();
-   
-    const payload = {
-        // Asegúrate de que estas variables estén definidas
-        Descripcion,
-        IdEquipamiento: Array.isArray(IdEquipamiento) ? IdEquipamiento.join(',') : '',
-        IdEstado,
-        Precio,
-        Garantia,
-        Fecha,
-        IdPersonal: Array.isArray(IdPersonal) ? IdPersonal.join(',') : '',
-        FormaPago,
-        FechaCobro,
-        NumeroCheque,
-        NumeroFactura,
-    };
 
-    axios.put(`https://lopardoservicios.com/backend/routes/putVisita.php?id=${id}`, payload, {
+    const formData = new FormData();
+    
+    // Append form fields
+    formData.append('Descripcion', Descripcion);
+    formData.append('IdEquipamiento', Array.isArray(IdEquipamiento) ? IdEquipamiento.join(',') : '');
+    formData.append('IdEstado', IdEstado);
+    formData.append('Precio', Precio);
+    formData.append('Garantia', Garantia);
+    formData.append('Fecha', Fecha);
+    formData.append('IdPersonal', Array.isArray(IdPersonal) ? IdPersonal.join(',') : '');
+    formData.append('FormaPago', FormaPago);
+    formData.append('FechaCobro', FechaCobro);
+    formData.append('NumeroCheque', NumeroCheque);
+    formData.append('NumeroFactura', NumeroFactura);
+
+    // Append new files
+    newFiles.forEach(file => {
+      formData.append('adjuntos[]', file);
+    });
+
+    if (adjuntosParaEliminar.length > 0) {
+      formData.append('adjuntos_a_eliminar', JSON.stringify(adjuntosParaEliminar));
+    }
+
+    // Use POST and include 'id' in URL for update
+    axios.post(`https://lopardoservicios.com/backend/routes/putVisita.php?idVisita=${id}`, formData, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data'
         }
     })
     .then(res => {
         console.log("Respuesta del servidor:", res);
-        console.log("Estado de la ubicación:", location.state); // Para depuración
         const redirectTo = location.state?.from === 'busqueda' ? '../busqueda' : '../datos'; 
         navigate(redirectTo);
     })
     .catch(error => {
         console.error('Error al actualizar la visita:', error);
+        alert('Error al actualizar la visita. ' + (error.response?.data?.message || ''));
     });
   };
 
@@ -305,6 +344,63 @@ export function DatosUpdate() {
                 onChange={e => setFechaCobro(e.target.value)}
                 autoComplete="off"
               />
+            </div>
+
+            {/* Attachments Section */}
+            <div className="mt-4">
+              <h5 className="mb-3">Adjuntos</h5>
+              
+              {/* Existing Attachments */}
+              {adjuntos.length > 0 && (
+                <div>
+                  <h6>Adjuntos existentes:</h6>
+                  <ul className="list-group mb-3">
+                    {adjuntos.map(adjunto => (
+                      <li key={adjunto.IdAdjunto} className="list-group-item d-flex justify-content-between align-items-center">
+                        <a href={`https://lopardoservicios.com${adjunto.URL}`} target="_blank" rel="noopener noreferrer">
+                          {adjunto.NombreOriginal}
+                        </a>
+                        <button type="button" className="btn btn-danger btn-sm" onClick={() => handleRemoveExistingFile(adjunto.IdAdjunto)}>
+                          Eliminar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* New Attachments Input */}
+              <div
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onClick={handleOpenFileDialog}
+                style={{ border: '2px dashed #ccc', padding: '20px', borderRadius: '5px', textAlign: 'center', cursor: 'pointer', marginTop: '20px' }}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                  multiple
+                  accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.mp4,.mov"
+                />
+                <p>Arrastra y suelta archivos nuevos aquí, o haz clic para seleccionar</p>
+                {newFiles.length > 0 && (
+                  <div>
+                    <h6>Archivos nuevos:</h6>
+                    <ul className="list-unstyled">
+                      {newFiles.map((file, index) => (
+                        <li key={index}>
+                          {file.name}
+                          <button type="button" onClick={() => handleRemoveFile(file.name)} style={{ marginLeft: '10px', color: 'red', border: 'none', background: 'none' }}>
+                            &times;
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
 
               <br />

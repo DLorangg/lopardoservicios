@@ -1,41 +1,43 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 include '../db.php';
 
-$idDato = $_GET['idDato'] ?? null;
+$idVisita = $_GET['idVisita'] ?? null;
 
-if (!$idDato) {
-    header('Content-Type: application/json');
+if (!$idVisita) {
     http_response_code(400);
-    echo json_encode(['Message' => 'ID de visita no proporcionado']);
+    echo json_encode(['message' => 'ID de visita no proporcionado']);
     exit;
 }
 
-$sqlVisita = "
-    SELECT v.*, GROUP_CONCAT(a.URL) AS Adjuntos
-    FROM visita v
-    LEFT JOIN adjunto a ON FIND_IN_SET(a.IdAdjunto, v.IdAdjunto) > 0
-    WHERE v.IdVisita = ?
-    GROUP BY v.IdVisita
-";
-
 try {
-    $stmt = $pdo->prepare($sqlVisita);
-    $stmt->execute([$idDato]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    // 1. Fetch main visit data
+    $sqlVisita = "SELECT * FROM visita WHERE IdVisita = ?";
+    $stmtVisita = $pdo->prepare($sqlVisita);
+    $stmtVisita->execute([$idVisita]);
+    $visita = $stmtVisita->fetch(PDO::FETCH_ASSOC);
 
-    if (!$result) {
-        header('Content-Type: application/json');
+    if (!$visita) {
         http_response_code(404);
-        echo json_encode(['Message' => 'Visita no encontrada']);
-    } else {
-        header('Content-Type: application/json');
-        echo json_encode($result);
+        echo json_encode(['message' => 'Visita no encontrada']);
+        exit;
     }
+
+    // 2. Fetch associated attachments
+    $sqlAdjuntos = "SELECT IdAdjunto, IdVisita, URL, NombreOriginal, Tipo, FechaSubida FROM adjunto WHERE IdVisita = ?";
+    $stmtAdjuntos = $pdo->prepare($sqlAdjuntos);
+    $stmtAdjuntos->execute([$idVisita]);
+    $adjuntos = $stmtAdjuntos->fetchAll(PDO::FETCH_ASSOC);
+
+    // 3. Combine results
+    $visita['adjuntos'] = $adjuntos;
+
+    // 4. Return combined JSON
+    echo json_encode($visita);
+
 } catch (PDOException $e) {
-    // Manejo de errores
-    error_log('Error al obtener detalles de la visita: ' . $e->getMessage());
-    header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(['Message' => 'Error en el servidor', 'error' => $e->getMessage()]);
+    echo json_encode(['message' => 'Error en el servidor al obtener los detalles de la visita.', 'error' => $e->getMessage()]);
 }
 ?>
