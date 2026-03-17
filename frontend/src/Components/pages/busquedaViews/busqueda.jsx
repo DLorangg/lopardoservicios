@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import Rouben from '../../../Assets/Rouben.otf';
-import { useLocation } from  'react-router-dom';
 
 export function Busqueda() {
   const [content, setContent] = useState(<BusquedaList ShowForm={ShowForm} />);
@@ -23,8 +22,7 @@ export function Busqueda() {
   );
 }
 
-export function BusquedaList(props) {
-  let location = useLocation()
+export function BusquedaList() {
   const [dataVisita, setDataVisita] = useState([]);
   const [dataCliente, setDataCliente] = useState([]);
   const [sortBy, setSortBy] = useState('Fecha'); // Columna por defecto para ordenar por fecha
