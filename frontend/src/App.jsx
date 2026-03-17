@@ -9,6 +9,8 @@ import { Clientes } from './Components/pages/clienteViews/cliente';
 import { EquipoUpdate } from './Components/pages/equipoViews/equipoUpdate';
 import { LoginForm } from './Components/LoginForm/LoginForm';
 import { Caja } from './Components/pages/cajaViews/caja';
+import { Personal } from './Components/pages/personalViews/personal';
+import { PersonalUpdate } from './Components/pages/personalViews/personalUpdate';
 import { CajaUpdate } from './Components/pages/cajaViews/cajaUpdate';
 import { Busqueda } from './Components/pages/busquedaViews/busqueda';
 import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
@@ -38,7 +40,9 @@ function App() {
         <Route path='/updatevisita/:id' element={authenticated ? <DatosUpdate /> : <Navigate to='/login' replace />} />
         <Route path='/datosdetalle/:id' element={authenticated ? <DatosDetalle /> : <Navigate to='/login' replace />} />
         <Route path='/caja' element={authenticated ? <Caja /> : <Navigate to='/login' replace />} />
+        <Route path='/personal' element={authenticated ? <Personal /> : <Navigate to='/login' replace />} />
         <Route path="/cajaUpdate/:id" element={authenticated ? <CajaUpdate /> : <Navigate to='/login' replace />} />
+        <Route path="/personalUpdate/:id" element={authenticated ? <PersonalUpdate /> : <Navigate to='/login' replace />} />
         <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/busqueda' replace />} />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
       </Routes>

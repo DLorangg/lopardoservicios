@@ -1,0 +1,62 @@
+.personal-container {
+    padding: 20px;
+}
+
+.personal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.personal-table th, .personal-table td {
+    border: 1px solid #ddd;
+    padding: 4px; /* Reducir el padding para achicar los espacios */
+    text-align: left;
+}
+
+.personal-table th {
+    background-color: #f2f2f2;
+}
+
+.personal-table td:nth-child(2) {
+    width: 50%; /* Hacer que la columna de detalle ocupe más espacio */
+}
+
+.personal-table th, .personal-table td:not(:nth-child(2)) {
+    width: 10%; /* Hacer que las otras columnas ocupen menos espacio */
+}
+
+.personal-form {
+    margin-top: 20px;
+}
+
+.personal-form label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.personal-form input {
+    margin-bottom: 10px;
+}
+
+.personal-form button {
+    margin-right: 10px;
+}
+
+.personal-form button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.personal-form button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.personal-form button[type="button"] {
+    background-color: #f44336;
+    color: white;
+}
+
+.personal-form button[type="button"]:hover {
+    background-color: #e53935;
+}

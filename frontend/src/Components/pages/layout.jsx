@@ -38,6 +38,9 @@ export function Navbar({ setAuthenticated }) {
             <li className={`nav-item ${location.pathname === '/caja' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/caja" id="caja">Caja</Link>
             </li>
+            <li className={`nav-item ${location.pathname === '/personal' ? 'active' : ''}`}>
+              <Link className="nav-link text-dark" to="/personal" id="personal">Personal</Link>
+            </li>
             <li className={`nav-item ${location.pathname === '/busqueda' ? 'active' : ''}`}>
               <Link className="nav-link text-dark" to="/busqueda" id="busqueda">
                 <img src={SearchIcon} alt="Búsqueda" style={{ width: '24px', marginRight: '8px' }} />
