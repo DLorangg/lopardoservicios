@@ -24,41 +24,33 @@ export function Clientes() {
 
 export function ClientesList(props) {
   const [dataCliente, setDataCliente] = useState([]);
-  const [sortBy, setSortBy] = useState('Nombre'); // Ordenar por 'Nombre' por defecto
-  const [sortDirection, setSortDirection] = useState('asc'); // Predeterminado a asc
-  const [selectedClient, setSelectedClient] = useState(null); // Cliente seleccionado para editar
-  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de edición
-  const [showCreateModal, setShowCreateModal] = useState(false); // Estado para mostrar el modal de creación
+  const [sortBy, setSortBy] = useState('Nombre'); 
+  const [sortDirection, setSortDirection] = useState('asc'); 
+  const [selectedClient, setSelectedClient] = useState(null); 
+  const [showModal, setShowModal] = useState(false); 
+  const [showCreateModal, setShowCreateModal] = useState(false); 
 
-  // Función para obtener datos de clientes desde el servidor
   const fetchCliente = () => {
     axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
-      .then((response) => {
-        setDataCliente(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .then((response) => setDataCliente(response.data))
+      .catch((error) => console.error("Error fetching data:", error));
   };
 
   useEffect(() => {
     fetchCliente();
   }, []);
 
-  // Función para cambiar la dirección del ordenamiento
   const toggleSortDirection = () => {
     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  // Función para ordenar los datos por la columna seleccionada
   const sortByColumn = (columnName) => {
     setSortBy(columnName);
-    toggleSortDirection(); // Cambia automáticamente la dirección del ordenamiento al cambiar la columna
+    toggleSortDirection();
   };
 
-  // Función para ordenar los datos basados en sortBy y sortDirection
   const sortedDataCliente = [...dataCliente].sort((a, b) => {
-    const columnA = a[sortBy].toLowerCase(); // Convierte a minúsculas para ordenación alfabética
+    const columnA = a[sortBy].toLowerCase(); 
     const columnB = b[sortBy].toLowerCase();
     if (sortDirection === 'asc') {
       return columnA < columnB ? -1 : 1;
@@ -71,46 +63,63 @@ export function ClientesList(props) {
     axios.delete(`https://lopardoservicios.com/backend/routes/deleteCliente.php?IdCliente=${id}`)
     .then((response) => {
       console.log(response.data.message);
-      fetchCliente(); // Actualiza la lista después de borrar
+      fetchCliente(); 
     })
-    .catch((error) => {
-      console.error("Error al eliminar el cliente:", error);
-    });
+    .catch((error) => console.error("Error al eliminar el cliente:", error));
   };
 
   const handleEdit = (cliente) => {
-    setSelectedClient(cliente); // Selecciona el cliente
-    setShowModal(true); // Abre el modal
-    console.log("Cliente seleccionado para editar:", cliente); // Para verificar que el cliente se esté configurando
+    setSelectedClient(cliente); 
+    setShowModal(true); 
   };  
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedClient(null); // Limpiar el cliente seleccionado
-    fetchCliente(); // Actualizar la lista después de cerrar el modal
+    setSelectedClient(null); 
+    fetchCliente(); 
   };
 
-  const handleCreate = () => {
-    setShowCreateModal(true); // Mostrar el modal de creación
-  };
-
+  const handleCreate = () => setShowCreateModal(true); 
   const handleCloseCreateModal = () => {
-    setShowCreateModal(false); // Cerrar el modal de creación
-    fetchCliente(); // Actualizar la lista después de crear el cliente
+    setShowCreateModal(false); 
+    fetchCliente(); 
   };
+
+  // NUEVO: Función para hacer scroll a una letra específica
+  const scrollToLetter = (letter) => {
+    // Busca el índice del primer cliente cuyo nombre empiece con la letra
+    const index = sortedDataCliente.findIndex(c => 
+      c.Nombre.toUpperCase().startsWith(letter)
+    );
+
+    if (index !== -1) {
+      const element = document.getElementById(`cliente-row-${index}`);
+      if (element) {
+        // Hace un scroll suave y centra el elemento en la pantalla
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  // NUEVO: Funciones para scroll rápido arriba/abajo
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToBottom = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+
+  // NUEVO: Array del abecedario
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
   return (
     <>
       <h2 className="text-center mb-3" style={{ fontFamily: 'sans-serif' }}>CLIENTES</h2>
       <button onClick={handleCreate} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
       <button onClick={fetchCliente} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
-      <table className="table">
+      <table className="table mt-3">
         <thead>
           <tr>
             <th style={{ width: '20%' }}>
               Nombre{' '}
-              <button onClick={() => sortByColumn('Nombre')} className="btn btn-sm btn-link">
-                {sortDirection === 'asc' ? '⬇️' : '⬆️'} {/* Indicador de dirección de orden */}
+              <button onClick={() => sortByColumn('Nombre')} className="btn btn-sm btn-link text-decoration-none">
+                {sortDirection === 'asc' ? '⬇️' : '⬆️'}
               </button>
             </th>
             <th style={{ width: '10%' }}>CUIT/CUIL/DNI</th>
@@ -121,7 +130,7 @@ export function ClientesList(props) {
         </thead>
         <tbody>
           {sortedDataCliente.map((cliente, index) => (
-            <tr key={index}>
+            <tr key={index} id={`cliente-row-${index}`}>
               <td>{cliente.Nombre}</td>
               <td>{cliente.DNI}</td>
               <td>{cliente.Direccion}</td>
@@ -142,21 +151,92 @@ export function ClientesList(props) {
         </tbody>
       </table>
 
-      {/* Modal para crear nuevo cliente */}
-      <ModalComponent
-        show={showCreateModal}
-        handleClose={handleCloseCreateModal}
-        updateClientes={fetchCliente} // Llamada para actualizar la lista de clientes
-      />
+      <div style={{
+        position: 'fixed',
+        right: '15px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#f8f9fa',
+        padding: '10px 5px',
+        borderRadius: '20px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        zIndex: 1000,
+        fontSize: '11px',
+        fontWeight: 'bold',
+        color: '#140097'
+      }}>
+        {alphabet.map(letter => (
+          <span 
+            key={letter} 
+            onClick={() => scrollToLetter(letter)}
+            style={{ cursor: 'pointer', padding: '2px 5px', textAlign: 'center' }}
+            onMouseOver={(e) => e.target.style.transform = 'scale(1.5)'}
+            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+          >
+            {letter}
+          </span>
+        ))}
+      </div>
 
-      {/* Modal de edición */}
+      <div style={{
+        position: 'fixed',
+        bottom: '30px',
+        right: '15px', // Alineado verticalmente con el abecedario
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        zIndex: 1000
+      }}>
+        <button 
+          onClick={scrollToTop} 
+          style={{ 
+            backgroundColor: '#f8f9fa', // Mismo color de fondo que el abecedario
+            color: '#140097', // Mismo color de texto/icono que el abecedario
+            border: 'none', // Sin borde por defecto
+            borderRadius: '50%', 
+            width: '45px', 
+            height: '45px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            cursor: 'pointer', // Indicador de clic
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Misma sombra que el abecedario
+            fontSize: '18px', // Ajuste de tamaño para el símbolo
+            fontWeight: 'bold' // Peso del símbolo
+          }}
+          title="Ir arriba"
+        >
+          ↑ 
+        </button>
+        <button 
+          onClick={scrollToBottom} 
+          style={{ 
+            backgroundColor: '#f8f9fa', // Mismo que el abecedario
+            color: '#140097', // Mismo que el abecedario
+            border: 'none',
+            borderRadius: '50%', 
+            width: '45px', 
+            height: '45px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Misma sombra
+            fontSize: '18px', // Ajuste de tamaño
+            fontWeight: 'bold' // Peso
+          }}
+          title="Ir abajo"
+        >
+          ↓ 
+        </button>
+      </div>
+
+      <ModalComponent show={showCreateModal} handleClose={handleCloseCreateModal} updateClientes={fetchCliente} />
+      
       {showModal && (
-        <ModalUpdateComponent
-        clienteData={selectedClient}  // Pasar el cliente seleccionado correctamente
-        show={showModal}
-        handleClose={handleCloseModal}
-        updateClientes={fetchCliente}
-      />      
+        <ModalUpdateComponent clienteData={selectedClient} show={showModal} handleClose={handleCloseModal} updateClientes={fetchCliente} />      
       )}
     </>
   );
