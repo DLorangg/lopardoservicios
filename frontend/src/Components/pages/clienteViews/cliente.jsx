@@ -31,7 +31,7 @@ export function ClientesList(props) {
   const [showCreateModal, setShowCreateModal] = useState(false); 
 
   const fetchCliente = () => {
-    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getCliente.php`)
       .then((response) => setDataCliente(response.data))
       .catch((error) => console.error("Error fetching data:", error));
   };
@@ -60,7 +60,7 @@ export function ClientesList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`https://lopardoservicios.com/backend/routes/deleteCliente.php?IdCliente=${id}`)
+    axios.delete(`${import.meta.env.VITE_API_URL}/deleteCliente.php?IdCliente=${id}`)
     .then((response) => {
       console.log(response.data.message);
       fetchCliente(); 

@@ -1,0 +1,20 @@
+# Dependencias
+node_modules/
+vendor/
+
+# Archivos compilados de React
+frontend/dist/
+frontend/build/
+
+# Variables de entorno (¡Nunca subas credenciales al repo!)
+.env
+.env.*
+
+# Archivos de base de datos y Docker
+db_data/
+*.sql
+*.sqlite
+
+# Logs y SO
+*.log
+.DS_Store

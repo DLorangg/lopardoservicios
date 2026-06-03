@@ -1,5 +1,6 @@
 <?php
 include '../../db.php'; // Ajusta la ruta a db.php según la estructura de tu proyecto
+require '../verificarToken.php';
 
 // Configuración para el directorio de carga
 $uploadDir = '../../uploads/'; 

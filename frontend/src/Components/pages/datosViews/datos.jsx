@@ -36,7 +36,7 @@ export function DatosList(props) {
   // Función para obtener datos de visitas desde el servidor
   const fetchVisita = () => {
     const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
-    axios.get("https://lopardoservicios.com/backend/routes/getVisitas.php", {
+    axios.get(`${import.meta.env.VITE_API_URL}/getVisitas.php`, {
       params: { rol: userRole } // Pasar el rol como parámetro de la consulta
     })
     .then((response) => {
@@ -49,7 +49,7 @@ export function DatosList(props) {
 
   // Función para obtener datos de clientes desde el servidor
   const fetchCliente = () => {
-    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getCliente.php`)
       .then((response) => {
         setDataCliente(response.data);
       })
@@ -110,7 +110,7 @@ export function DatosList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`https://lopardoservicios.com/backend/routes/deleteVisita.php/${id}`)
+    axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
       .then((response) => {
         console.log(response.data.message);
         fetchVisita();
@@ -199,7 +199,7 @@ export function DatosForm(props) {
   const handleShowUpdateModal = () => setShowUpdateModal(true);
 
   function fetchCliente() {
-    axios.get("https://lopardoservicios.com/backend/routes/getCliente.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getCliente.php`)
       .then(res => setDataCliente(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -207,7 +207,7 @@ export function DatosForm(props) {
   useEffect(() => fetchCliente(), []);
 
   function fetchEquipamiento() {
-    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getEquipamiento.php`)
       .then(res => setDataEquipamiento(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -217,7 +217,7 @@ export function DatosForm(props) {
   const [dataEstado, setDataEstado] = useState([]);
 
   function fetchEstado() {
-    axios.get("https://lopardoservicios.com/backend/routes/getEstado.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getEstado.php`)
       .then(res => setDataEstado(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -227,7 +227,7 @@ export function DatosForm(props) {
   const [dataPersonal, setDataPersonal] = useState([]);
 
   function fetchPersonal() {
-    axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getPersonal.php`)
       .then(res => setDataPersonal(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -290,7 +290,7 @@ export function DatosForm(props) {
   const handleDeleteCliente = (idCliente) => {
     console.log(idCliente);
     if (window.confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
-        axios.delete(`https://lopardoservicios.com/backend/routes/deleteCliente.php?IdCliente=${idCliente}`) // Asegúrate de usar 'IdCliente'
+        axios.delete(`${import.meta.env.VITE_API_URL}/deleteCliente.php?IdCliente=${idCliente}`) // Asegúrate de usar 'IdCliente'
             .then(response => {
                 console.log(response.data.message);
                 fetchCliente(); // Llama a la función para actualizar la lista de clientes
@@ -375,7 +375,7 @@ export function DatosForm(props) {
       console.log(`${key}:`, value);
     }
     
-    axios.post('https://lopardoservicios.com/backend/routes/createVisita.php', formData, {
+    axios.post(`${import.meta.env.VITE_API_URL}/createVisita.php`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

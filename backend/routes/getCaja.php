@@ -1,5 +1,6 @@
 <?php
 include '../db.php';
+require '../verificarToken.php';
 
 // Obtener el rol del query
 $rol = isset($_GET['rol']) ? $_GET['rol'] : '';

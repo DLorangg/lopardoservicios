@@ -20,7 +20,7 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
 
   useEffect(() => {
     // Cargar opciones de equipamiento al cargar el componente
-    axios.get('https://lopardoservicios.com/backend/routes/getEquipamiento.php')
+    axios.get(`${import.meta.env.VITE_API_URL}/getEquipamiento.php`)
       .then(response => {
         setEquipamientoOptions(response.data);
       })
@@ -57,7 +57,7 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
       Telefono: clienteData.Telefono.toString(),
     };
 
-    axios.post('https://lopardoservicios.com/backend/routes/postCliente.php', clienteDataToSend)
+    axios.post(`${import.meta.env.VITE_API_URL}/postCliente.php`, clienteDataToSend)
       .then(response => {
         console.log('Cliente creado:', response.data);
         alert('Cliente creado exitosamente');

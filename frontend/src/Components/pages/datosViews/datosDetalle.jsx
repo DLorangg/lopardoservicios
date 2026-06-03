@@ -40,11 +40,11 @@ function DatosDetalle() {
     const fetchData = async () => {
       try {
         const [clientes, estados, equipamientos, visitaDetalle, personal] = await Promise.all([
-          axios.get("https://lopardoservicios.com/backend/routes/getCliente.php"),
-          axios.get("https://lopardoservicios.com/backend/routes/getEstado.php"),
-          axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php"),
-          axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idVisita=${id}`),
-          axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
+          axios.get(`${import.meta.env.VITE_API_URL}/getCliente.php`),
+          axios.get(`${import.meta.env.VITE_API_URL}/getEstado.php`),
+          axios.get(`${import.meta.env.VITE_API_URL}/getEquipamiento.php`),
+          axios.get(`${import.meta.env.VITE_API_URL}/getVisitaDetalle.php?idVisita=${id}`),
+          axios.get(`${import.meta.env.VITE_API_URL}/getPersonal.php`)
         ]);
 
         setDataCliente(clientes.data);

@@ -20,7 +20,7 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
   const [equipamientoOptions, setEquipamientoOptions] = useState([]);
 
   useEffect(() => {
-    axios.get('https://lopardoservicios.com/backend/routes/getEquipamiento.php')
+    axios.get(`${import.meta.env.VITE_API_URL}/getEquipamiento.php`)
       .then(response => {
         setEquipamientoOptions(response.data);
       })
@@ -66,7 +66,7 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
     console.log('Datos del cliente antes de enviar:', clienteData);
     console.log('ID del cliente:', initialClienteData.IdCliente);
   
-    axios.put(`https://lopardoservicios.com/backend/routes/putCliente.php?id=${initialClienteData.IdCliente}`, clienteData)
+    axios.put(`${import.meta.env.VITE_API_URL}/putCliente.php?id=${initialClienteData.IdCliente}`, clienteData)
     .then(response => {
       console.log('Cliente actualizado:', response.data);
       alert('Cliente actualizado exitosamente');

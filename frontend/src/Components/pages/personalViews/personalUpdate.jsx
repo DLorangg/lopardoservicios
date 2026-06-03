@@ -14,7 +14,7 @@ export function PersonalUpdate() {
     }, []);
 
     const fetchRegistro = () => {
-        axios.get(`https://lopardoservicios.com/backend/routes/getPersonalById.php`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/getPersonalById.php`, {
             params: { id: id } 
         })
         .then(res => {
@@ -38,7 +38,7 @@ export function PersonalUpdate() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`https://lopardoservicios.com/backend/routes/putPersonal.php?id=${id}`, formData)
+        axios.put(`${import.meta.env.VITE_API_URL}/putPersonal.php?id=${id}`, formData)
             .then(res => {
                 console.log(res);
                 navigate('/personal');

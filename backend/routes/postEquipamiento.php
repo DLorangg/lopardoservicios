@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 $data = json_decode(file_get_contents('php://input'), true);
 

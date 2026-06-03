@@ -52,19 +52,19 @@ export function DatosUpdate() {
 
   // Fetching data functions
   function fetchPersonal() {
-    axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getPersonal.php`)
       .then(res => setDataPersonal(res.data))
       .catch((error) => console.log("Error: ", error));
   }
 
   function fetchEstado() {
-    axios.get("https://lopardoservicios.com/backend/routes/getEstado.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getEstado.php`)
       .then(res => setDataEstado(res.data))
       .catch((error) => console.log("Error: ", error));
   }
 
   function fetchEquipamiento() {
-    axios.get("https://lopardoservicios.com/backend/routes/getEquipamiento.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getEquipamiento.php`)
       .then(res => setDataEquipamiento(res.data))
       .catch((error) => console.log("Error: ", error));
   }
@@ -84,7 +84,7 @@ export function DatosUpdate() {
     fetchEquipamiento();
 
     // Obtener visita por ID con detalle de adjuntos
-    axios.get(`https://lopardoservicios.com/backend/routes/getVisitaDetalle.php?idVisita=${id}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/getVisitaDetalle.php?idVisita=${id}`)
       .then(res => {
         const currentVisit = res.data;
         if (currentVisit) {
@@ -133,7 +133,7 @@ export function DatosUpdate() {
     }
 
     // Use POST and include 'id' in URL for update
-    axios.post(`https://lopardoservicios.com/backend/routes/putVisita.php?idVisita=${id}`, formData, {
+    axios.post(`${import.meta.env.VITE_API_URL}/putVisita.php?idVisita=${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 $id = isset($_GET['id']) ? $_GET['id'] : null; // Obtener el ID del parámetro de consulta
 

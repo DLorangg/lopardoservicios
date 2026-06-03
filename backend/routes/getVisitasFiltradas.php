@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 // Obtener los parámetros de la solicitud
 $rol = isset($_GET['rol']) ? $_GET['rol'] : '';

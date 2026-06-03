@@ -1,5 +1,6 @@
 <?php
 include '../db.php'; // Asegúrate de ajustar la ruta a db.php según sea necesario
+require '../verificarToken.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

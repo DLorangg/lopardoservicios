@@ -12,7 +12,7 @@ export function ClienteDetalle() {
   useEffect(() => {
     const fetchCliente = async () => {
       try {
-        const response = await axios.get(`https://lopardoservicios.com/backend/routes/getCliente.php?IdCliente=${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/getCliente.php?IdCliente=${id}`);
         setCliente(response.data);
         setLoading(false);
       } catch (error) {

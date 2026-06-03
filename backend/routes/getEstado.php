@@ -1,5 +1,6 @@
 <?php
 include '../db.php';
+require '../verificarToken.php';
 
 $sql = 'SELECT * FROM estados';
 $stmt = $pdo->prepare($sql);

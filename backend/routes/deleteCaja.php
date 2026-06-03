@@ -1,5 +1,6 @@
 <?php
 include '../db.php'; // Asegúrate de ajustar la ruta a db.php según sea necesario
+require '../verificarToken.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $id = $_GET['id'];

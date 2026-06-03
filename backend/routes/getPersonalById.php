@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 // Obtener el ID del personal desde los parámetros de la URL
 $idPersonal = $_GET['id'];

@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 // Obtener los datos del cliente desde el cuerpo de la solicitud
 $input = json_decode(file_get_contents('php://input'), true);

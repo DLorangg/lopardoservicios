@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 // Obtener el ID del cliente desde los parámetros de la URL
 $idCliente = $_GET['id'];

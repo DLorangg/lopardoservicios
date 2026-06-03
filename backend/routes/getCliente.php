@@ -1,5 +1,6 @@
 <?php
-include '../db.php'; 
+include '../db.php';
+require '../verificarToken.php'; 
 
 // Habilitar la visualización de errores para debug
 ini_set('display_errors', 1);

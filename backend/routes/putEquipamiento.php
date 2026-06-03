@@ -1,5 +1,6 @@
 <?php
 include '../db.php';
+require '../verificarToken.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     parse_str(file_get_contents("php://input"), $_PUT); // Obtener los datos enviados en la solicitud PUT

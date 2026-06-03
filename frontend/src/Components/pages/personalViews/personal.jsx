@@ -30,7 +30,7 @@ function DatosList(props) {
   const [dataPersonal, setDataPersonal] = useState([]);
 
   function fetchPersonal() {
-    axios.get("https://lopardoservicios.com/backend/routes/getPersonal.php")
+    axios.get(`${import.meta.env.VITE_API_URL}/getPersonal.php`)
     .then(res => setDataPersonal(res.data))
     .catch((error) => console.log("Error: ", error));
   }
@@ -39,7 +39,7 @@ function DatosList(props) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete('https://lopardoservicios.com/backend/routes/deletePersonal.php', {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/deletePersonal.php`, {
         params: { IdPersonal: id }
       });
       fetchPersonal();
@@ -97,7 +97,7 @@ function DatosForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    axios.post('https://lopardoservicios.com/backend/routes/postPersonal.php', formValues)
+    axios.post(`${import.meta.env.VITE_API_URL}/postPersonal.php`, formValues)
       .then(res => {
         console.log(res);
         navigate(props.ShowList());

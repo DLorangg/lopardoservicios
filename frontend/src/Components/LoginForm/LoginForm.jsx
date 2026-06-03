@@ -19,18 +19,19 @@ export function LoginForm({ setAuthenticated }) {
 
   const handleLogin = async () => {
     try {
-        const response = await axios.post('https://lopardoservicios.com/backend/routes/login.php', {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/login.php`, {
             username: username,
             password: password,
         });
 
         // Desestructura los datos de la respuesta
-        const { userName, userRole, message } = response.data;
+        const { userName, userRole, token, message } = response.data;
 
-        // Verifica que se reciban el nombre de usuario y el rol
-        if (userName && userRole) {
+        // Verifica que se reciban el nombre de usuario, el rol y el token
+        if (userName && userRole && token) {
             localStorage.setItem('userName', userName);
-            localStorage.setItem('userRole', userRole); // Guardar el rol como string
+            localStorage.setItem('userRole', userRole);
+            localStorage.setItem('token', token); // Guardar el token
             setAuthenticated(true);
             toast.success(message); // Mostrar el mensaje de éxito
 
@@ -45,6 +46,7 @@ export function LoginForm({ setAuthenticated }) {
             // Limpia los datos en caso de que no se reciban los datos esperados
             localStorage.removeItem('userName');
             localStorage.removeItem('userRole');
+            localStorage.removeItem('token');
             setAuthenticated(false);
             toast.error('No se recibieron datos de usuario válidos');
         }
@@ -57,7 +59,7 @@ export function LoginForm({ setAuthenticated }) {
 
   const handleChangePassword = async () => {
     try {
-      const response = await axios.put('https://lopardoservicios.com/backend/routes/updatePassword.php', {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/updatePassword.php`, {
         username: username,
         currentPassword: password,
         newPassword: newPassword,

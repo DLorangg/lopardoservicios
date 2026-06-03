@@ -35,7 +35,7 @@ function DatosList(props) {
   const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
 
   function fetchCaja() {
-    axios.get("https://lopardoservicios.com/backend/routes/getCaja.php", {
+    axios.get(`${import.meta.env.VITE_API_URL}/getCaja.php`, {
       params: { rol: userRole } // Pasar el rol como parámetro de la consulta
     })
     .then(res => setDataCaja(res.data))
@@ -46,7 +46,7 @@ function DatosList(props) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete('https://lopardoservicios.com/backend/routes/deleteCaja.php', {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/deleteCaja.php`, {
         params: { id: id }
       });
       fetchCaja();
@@ -113,7 +113,7 @@ function DatosForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    axios.post('https://lopardoservicios.com/backend/routes/postCaja.php', formValues)
+    axios.post(`${import.meta.env.VITE_API_URL}/postCaja.php`, formValues)
       .then(res => {
         console.log(res);
         navigate(props.ShowList());
