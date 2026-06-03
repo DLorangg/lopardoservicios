@@ -18,4 +18,4 @@ db_data/
 # Logs y SO
 *.log
 .DS_Store
-*.yml
+docker-compose.yml
