@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export function PersonalUpdate() {
     const [formData, setFormData] = useState({
@@ -41,10 +42,12 @@ export function PersonalUpdate() {
         axios.put(`${import.meta.env.VITE_API_URL}/putPersonal.php?id=${id}`, formData)
             .then(res => {
                 console.log(res);
+                toast.success("Cambios guardados con éxito");
                 navigate('/personal');
             })
             .catch(error => {
                 console.error('Error al actualizar el registro:', error);
+                toast.error("Error al guardar los datos. Inténtalo de nuevo.");
             });
     }
 

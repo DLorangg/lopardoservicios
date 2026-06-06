@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa';
 import LogoCompleto from '../../Assets/Logo_Completo.png';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 
 export function LoginForm({ setAuthenticated }) {
   const [username, setUsername] = useState('');
@@ -25,7 +24,7 @@ export function LoginForm({ setAuthenticated }) {
         });
 
         // Desestructura los datos de la respuesta
-        const { userName, userRole, token, message } = response.data;
+        const { userName, userRole, token } = response.data;
 
         // Verifica que se reciban el nombre de usuario, el rol y el token
         if (userName && userRole && token) {
@@ -33,7 +32,7 @@ export function LoginForm({ setAuthenticated }) {
             localStorage.setItem('userRole', userRole);
             localStorage.setItem('token', token); // Guardar el token
             setAuthenticated(true);
-            toast.success(message); // Mostrar el mensaje de éxito
+            toast.success("¡Inicio de sesión exitoso! Bienvenido."); // Mostrar el mensaje de éxito
 
             // Verifica la contraseña para decidir si mostrar el cambio de contraseña
             if (password === '1234') {
@@ -52,7 +51,11 @@ export function LoginForm({ setAuthenticated }) {
         }
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        toast.error('Error al iniciar sesión. Verifica tus credenciales.');
+        if (error.response && error.response.status === 401) {
+            toast.error("Credenciales incorrectas. Inténtalo de nuevo.");
+        } else {
+            toast.error('Error al iniciar sesión. Verifica tus credenciales.');
+        }
     }
   };
 
@@ -65,7 +68,7 @@ export function LoginForm({ setAuthenticated }) {
         newPassword: newPassword,
       });
 
-      toast.success(response.data.message);
+      toast.success(response.data.message || 'Contraseña cambiada exitosamente');
       setNewPassword('');
       setShowChangePassword(false); // Ocultar el formulario después de cambiar la contraseña
       navigate('/'); // Redirigir al home después de cambiar la contraseña
@@ -106,7 +109,6 @@ export function LoginForm({ setAuthenticated }) {
           color: #ccc; /* Cambia el color del texto del placeholder */
         }
       `}</style>
-      <ToastContainer />
       <div
         style={{
           width: '420px',

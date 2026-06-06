@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './personal.css';
 import Rouben from '../../../Assets/Rouben.otf';
 
@@ -38,13 +39,17 @@ function DatosList(props) {
   useEffect(() => fetchPersonal(), []);
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/deletePersonal.php`, {
-        params: { IdPersonal: id }
-      });
-      fetchPersonal();
-    } catch (error) {
-      console.log(error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.")) {
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/deletePersonal.php`, {
+          params: { IdPersonal: id }
+        });
+        toast.success("Registro eliminado correctamente");
+        fetchPersonal();
+      } catch (error) {
+        console.log(error);
+        toast.error("No se pudo eliminar el registro.");
+      }
     }
   }
   
@@ -100,10 +105,12 @@ function DatosForm(props) {
     axios.post(`${import.meta.env.VITE_API_URL}/postPersonal.php`, formValues)
       .then(res => {
         console.log(res);
+        toast.success("Cambios guardados con éxito");
         navigate(props.ShowList());
       })
       .catch(error => {
         console.error('Error al crear el registro:', error);
+        toast.error("Error al guardar los datos. Inténtalo de nuevo.");
       });
   }
 

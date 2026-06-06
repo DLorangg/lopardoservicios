@@ -3,6 +3,7 @@ import LogoutIcon from '../../Assets/logout.png';
 import CirculoLogo from '../../Assets/Circulo_Logo.png';
 import SearchIcon from '../../Assets/search.png';  
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './layout.css';
 
 export function Navbar({ setAuthenticated }) {
@@ -10,6 +11,7 @@ export function Navbar({ setAuthenticated }) {
   const location = useLocation();
 
   const handleLogout = () => {
+    toast.success("Sesión cerrada correctamente. ¡Hasta luego!");
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     setAuthenticated(false);

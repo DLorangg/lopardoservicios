@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export function EquipoUpdate() {
   const [Nombre, setNombre] = useState('');
@@ -32,10 +33,12 @@ export function EquipoUpdate() {
     axios.put(`${import.meta.env.VITE_API_URL}/putEquipamiento.php/${id}`, { Nombre })
       .then(res => {
         console.log(res);
+        toast.success("Cambios guardados con éxito");
         navigate('../equipo');
       })
       .catch(error => {
         console.error('Error al actualizar el equipamiento:', error);
+        toast.error("Error al guardar los datos. Inténtalo de nuevo.");
       });
   }
 

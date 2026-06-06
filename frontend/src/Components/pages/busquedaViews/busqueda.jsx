@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
+import toast from 'react-hot-toast';
 import Rouben from '../../../Assets/Rouben.otf';
 
 // --- FUNCIONES AUXILIARES DE FECHAS (FORMATO ARGENTINO DD/MM/YYYY) ---
@@ -173,14 +174,18 @@ export function BusquedaList() {
   });
   
   const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
-      .then((response) => {
-        console.log(response.data.message);
-        fetchVisita();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la visita:", error);
-      });
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.")) {
+      axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
+        .then((response) => {
+          console.log(response.data.message);
+          toast.success("Registro eliminado correctamente");
+          fetchVisita();
+        })
+        .catch((error) => {
+          console.error("Error al eliminar la visita:", error);
+          toast.error("No se pudo eliminar el registro.");
+        });
+    }
   };
 
   const handleFilterChange = (event) => {

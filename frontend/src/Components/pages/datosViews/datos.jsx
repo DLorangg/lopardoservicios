@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 import {ModalComponent} from "../modal"
 import { ModalUpdateComponent } from '../modalUpdate';
@@ -141,14 +142,18 @@ export function DatosList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
-      .then((response) => {
-        console.log(response.data.message);
-        fetchVisita();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la visita:", error);
-      });
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.")) {
+      axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
+        .then((response) => {
+          console.log(response.data.message);
+          toast.success("Registro eliminado correctamente");
+          fetchVisita();
+        })
+        .catch((error) => {
+          console.error("Error al eliminar la visita:", error);
+          toast.error("No se pudo eliminar el registro.");
+        });
+    }
   };
 
   const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
@@ -370,10 +375,12 @@ export function DatosForm(props) {
         axios.delete(`${import.meta.env.VITE_API_URL}/deleteCliente.php?IdCliente=${idCliente}`) // Asegúrate de usar 'IdCliente'
             .then(response => {
                 console.log(response.data.message);
+                toast.success("Registro eliminado correctamente");
                 fetchCliente(); // Llama a la función para actualizar la lista de clientes
             })
             .catch(error => {
                 console.error("Hubo un error al eliminar el cliente:", error);
+                toast.error("No se pudo eliminar el registro.");
             });
     }
   };
@@ -459,12 +466,12 @@ export function DatosForm(props) {
     })
     .then(response => {
       console.log(response);
-      alert('Visita creada exitosamente');
+      toast.success("Cambios guardados con éxito");
       props.ShowList(); // Navigate back to the list
     })
     .catch(error => {
       console.error('Error al crear la visita:', error);
-      alert('Error al crear la visita. ' + (error.response?.data?.message || ''));
+      toast.error("Error al guardar los datos. Inténtalo de nuevo.");
     });
   };  
   

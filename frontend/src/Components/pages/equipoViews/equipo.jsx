@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import {Link, useNavigate} from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Rouben from '../../../Assets/Rouben.otf';
 
 export function Equipo() {
@@ -41,15 +42,17 @@ function DatosList(props) {
 
 
   const handleDelete = async (id) => {
-
-    try{
-      await axios.delete(`${import.meta.env.VITE_API_URL}/deleteEquipamiento.php/`+id)
-      fetchEquipo()
-    }catch(error){
-      console.log(error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.")) {
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/deleteEquipamiento.php/` + id);
+        toast.success("Registro eliminado correctamente");
+        fetchEquipo();
+      } catch (error) {
+        console.log(error);
+        toast.error("No se pudo eliminar el registro.");
+      }
     }
-
-  }
+  };
   
 
   return (
@@ -98,17 +101,19 @@ function DatosForm(props) {
   const navigate = useNavigate();
 
   function handleSubmit(event) {
-  
-
       event.preventDefault();
 
       axios.post(`${import.meta.env.VITE_API_URL}/postEquipamiento.php`,{Nombre})
       .then(res => {
         console.log(res);
         console.log(Nombre);
+        toast.success("Cambios guardados con éxito");
         navigate(props.ShowList());
       })
-
+      .catch(error => {
+        console.error('Error al crear el equipo:', error);
+        toast.error("Error al guardar los datos. Inténtalo de nuevo.");
+      });
   }
 
   return (

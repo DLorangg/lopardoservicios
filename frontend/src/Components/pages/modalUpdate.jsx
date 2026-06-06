@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export function ModalUpdateComponent({ show, handleClose, updateClientes, clienteData: initialClienteData }) {
   const [clienteData, setClienteData] = useState({
@@ -69,15 +70,14 @@ export function ModalUpdateComponent({ show, handleClose, updateClientes, client
     axios.put(`${import.meta.env.VITE_API_URL}/putCliente.php?id=${initialClienteData.IdCliente}`, clienteData)
     .then(response => {
       console.log('Cliente actualizado:', response.data);
-      alert('Cliente actualizado exitosamente');
+      toast.success("Cambios guardados con éxito");
       handleClose();
       updateClientes(); 
     })
     .catch(error => {
       console.error('Error al actualizar cliente:', error);
-      alert('Error al actualizar cliente');
+      toast.error("Error al guardar los datos. Inténtalo de nuevo.");
     });
-
   };
 
   return (

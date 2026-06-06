@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export function ModalComponent({ show, handleClose, updateClientes }) {
   const [clienteData, setClienteData] = useState({
@@ -60,13 +61,13 @@ export function ModalComponent({ show, handleClose, updateClientes }) {
     axios.post(`${import.meta.env.VITE_API_URL}/postCliente.php`, clienteDataToSend)
       .then(response => {
         console.log('Cliente creado:', response.data);
-        alert('Cliente creado exitosamente');
+        toast.success("Cambios guardados con éxito");
         handleClose();
         updateClientes(); 
       })
       .catch(error => {
         console.error('Error al crear cliente:', error);
-        alert('Error al crear cliente');
+        toast.error("Error al guardar los datos. Inténtalo de nuevo.");
       });
   };
 

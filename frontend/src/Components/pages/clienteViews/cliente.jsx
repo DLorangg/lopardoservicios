@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ModalUpdateComponent } from '../modalUpdate';
 import { ModalComponent } from '../modal'; // Importa el modal para nuevos clientes
+import toast from 'react-hot-toast';
 
 export function Clientes() {
   const [content, setContent] = useState(<ClientesList ShowForm={ShowForm} />);
@@ -60,12 +61,18 @@ export function ClientesList(props) {
   });
 
   const handleDelete = (id) => {
-    axios.delete(`${import.meta.env.VITE_API_URL}/deleteCliente.php?IdCliente=${id}`)
-    .then((response) => {
-      console.log(response.data.message);
-      fetchCliente(); 
-    })
-    .catch((error) => console.error("Error al eliminar el cliente:", error));
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.")) {
+      axios.delete(`${import.meta.env.VITE_API_URL}/deleteCliente.php?IdCliente=${id}`)
+      .then((response) => {
+        console.log(response.data.message);
+        toast.success("Registro eliminado correctamente");
+        fetchCliente(); 
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el cliente:", error);
+        toast.error("No se pudo eliminar el registro.");
+      });
+    }
   };
 
   const handleEdit = (cliente) => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Form, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export function DatosUpdate() {
   const [dataVisita, setDataVisita] = useState([]);
@@ -140,12 +141,13 @@ export function DatosUpdate() {
     })
     .then(res => {
         console.log("Respuesta del servidor:", res);
+        toast.success("Cambios guardados con éxito");
         const redirectTo = location.state?.from === 'busqueda' ? '../busqueda' : '../datos'; 
         navigate(redirectTo);
     })
     .catch(error => {
         console.error('Error al actualizar la visita:', error);
-        alert('Error al actualizar la visita. ' + (error.response?.data?.message || ''));
+        toast.error("Error al guardar los datos. Inténtalo de nuevo.");
     });
   };
 
