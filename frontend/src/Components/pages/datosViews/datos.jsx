@@ -31,16 +31,27 @@ export function DatosList(props) {
   const [dataCliente, setDataCliente] = useState([]);
   const [sortBy, setSortBy] = useState('Fecha');
   const [sortDirection, setSortDirection] = useState('asc');
-  let location = useLocation()
+  let location = useLocation();
+
+  // Estados de paginación
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [limit, setLimit] = useState(50);
 
   // Función para obtener datos de visitas desde el servidor
-  const fetchVisita = () => {
+  const fetchVisita = (pageNumber = page, currentLimit = limit) => {
     const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
+    const offset = (pageNumber - 1) * currentLimit;
     axios.get(`${import.meta.env.VITE_API_URL}/getVisitas.php`, {
-      params: { rol: userRole } // Pasar el rol como parámetro de la consulta
+      params: { 
+        rol: userRole,
+        limit: currentLimit,
+        offset: offset
+      } // Pasar el rol, limit y offset como parámetros de consulta
     })
     .then((response) => {
-      setDataVisita(response.data);
+      setDataVisita(response.data.data || []);
+      setTotalRecords(response.data.total || 0);
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -58,13 +69,33 @@ export function DatosList(props) {
       });
   };
 
-  // Ejecutar fetch de datos al montar el componente
+  // Obtener datos iniciales al montar el componente
   useEffect(() => {
-    fetchVisita();
     fetchCliente();
     setSortBy('Fecha');
     setSortDirection('desc');
   }, []);
+
+  // Fetch visitas cuando cambia la página
+  useEffect(() => {
+    fetchVisita(page, limit);
+  }, [page]);
+
+  // Evitar fetch duplicado en el montaje inicial
+  const isMounted = useRef(false);
+
+  // Reiniciar a página 1 y recargar cuando cambia limit
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    if (page !== 1) {
+      setPage(1);
+    } else {
+      fetchVisita(1, limit);
+    }
+  }, [limit]);
 
   // Formatear la fecha para mostrarla en la tabla
   const formatFecha = (fecha) => {
@@ -119,6 +150,8 @@ export function DatosList(props) {
         console.error("Error al eliminar la visita:", error);
       });
   };
+
+  const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
 
   return (
     <>
@@ -181,6 +214,50 @@ export function DatosList(props) {
           ))}
         </tbody>
       </table>
+
+      {/* Controles de Paginación */}
+      <div className="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
+        <div className="d-flex align-items-center gap-2">
+          <label htmlFor="limit-select" style={{ fontWeight: '500', color: '#001461', marginBottom: 0 }}>
+            Filas por página:
+          </label>
+          <select
+            id="limit-select"
+            className="form-select form-select-sm"
+            style={{ width: 'auto', borderColor: '#140097', color: '#001461' }}
+            value={limit}
+            onChange={(e) => setLimit(parseInt(e.target.value, 10))}
+          >
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+          </select>
+        </div>
+
+        <div className="d-flex align-items-center gap-3">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            style={{ borderColor: '#140097', color: '#140097' }}
+            disabled={page === 1}
+            onClick={() => setPage(prev => Math.max(1, prev - 1))}
+          >
+            Anterior
+          </button>
+          <span style={{ fontWeight: '500', color: '#001461' }}>
+            Página {page} de {totalPages}
+          </span>
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            style={{ borderColor: '#140097', color: '#140097' }}
+            disabled={page >= totalPages}
+            onClick={() => setPage(prev => prev + 1)}
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </>
   );
 }

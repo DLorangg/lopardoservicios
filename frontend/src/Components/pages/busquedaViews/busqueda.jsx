@@ -27,6 +27,12 @@ export function BusquedaList() {
   const [dataCliente, setDataCliente] = useState([]);
   const [sortBy, setSortBy] = useState('Fecha'); // Columna por defecto para ordenar por fecha
   const [sortDirection, setSortDirection] = useState('asc'); // Dirección por defecto ascendente (viejas a nuevas)
+  
+  // Estados de paginación
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [limit, setLimit] = useState(50);
+
   const [filters, setFilters] = useState({
     fechaCobro: '',
     fechaDesde: '',
@@ -35,9 +41,9 @@ export function BusquedaList() {
     idCliente: ''
   });
 
-
-  const fetchVisita = () => {
+  const fetchVisita = (pageNumber = page, currentLimit = limit) => {
     const userRole = localStorage.getItem('userRole');
+    const offset = (pageNumber - 1) * currentLimit;
     axios.get(`${import.meta.env.VITE_API_URL}/getVisitasFiltradas.php`, {
       params: { 
         rol: userRole,
@@ -45,12 +51,14 @@ export function BusquedaList() {
         fechaDesde: filters.fechaDesde,
         fechaHasta: filters.fechaHasta,
         idEstado: filters.idEstado,
-        idCliente: filters.idCliente
+        idCliente: filters.idCliente,
+        limit: currentLimit,
+        offset: offset
       }
     })
-
     .then((response) => {
-        setDataVisita(response.data);
+        setDataVisita(response.data.data || []);
+        setTotalRecords(response.data.total || 0);
     })
     .catch((error) => {
         console.error("Error fetching data:", error);
@@ -67,12 +75,17 @@ export function BusquedaList() {
       });
   }
 
+  // Obtener datos iniciales al montar el componente
   useEffect(() => {
-    fetchVisita();
     fetchCliente();
     setSortBy('Fecha');
     setSortDirection('desc');
-  }, [filters]);
+  }, []);
+
+  // Fetch visitas cuando cambian la página, límite o filtros
+  useEffect(() => {
+    fetchVisita(page, limit);
+  }, [page, limit, filters]);
 
   const formatFecha = (fecha) => {
     if (!fecha) return "-";
@@ -131,7 +144,6 @@ export function BusquedaList() {
     }
   });
   
-
   const handleDelete = (id) => {
     axios.delete(`${import.meta.env.VITE_API_URL}/deleteVisita.php/${id}`)
       .then((response) => {
@@ -149,7 +161,10 @@ export function BusquedaList() {
       ...prevFilters,
       [name]: value
     }));
+    setPage(1);
   };
+
+  const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
 
   return (
     <>
@@ -215,11 +230,13 @@ export function BusquedaList() {
                 </option>
             ))}
           </select>
-
         </div>
       </div>
       <button
-        onClick={() => setFilters({ fechaCobro: '', fechaDesde: '', fechaHasta: '', idEstado: '', idCliente: '' })}
+        onClick={() => {
+          setFilters({ fechaCobro: '', fechaDesde: '', fechaHasta: '', idEstado: '', idCliente: '' });
+          setPage(1);
+        }}
         type="button"
         className="btn btn-outline-secondary mb-3"
       >
@@ -229,18 +246,16 @@ export function BusquedaList() {
       <table className="table">
         <thead>
           <tr>
-          <th style={{ width: '15%' }}>
-            Cliente{' '}
-            <button
-              type="button"
-              className="btn btn-outline-primary btn-sm"
-              onClick={() => sortByColumn('Nombre')}
-            >
-              {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
-            </button>
-          </th>
-
-
+            <th style={{ width: '15%' }}>
+              Cliente{' '}
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => sortByColumn('Nombre')}
+              >
+                {sortDirection === 'asc' ? <>&uarr;</> : <>&darr;</>}
+              </button>
+            </th>
             <th style={{ width: '25%' }}>Dirección</th>
             <th style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '10%' }}>
@@ -283,6 +298,53 @@ export function BusquedaList() {
           ))}
         </tbody>
       </table>
+
+      {/* Controles de Paginación */}
+      <div className="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
+        <div className="d-flex align-items-center gap-2">
+          <label htmlFor="limit-select" style={{ fontWeight: '500', color: '#001461', marginBottom: 0 }}>
+            Filas por página:
+          </label>
+          <select
+            id="limit-select"
+            className="form-select form-select-sm"
+            style={{ width: 'auto', borderColor: '#140097', color: '#001461' }}
+            value={limit}
+            onChange={(e) => {
+              setLimit(parseInt(e.target.value, 10));
+              setPage(1);
+            }}
+          >
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+          </select>
+        </div>
+
+        <div className="d-flex align-items-center gap-3">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            style={{ borderColor: '#140097', color: '#140097' }}
+            disabled={page === 1}
+            onClick={() => setPage(prev => Math.max(1, prev - 1))}
+          >
+            Anterior
+          </button>
+          <span style={{ fontWeight: '500', color: '#001461' }}>
+            Página {page} de {totalPages}
+          </span>
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            style={{ borderColor: '#140097', color: '#140097' }}
+            disabled={page >= totalPages}
+            onClick={() => setPage(prev => prev + 1)}
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </>
   );
 }

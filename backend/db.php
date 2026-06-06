@@ -1,7 +1,16 @@
 <?php
 // --- CONFIGURACIÓN DE CORS ---
-// Permitir solicitudes desde cualquier origen (útil para desarrollo)
-header("Access-Control-Allow-Origin: *");
+$allowed_origins = [
+    'http://localhost:5173',
+    'https://lopardoservicios.com'
+];
+
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $origin = $_SERVER['HTTP_ORIGIN'];
+    if (in_array($origin, $allowed_origins)) {
+        header("Access-Control-Allow-Origin: " . $origin);
+    }
+}
 // Permitir los métodos HTTP que usa tu aplicación
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 // Permitir los encabezados que Axios y Fetch envían

@@ -4,7 +4,6 @@ import App from './App';
 import axios from 'axios'; // Importamos axios
 
 // --- INTERCEPTOR GLOBAL DE AXIOS ---
-// Esto intercepta TODAS las peticiones antes de que salgan al backend
 axios.interceptors.request.use(
   (config) => {
     // Buscamos el token guardado en el navegador
@@ -16,6 +15,19 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+axios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );
