@@ -17,16 +17,33 @@ import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [showCacheAlert, setShowCacheAlert] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setAuthenticated(true);
     }
+
+    const cacheNotified = localStorage.getItem('lopardo_v2_cache_notified');
+    if (!cacheNotified) {
+      setShowCacheAlert(true);
+    }
   }, []);
+
+  const handleDismissAlert = () => {
+    localStorage.setItem('lopardo_v2_cache_notified', 'true');
+    setShowCacheAlert(false);
+  };
 
   return (
     <div>
+      {showCacheAlert && (
+        <div className="alert alert-warning alert-dismissible fade show m-0 text-center" role="alert" style={{ borderRadius: 0 }}>
+          ⚠️ <strong>¡Actualización importante!</strong> Si notas problemas al cargar los datos o las fechas, por favor limpia la caché de tu navegador (Ctrl + F5 o Ctrl + Shift + R).
+          <button type="button" className="btn-close" aria-label="Close" onClick={handleDismissAlert}></button>
+        </div>
+      )}
       <Navbar setAuthenticated={setAuthenticated} />
       <Routes>
         <Route path='/' element={authenticated ? <Home /> : <Navigate to='/login' replace />} />

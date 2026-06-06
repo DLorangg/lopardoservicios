@@ -31,12 +31,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Iterar sobre los archivos subidos
     foreach ($_FILES['files']['tmp_name'] as $key => $tmpName) {
-        $fileName = time() . '-' . basename($_FILES['files']['name'][$key]); // Guardar archivos con timestamp
+        $originalName = $_FILES['files']['name'][$key];
+        $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+        // 1. Validación secundaria de extensión
+        if (!in_array($extension, ['jpg', 'jpeg', 'png', 'pdf'])) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Invalid file extension: .' . $extension]);
+            exit;
+        }
+
+        // 2. Sanitizar el nombre del archivo original
+        $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+        $baseName = strtolower($baseName);
+
+        // Quitar acentos/tildes
+        $accents = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'ü' => 'u', 'ñ' => 'n',
+            'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o',
+            'â' => 'a', 'ê' => 'e', 'î' => 'i', 'ô' => 'o', 'û' => 'u'
+        ];
+        $baseName = strtr($baseName, $accents);
+
+        // Reemplazar espacios por guiones bajos
+        $baseName = str_replace(' ', '_', $baseName);
+
+        // Eliminar caracteres especiales (dejar solo alfanuméricos y guiones bajos)
+        $baseName = preg_replace('/[^a-z0-9_]/', '', $baseName);
+
+        // Asignar nombre seguro alternativo si quedó vacío
+        if (empty($baseName)) {
+            $baseName = 'file';
+        }
+
+        // Generar nombre de archivo final seguro
+        $fileName = time() . '-' . $baseName . '.' . $extension;
         $targetFilePath = $uploadDir . $fileName;
 
-        // Comprobar el tipo de archivo (incluyendo jpg)
+        // 3. Comprobar el tipo de archivo MIME de forma estricta
         $fileType = mime_content_type($tmpName);
-        if (!in_array($fileType, ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'])) {
+        if (!in_array($fileType, ['image/jpeg', 'image/png', 'application/pdf'])) {
             http_response_code(400);
             echo json_encode(['message' => 'Invalid file type: ' . $fileType]);
             exit;
