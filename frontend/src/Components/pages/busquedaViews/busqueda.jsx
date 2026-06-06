@@ -4,6 +4,28 @@ import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import Rouben from '../../../Assets/Rouben.otf';
 
+// --- FUNCIONES AUXILIARES DE FECHAS (FORMATO ARGENTINO DD/MM/YYYY) ---
+const applyDateMask = (val) => {
+  const cleanVal = val.replace(/\D/g, '').slice(0, 8);
+  if (cleanVal.length > 4) {
+    return `${cleanVal.slice(0, 2)}/${cleanVal.slice(2, 4)}/${cleanVal.slice(4)}`;
+  } else if (cleanVal.length > 2) {
+    return `${cleanVal.slice(0, 2)}/${cleanVal.slice(2)}`;
+  }
+  return cleanVal;
+};
+
+const formatApiDate = (date) => {
+  if (!date) return '';
+  if (date.length === 10) {
+    const parts = date.split('/');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+  }
+  return '';
+};
+
 export function Busqueda() {
   const [content, setContent] = useState(<BusquedaList ShowForm={ShowForm} />);
 
@@ -44,12 +66,18 @@ export function BusquedaList() {
   const fetchVisita = (pageNumber = page, currentLimit = limit) => {
     const userRole = localStorage.getItem('userRole');
     const offset = (pageNumber - 1) * currentLimit;
+    
+    // Convertir fechas de formato argentino DD/MM/YYYY a YYYY-MM-DD para el backend
+    const apiFechaCobro = formatApiDate(filters.fechaCobro);
+    const apiFechaDesde = formatApiDate(filters.fechaDesde);
+    const apiFechaHasta = formatApiDate(filters.fechaHasta);
+
     axios.get(`${import.meta.env.VITE_API_URL}/getVisitasFiltradas.php`, {
       params: { 
         rol: userRole,
-        fechaCobro: filters.fechaCobro,
-        fechaDesde: filters.fechaDesde,
-        fechaHasta: filters.fechaHasta,
+        fechaCobro: apiFechaCobro,
+        fechaDesde: apiFechaDesde,
+        fechaHasta: apiFechaHasta,
         idEstado: filters.idEstado,
         idCliente: filters.idCliente,
         limit: currentLimit,
@@ -156,7 +184,10 @@ export function BusquedaList() {
   };
 
   const handleFilterChange = (event) => {
-    const { name, value } = event.target;
+    let { name, value } = event.target;
+    if (name === 'fechaCobro' || name === 'fechaDesde' || name === 'fechaHasta') {
+      value = applyDateMask(value);
+    }
     setFilters(prevFilters => ({
       ...prevFilters,
       [name]: value
@@ -179,9 +210,11 @@ export function BusquedaList() {
         <div className="col-md-3">
           <label className="form-label">Fecha de Cobro</label>
           <input
-            type="date"
+            type="text"
             name="fechaCobro"
             className="form-control"
+            placeholder="DD/MM/YYYY"
+            maxLength={10}
             value={filters.fechaCobro}
             onChange={handleFilterChange}
           />
@@ -189,9 +222,11 @@ export function BusquedaList() {
         <div className="col-md-3">
           <label className="form-label">Desde</label>
           <input
-            type="date"
+            type="text"
             name="fechaDesde"
             className="form-control"
+            placeholder="DD/MM/YYYY"
+            maxLength={10}
             value={filters.fechaDesde}
             onChange={handleFilterChange}
           />
@@ -199,9 +234,11 @@ export function BusquedaList() {
         <div className="col-md-3">
           <label className="form-label">Hasta</label>
           <input
-            type="date"
+            type="text"
             name="fechaHasta"
             className="form-control"
+            placeholder="DD/MM/YYYY"
+            maxLength={10}
             value={filters.fechaHasta}
             onChange={handleFilterChange}
           />
