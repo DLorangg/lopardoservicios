@@ -51,7 +51,7 @@ try {
 
     // --- 3. Handle File Uploads ---
     if (!empty($_FILES['adjuntos'])) {
-        $uploadDir = '../../uploads/';
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
@@ -73,7 +73,22 @@ try {
             $fileError = $files['error'][$i];
 
             if ($fileError === UPLOAD_ERR_OK) {
-                $uniqueName = time() . '-' . uniqid('', true) . '-' . basename($fileName);
+                // Extraer el tipo MIME real y validar
+                $realMime = mime_content_type($tmpName);
+                if (!in_array($realMime, ['image/jpeg', 'image/png', 'application/pdf'])) {
+                    throw new Exception("Tipo MIME no permitido: $realMime");
+                }
+
+                // Extraer la extensión y validar
+                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                if (!in_array($extension, ['jpg', 'jpeg', 'png', 'pdf'])) {
+                    throw new Exception("Extensión de archivo no permitida: $extension");
+                }
+
+                // Sanitizar el nombre del archivo original
+                $sanitizedFileName = preg_replace('/[^a-zA-Z0-9.]/u', '_', basename($fileName));
+
+                $uniqueName = time() . '-' . uniqid('', true) . '-' . $sanitizedFileName;
                 $targetFilePath = $uploadDir . $uniqueName;
                 $urlPath = '/uploads/' . $uniqueName; // Path to be stored in DB
 

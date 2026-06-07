@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
 import './datosDetalle.css';
 import { format, parseISO } from 'date-fns';
 
@@ -30,8 +29,6 @@ function DatosDetalle() {
   const [dataPersonal, setDataPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [modalImage, setModalImage] = useState('');
 
   const { id } = useParams();
   const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
@@ -135,32 +132,7 @@ function DatosDetalle() {
   const equipamientoVisitaNombre = getEquipamientoNames(visitaActual.IdEquipamiento || '');
   
 
-  const getFileType = (url) => {
-    const extension = url.split('.').pop().toLowerCase();
-    if (['pdf'].includes(extension)) {
-      return 'pdf';
-    }
-    if (['png', 'jpg', 'jpeg', 'gif'].includes(extension)) {
-      return 'image';
-    }
-    return 'other';
-  };
-
-  const adjuntos = visitaActual.adjuntos ? visitaActual.adjuntos.map(adjunto => ({
-    url: `https://lopardoservicios.com${adjunto.URL}`,
-    nombre: adjunto.NombreOriginal,
-    type: getFileType(`https://lopardoservicios.com${adjunto.URL}`)
-  })) : [];
-
-  const handleImageClick = (url) => {
-    setModalImage(url);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setModalImage('');
-  };
+  const baseUrl = import.meta.env.VITE_API_URL.replace('/backend/routes', '').replace('/routes', '');
 
   return (
     <div className="container">
@@ -247,26 +219,28 @@ function DatosDetalle() {
           <div className="form-group detalle-item">
           <label className="font-weight-bold">Adjuntos: </label>
           <div>
-            {adjuntos.length > 0 ? (
-              adjuntos.map((adjunto, index) => (
-                <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}>
-                  {adjunto.type === 'image' ? (
-                    <img
-                      src={adjunto.url}
-                      alt={`Adjunto ${index + 1}`}
-                      title={adjunto.nombre}
-                      style={{ width: '100px', cursor: 'pointer' }}
-                      onClick={() => handleImageClick(adjunto.url)}
-                    />
-                  ) : adjunto.type === 'pdf' ? (
-                    <a href={adjunto.url} target="_blank" rel="noopener noreferrer" title={adjunto.nombre}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    </a>
-                  ) : (
-                    <a href={adjunto.url} target="_blank" rel="noopener noreferrer" title={adjunto.nombre}>Ver adjunto</a>
-                  )}
-                </div>
-              ))
+            {visitaActual.adjuntos && visitaActual.adjuntos.length > 0 ? (
+              visitaActual.adjuntos.map((adjunto, index) => {
+                const fileUrl = baseUrl + adjunto.URL;
+                const isImage = fileUrl.match(/\.(jpeg|jpg|png)$/i);
+                return (
+                  <div key={index} style={{ display: 'inline-block', marginRight: '10px', verticalAlign: 'middle' }}>
+                    {isImage ? (
+                      <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={fileUrl}
+                          alt="Adjunto"
+                          style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }}
+                        />
+                      </a>
+                    ) : (
+                      <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info btn-sm">
+                        Ver Documento
+                      </a>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <p>No hay adjuntos.</p>
             )}
@@ -278,22 +252,8 @@ function DatosDetalle() {
         </div>
       </div>
     </div>
-
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Imagen</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <img src={modalImage} alt="Imagen Grande" style={{ width: '100%', height: 'auto' }} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  );
+  </div>
+);
 }
 
 export default DatosDetalle;

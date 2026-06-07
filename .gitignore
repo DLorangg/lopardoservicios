@@ -19,3 +19,4 @@ db_data/
 *.log
 .DS_Store
 docker-compose.yml
+uploads/  # Ignoramos la carpeta uploads para evitar subir archivos subidos por los usuarios

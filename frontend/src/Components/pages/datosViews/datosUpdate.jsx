@@ -151,6 +151,8 @@ export function DatosUpdate() {
     });
   };
 
+  const baseUrl = import.meta.env.VITE_API_URL.replace('/backend/routes', '').replace('/routes', '');
+
   return (
     <>
     <div className="container my-5" style={{border: '1px solid #001461'}}>
@@ -357,16 +359,33 @@ export function DatosUpdate() {
                 <div>
                   <h6>Adjuntos existentes:</h6>
                   <ul className="list-group mb-3">
-                    {adjuntos.map(adjunto => (
-                      <li key={adjunto.IdAdjunto} className="list-group-item d-flex justify-content-between align-items-center">
-                        <a href={`https://lopardoservicios.com${adjunto.URL}`} target="_blank" rel="noopener noreferrer">
-                          {adjunto.NombreOriginal}
-                        </a>
-                        <button type="button" className="btn btn-danger btn-sm" onClick={() => handleRemoveExistingFile(adjunto.IdAdjunto)}>
-                          Eliminar
-                        </button>
-                      </li>
-                    ))}
+                    {adjuntos.map(adjunto => {
+                      const fileUrl = baseUrl + adjunto.URL;
+                      const isImage = fileUrl.match(/\.(jpeg|jpg|png)$/i);
+                      return (
+                        <li key={adjunto.IdAdjunto} className="list-group-item d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center gap-2">
+                            {isImage ? (
+                              <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                                <img
+                                  src={fileUrl}
+                                  alt="Adjunto"
+                                  style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }}
+                                />
+                              </a>
+                            ) : (
+                              <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info btn-sm">
+                                Ver Documento
+                              </a>
+                            )}
+                            <span className="ms-2 text-muted" style={{ fontSize: '0.85rem' }}>{adjunto.NombreOriginal}</span>
+                          </div>
+                          <button type="button" className="btn btn-danger btn-sm" onClick={() => handleRemoveExistingFile(adjunto.IdAdjunto)}>
+                            Eliminar
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}

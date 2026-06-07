@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 import {ModalComponent} from "../modal"
 import { ModalUpdateComponent } from '../modalUpdate';
@@ -466,12 +466,18 @@ export function DatosForm(props) {
     })
     .then(response => {
       console.log(response);
-      toast.success("Cambios guardados con éxito");
-      props.ShowList(); // Navigate back to the list
+      if (response.status === 200 && response.data && response.data.success) {
+        toast.success('Visita y adjuntos creados exitosamente');
+        props.ShowList(); // Navigate back to the list
+      } else {
+        const errorMsg = response.data?.error || response.data?.details || 'Error desconocido';
+        toast.error('Error: ' + errorMsg);
+      }
     })
     .catch(error => {
       console.error('Error al crear la visita:', error);
-      toast.error("Error al guardar los datos. Inténtalo de nuevo.");
+      const mensajeExtraido = error.response?.data?.details || error.response?.data?.error || error.message || 'Error desconocido';
+      toast.error('Error: ' + mensajeExtraido);
     });
   };  
   

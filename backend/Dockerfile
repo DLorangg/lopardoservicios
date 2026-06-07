@@ -8,3 +8,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 
 # Damos permisos al directorio de trabajo
 RUN chown -R www-data:www-data /var/www/html
+
+# NUEVO: Creamos la carpeta uploads fuera del html y le damos permisos
+# Creamos la carpeta uploads dentro del html y le damos permisos
+RUN mkdir -p /var/www/html/uploads && chown -R www-data:www-data /var/www/html/uploads
