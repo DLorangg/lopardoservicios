@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster, toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { Navbar, Footer } from './Components/pages/layout';
 import { Home } from './Components/pages/home';
 import { Datos } from './Components/pages/datosViews/datos';
@@ -40,7 +40,7 @@ function App() {
   return (
     <div>
       <Toaster position="top-right" reverseOrder={false} />
-      {showCacheAlert && (
+      {authenticated && showCacheAlert && (
         <div className="alert alert-warning alert-dismissible fade show m-0 text-center" role="alert" style={{ borderRadius: 0 }}>
           ⚠️ <strong>¡Actualización del sistema!</strong> Si experimentas problemas al cargar datos o fechas, limpia la caché con Ctrl + F5
           <button type="button" className="btn-close" aria-label="Close" onClick={handleDismissAlert}></button>

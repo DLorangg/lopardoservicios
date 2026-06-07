@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa';
 import LogoCompleto from '../../Assets/Logo_Completo.png';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// eslint-disable-next-line react/prop-types
 export function LoginForm({ setAuthenticated }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +17,8 @@ export function LoginForm({ setAuthenticated }) {
     localStorage.removeItem('userName');
   }, []);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/login.php`, {
             username: username,
@@ -123,10 +125,7 @@ export function LoginForm({ setAuthenticated }) {
         }}
       >
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLogin();
-          }}
+          onSubmit={handleLogin}
           style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}
         >
           <img
