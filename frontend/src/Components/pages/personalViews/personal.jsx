@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Pencil, Trash, ArrowClockwise } from 'react-bootstrap-icons';
 import './personal.css';
 import Rouben from '../../../Assets/Rouben.otf';
 
@@ -21,7 +22,7 @@ export function Personal() {
   }
 
   return (
-    <div className="container my-5 personal-container" style={{border: '1px solid #001461'}}>
+    <div className="container my-5 bg-white rounded-4 shadow-sm p-4">
       {content}
     </div>
   );
@@ -64,8 +65,8 @@ function DatosList(props) {
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>PERSONAL</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
-      <button onClick={() => fetchPersonal()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
-      <table className="table personal-table">
+      <button onClick={() => fetchPersonal()} type="button" className="btn btn-outline-secondary"><ArrowClockwise /></button>
+      <table className="table table-hover align-middle">
         <thead>
           <tr>
             <th>ID</th>
@@ -79,11 +80,11 @@ function DatosList(props) {
               <td>{dato.IdPersonal}</td>
               <td>{dato.Nombre}</td>
               <td style={{ whiteSpace: "nowrap" }}>
-                <Link to={`/personalUpdate/${dato.IdPersonal}`} className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
-                    Editar
+                <Link to={`/personalUpdate/${dato.IdPersonal}`} className="btn btn-link text-primary p-1" title="Editar">
+                  <Pencil />
                 </Link>
-                <button type="button" className="btn btn-danger btn-sm" onClick={e => handleDelete(dato.IdPersonal)} style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}>
-                  Borrar
+                <button type="button" className="btn btn-link text-danger p-1" onClick={e => handleDelete(dato.IdPersonal)} title="Borrar">
+                  <Trash />
                 </button>
               </td>
             </tr>
