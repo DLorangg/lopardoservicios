@@ -112,16 +112,12 @@ export function LoginForm({ setAuthenticated }) {
         }
       `}</style>
       <div
+        className="bg-white rounded-4 shadow-lg text-dark"
         style={{
           width: '420px',
-          background: 'transparent',
-          border: '2px solid rgba(255, 255, 255, .2)',
-          backdropFilter: 'blur(30px)',
-          boxShadow: '0 0 10px rgba(0, 0, 0, .2)',
-          color: '#fff',
-          borderRadius: '10px',
           padding: '30px 40px',
           textAlign: 'center',
+          border: '1px solid rgba(0, 0, 0, .1)'
         }}
       >
         <form
@@ -139,7 +135,7 @@ export function LoginForm({ setAuthenticated }) {
               margin: '0 auto 30px',
             }}
           />
-          <h1 style={{ fontSize: '36px', marginBottom: '30px' }}>Iniciar sesión</h1>
+          <h1 className="text-dark" style={{ fontSize: '36px', marginBottom: '30px' }}>Iniciar sesión</h1>
 
           <div
             style={{
@@ -160,17 +156,17 @@ export function LoginForm({ setAuthenticated }) {
                 width: '100%',
                 height: '50px',
                 background: 'transparent',
-                border: '2px solid rgba(255, 255, 255, .2)',
+                border: '1px solid #ced4da',
                 outline: 'none',
                 borderRadius: '40px',
                 fontSize: '16px',
-                color: '#fff',
+                color: '#212529',
                 padding: '0 45px 0 20px',
                 boxSizing: 'border-box',
               }}
             />
             <FaUser
-              className='icon'
+              className='icon text-secondary'
               style={{
                 position: 'absolute',
                 right: '20px',
@@ -199,17 +195,17 @@ export function LoginForm({ setAuthenticated }) {
                 width: '100%',
                 height: '50px',
                 background: 'transparent',
-                border: '2px solid rgba(255, 255, 255, .2)',
+                border: '1px solid #ced4da',
                 outline: 'none',
                 borderRadius: '40px',
                 fontSize: '16px',
-                color: '#fff',
+                color: '#212529',
                 padding: '0 45px 0 20px',
                 boxSizing: 'border-box',
               }}
             />
             <FaLock
-              className='icon'
+              className='icon text-secondary'
               style={{
                 position: 'absolute',
                 right: '20px',
@@ -222,26 +218,20 @@ export function LoginForm({ setAuthenticated }) {
 
           <button
             type='submit'
+            className="btn btn-primary w-100"
             style={{
-              width: '100%',
               height: '45px',
-              background: '#fff',
-              border: 'none',
-              outline: 'none',
               borderRadius: '40px',
-              boxShadow: '0 0 10px rgba(0, 0, 0, .1)',
-              cursor: 'pointer',
               fontSize: '16px',
-              color: '#333',
               fontWeight: '700',
             }}
           >
-            Iniciar sesión
+            Ingresar
           </button>
 
           {showChangePassword && (
             <div style={{ marginTop: '20px' }}>
-              <label htmlFor='newPassword' style={{ color: '#fff', fontSize: '16px' }}>Nueva contraseña:</label>
+              <label htmlFor='newPassword' style={{ color: '#212529', fontSize: '16px', display: 'block', marginBottom: '8px' }}>Nueva contraseña:</label>
               <input
                 type='password'
                 name='newPassword'
@@ -253,11 +243,11 @@ export function LoginForm({ setAuthenticated }) {
                   width: '100%',
                   height: '50px',
                   background: 'transparent',
-                  border: '2px solid rgba(255, 255, 255, .2)',
+                  border: '1px solid #ced4da',
                   outline: 'none',
                   borderRadius: '40px',
                   fontSize: '16px',
-                  color: '#fff',
+                  color: '#212529',
                   padding: '0 45px 0 20px',
                   boxSizing: 'border-box',
                 }}
@@ -265,16 +255,12 @@ export function LoginForm({ setAuthenticated }) {
               <button
                 type='button'
                 onClick={handleChangePassword}
+                className="btn btn-secondary w-100"
                 style={{
-                  marginTop: '10px',
-                  background: '#FFFFFF',
-                  border: '2px solid #FFFFFF',
-                  color: '#333',
-                  fontWeight: '700',
+                  marginTop: '15px',
                   borderRadius: '40px',
-                  padding: '10px 20px',
+                  fontWeight: '700',
                   fontSize: '16px',
-                  cursor: 'pointer',
                 }}
               >
                 Cambiar contraseña

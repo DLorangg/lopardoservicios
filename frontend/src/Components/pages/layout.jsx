@@ -56,7 +56,7 @@ export function Navbar({ setAuthenticated }) {
             src={LogoutIcon}
             alt="Cerrar sesión"
             className="logout-icon"
-            style={{ width: '32px', height: '32px', cursor: 'pointer' }}
+            style={{ width: '24px', height: '24px', objectFit: 'contain', cursor: 'pointer' }}
             onClick={handleLogout}
           />
         </div>

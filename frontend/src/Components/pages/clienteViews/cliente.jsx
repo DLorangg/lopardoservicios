@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ModalUpdateComponent } from '../modalUpdate';
 import { ModalComponent } from '../modal'; // Importa el modal para nuevos clientes
 import toast from 'react-hot-toast';
+import { Eye, Pencil, Trash, ArrowClockwise } from 'react-bootstrap-icons';
 
 export function Clientes() {
   const [content, setContent] = useState(<ClientesList ShowForm={ShowForm} />);
@@ -17,7 +18,7 @@ export function Clientes() {
   }
 
   return (
-    <div className="container my-5" style={{ border: '1px solid #001461' }}>
+    <div className="container my-5 bg-white rounded-3 shadow-sm p-4" style={{ border: '1px solid rgba(0, 0, 0, 0.05)' }}>
       {content}
     </div>
   );
@@ -119,8 +120,10 @@ export function ClientesList(props) {
     <>
       <h2 className="text-center mb-3" style={{ fontFamily: 'sans-serif' }}>CLIENTES</h2>
       <button onClick={handleCreate} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
-      <button onClick={fetchCliente} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
-      <table className="table mt-3">
+      <button onClick={fetchCliente} type="button" className="btn btn-outline-secondary me-2" title="Actualizar">
+        <ArrowClockwise />
+      </button>
+      <table className="table table-hover align-middle mt-3">
         <thead>
           <tr>
             <th style={{ width: '20%' }}>
@@ -129,10 +132,10 @@ export function ClientesList(props) {
                 {sortDirection === 'asc' ? '⬇️' : '⬆️'}
               </button>
             </th>
-            <th style={{ width: '10%' }}>CUIT/CUIL/DNI</th>
-            <th style={{ width: '20%' }}>Dirección</th>
-            <th style={{ width: '30%' }}>Razón social</th>
-            <th style={{ width: '30%' }}>Acciones</th>
+            <th style={{ width: '15%' }}>CUIT/CUIL/DNI</th>
+            <th style={{ width: '25%' }}>Dirección</th>
+            <th style={{ width: '25%' }}>Razón social</th>
+            <th style={{ width: '15%', paddingRight: '20px' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -143,14 +146,18 @@ export function ClientesList(props) {
               <td>{cliente.Direccion}</td>
               <td>{cliente.RazonSocial}</td>
               <td>
-                <Link to={`/clientesdetalle/${cliente.IdCliente}`} className="btn btn-secondary btn-sm me-2">Detalle</Link>
-                <button onClick={() => handleEdit(cliente)} className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Editar</button>
+                <Link to={`/clientesdetalle/${cliente.IdCliente}`} className="btn btn-link text-secondary p-1" title="Ver detalle">
+                  <Eye size={18} />
+                </Link>
+                <button onClick={() => handleEdit(cliente)} className="btn btn-link text-primary p-1" title="Editar">
+                  <Pencil size={18} />
+                </button>
                 <button
-                  className="btn btn-danger btn-sm"
+                  className="btn btn-link text-danger p-1"
                   onClick={() => handleDelete(cliente.IdCliente)}
-                  style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}
+                  title="Borrar"
                 >
-                  Borrar
+                  <Trash size={18} />
                 </button>
               </td>
             </tr>

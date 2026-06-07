@@ -8,6 +8,7 @@ import {ModalComponent} from "../modal"
 import { ModalUpdateComponent } from '../modalUpdate';
 import Rouben from '../../../Assets/Rouben.otf';
 import { useLocation } from  'react-router-dom';
+import { Eye, Pencil, Trash, ArrowClockwise } from 'react-bootstrap-icons';
 
 export function Datos() {
   const [content, setContent] = useState(<DatosList ShowForm={ShowForm} />);
@@ -19,9 +20,8 @@ export function Datos() {
   function ShowForm() {
     setContent(<DatosForm ShowList={ShowList} />);
   }
-
   return (
-    <div className="container my-5" style={{border: '1px solid #001461'}}>
+    <div className="container my-5 bg-white rounded-3 shadow-sm p-4" style={{ border: '1px solid rgba(0, 0, 0, 0.05)' }}>
       {content}
     </div>
   );
@@ -168,8 +168,10 @@ export function DatosList(props) {
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
       <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
-      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
-      <table className="table">
+      <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-secondary me-2" title="Actualizar">
+        <ArrowClockwise />
+      </button>
+      <table className="table table-hover align-middle">
         <thead>
           <tr>
             <th style={{ width: '10%' }}>
@@ -184,7 +186,7 @@ export function DatosList(props) {
             </th>
             <th style={{ width: '25%' }}>Cliente</th>
             <th style={{ width: '30%' }}>Dirección</th>
-            <th style={{ width: '10%' }}>Precio</th>
+            <th className="text-end" style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '30%', paddingRight: '50px' }}>Acciones</th>
           </tr>
         </thead>
@@ -196,23 +198,23 @@ export function DatosList(props) {
                 {dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}
               </td>
               <td style={{ width: '30%' }}>{dato.Direccion}</td>
-              <td style={{ width: '10%' }}>
+              <td className="text-end" style={{ width: '10%' }}>
                 {dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}
               </td>
               <td style={{ width: '40%', whiteSpace: "nowrap" }}>
-                <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
-                  Detalle
+                <Link to={`/datosdetalle/${dato.IdVisita}`} className="btn btn-link text-secondary p-1" title="Ver detalle">
+                  <Eye size={18} />
                 </Link>
-                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'datos' }} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
-                  Editar
+                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'datos' }} className="btn btn-link text-primary p-1" title="Editar">
+                  <Pencil size={18} />
                 </Link>
                 <button
                   type="button"
-                  className="btn btn-danger btn-sm"
-                  style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}
+                  className="btn btn-link text-danger p-1"
                   onClick={() => handleDelete(dato.IdVisita)}
+                  title="Borrar"
                 >
-                  Borrar
+                  <Trash size={18} />
                 </button>
               </td>
             </tr>
