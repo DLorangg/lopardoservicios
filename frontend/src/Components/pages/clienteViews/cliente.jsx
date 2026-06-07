@@ -15,15 +15,12 @@ export function Clientes() {
 
   function ShowForm() {
     setContent(<ClientesForm ShowList={ShowList} />);
-  }
-
-  return (
-    <div className="container my-5 bg-white rounded-3 shadow-sm p-4" style={{ border: '1px solid rgba(0, 0, 0, 0.05)' }}>
+  }  return (
+    <div className="container my-5 custom-card-container rounded-3 shadow-sm p-4">
       {content}
     </div>
   );
 }
-
 export function ClientesList(props) {
   const [dataCliente, setDataCliente] = useState([]);
   const [sortBy, setSortBy] = useState('Nombre'); 
@@ -119,7 +116,7 @@ export function ClientesList(props) {
   return (
     <>
       <h2 className="text-center mb-3" style={{ fontFamily: 'sans-serif' }}>CLIENTES</h2>
-      <button onClick={handleCreate} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
+      <button onClick={handleCreate} type="button" className="btn btn-primary me-2" style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }}>Crear</button>
       <button onClick={fetchCliente} type="button" className="btn btn-outline-secondary me-2" title="Actualizar">
         <ArrowClockwise />
       </button>
@@ -172,14 +169,15 @@ export function ClientesList(props) {
         transform: 'translateY(-50%)',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--bs-tertiary-bg)',
         padding: '10px 5px',
         borderRadius: '20px',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         zIndex: 1000,
         fontSize: '11px',
         fontWeight: 'bold',
-        color: '#140097'
+        color: 'var(--brand-primary)',
+        border: '1px solid var(--bs-border-color)'
       }}>
         {alphabet.map(letter => (
           <span 
@@ -206,9 +204,9 @@ export function ClientesList(props) {
         <button 
           onClick={scrollToTop} 
           style={{ 
-            backgroundColor: '#f8f9fa', // Mismo color de fondo que el abecedario
-            color: '#140097', // Mismo color de texto/icono que el abecedario
-            border: 'none', // Sin borde por defecto
+            backgroundColor: 'var(--bs-tertiary-bg)', // Mismo color de fondo que el abecedario
+            color: 'var(--brand-primary)', // Mismo color de texto/icono que el abecedario
+            border: '1px solid var(--bs-border-color)', // Con borde adaptativo
             borderRadius: '50%', 
             width: '45px', 
             height: '45px', 
@@ -227,9 +225,9 @@ export function ClientesList(props) {
         <button 
           onClick={scrollToBottom} 
           style={{ 
-            backgroundColor: '#f8f9fa', // Mismo que el abecedario
-            color: '#140097', // Mismo que el abecedario
-            border: 'none',
+            backgroundColor: 'var(--bs-tertiary-bg)', // Mismo que el abecedario
+            color: 'var(--brand-primary)', // Mismo que el abecedario
+            border: '1px solid var(--bs-border-color)',
             borderRadius: '50%', 
             width: '45px', 
             height: '45px', 

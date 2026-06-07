@@ -44,7 +44,7 @@ export function EquipoUpdate() {
 
   return (
     <>
-      <div className="container my-5" style={{ border: '1px solid #001461' }} >
+      <div className="container my-5 custom-card-container rounded-4 shadow-sm p-4">
         <h2 className="text-center mb-3">Editar Equipo</h2>
         <div className="row bm-3">
           <div className="col-lg-6 mx-auto">

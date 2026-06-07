@@ -18,7 +18,7 @@ export function Equipo() {
   
 
   return (
-    <div className="container my-5" style={{border: '1px solid #001461'}} >
+    <div className="container my-5 custom-card-container rounded-4 shadow-sm p-4" >
       {content}
     </div>
   );
@@ -64,8 +64,8 @@ function DatosList(props) {
         }
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>EQUIPOS</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
-      <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: '#140097', color: '#140097' }}>Actualizar</button>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }}>Crear</button>
+      <button onClick={() => fetchEquipo()} type="button" className="btn btn-outline-primary me-2" style={{ borderColor: 'var(--brand-primary)', color: 'var(--brand-primary)' }}>Actualizar</button>
       <table className="table">
         <thead>
           <tr>
@@ -80,7 +80,7 @@ function DatosList(props) {
               <td>{dato.Nombre}</td>
            
               <td style={{ width: "10px", whiteSpace: "nowrap" }}>
-                <Link  to={`/update/${dato.IdEquipamiento}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
+                <Link  to={`/update/${dato.IdEquipamiento}`} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }}>
                   Editar
                 </Link>
                 <button type="button" className="btn btn-danger btn-sm" onClick={e => handleDelete(dato.IdEquipamiento)} style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}>

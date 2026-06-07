@@ -19,6 +19,12 @@ import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [showCacheAlert, setShowCacheAlert] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('lopardo_theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('lopardo_theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,7 +52,7 @@ function App() {
           <button type="button" className="btn-close" aria-label="Close" onClick={handleDismissAlert}></button>
         </div>
       )}
-      <Navbar setAuthenticated={setAuthenticated} />
+      <Navbar setAuthenticated={setAuthenticated} theme={theme} setTheme={setTheme} />
       <Routes>
         <Route path='/' element={authenticated ? <Home /> : <Navigate to='/login' replace />} />
         <Route path='/datos' element={authenticated ? <Datos /> : <Navigate to='/login' replace />} />

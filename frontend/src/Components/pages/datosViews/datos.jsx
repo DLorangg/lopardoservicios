@@ -21,7 +21,7 @@ export function Datos() {
     setContent(<DatosForm ShowList={ShowList} />);
   }
   return (
-    <div className="container my-5 bg-white rounded-3 shadow-sm p-4" style={{ border: '1px solid rgba(0, 0, 0, 0.05)' }}>
+    <div className="container my-5 custom-card-container rounded-3 shadow-sm p-4">
       {content}
     </div>
   );
@@ -167,7 +167,7 @@ export function DatosList(props) {
         }
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>Crear</button>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }}>Crear</button>
       <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-secondary me-2" title="Actualizar">
         <ArrowClockwise />
       </button>
@@ -225,13 +225,13 @@ export function DatosList(props) {
       {/* Controles de Paginación */}
       <div className="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
         <div className="d-flex align-items-center gap-2">
-          <label htmlFor="limit-select" style={{ fontWeight: '500', color: '#001461', marginBottom: 0 }}>
+          <label htmlFor="limit-select" style={{ fontWeight: '500', color: 'var(--brand-text)', marginBottom: 0 }}>
             Filas por página:
           </label>
           <select
             id="limit-select"
             className="form-select form-select-sm"
-            style={{ width: 'auto', borderColor: '#140097', color: '#001461' }}
+            style={{ width: 'auto', borderColor: 'var(--brand-primary)', color: 'var(--brand-text)', backgroundColor: 'var(--bs-body-bg)' }}
             value={limit}
             onChange={(e) => setLimit(parseInt(e.target.value, 10))}
           >
@@ -245,19 +245,19 @@ export function DatosList(props) {
           <button
             type="button"
             className="btn btn-outline-primary"
-            style={{ borderColor: '#140097', color: '#140097' }}
+            style={{ borderColor: 'var(--brand-primary)', color: 'var(--brand-primary)' }}
             disabled={page === 1}
             onClick={() => setPage(prev => Math.max(1, prev - 1))}
           >
             Anterior
           </button>
-          <span style={{ fontWeight: '500', color: '#001461' }}>
+          <span style={{ fontWeight: '500', color: 'var(--brand-text)' }}>
             Página {page} de {totalPages}
           </span>
           <button
             type="button"
             className="btn btn-outline-primary"
-            style={{ borderColor: '#140097', color: '#140097' }}
+            style={{ borderColor: 'var(--brand-primary)', color: 'var(--brand-primary)' }}
             disabled={page >= totalPages}
             onClick={() => setPage(prev => prev + 1)}
           >

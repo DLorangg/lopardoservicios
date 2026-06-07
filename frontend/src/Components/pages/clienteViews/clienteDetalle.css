@@ -1,14 +1,11 @@
-.container {
-    background-color: #f2f2f2;
-    padding: 20px;
-    border-radius: 10px;
+.cliente-detalle {
     position: relative;
     font-size: medium;
   }
   
   .detalle-div {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
@@ -27,7 +24,7 @@
   
   .detalle-item span {
     display: inline-block;
-    color: #666666;
+    color: var(--bs-secondary-color);
   }
   
   .error-message {
@@ -36,12 +33,12 @@
   }
   
   .ml-2 {
-    color: black !important;
+    color: var(--bs-body-color) !important;
   }
   
   /* Estado del Cliente (Opcional, si aplicas estados similares a las visitas) */
   .estado-texto span {
-    color: black !important;
+    color: #ffffff !important;
     font-weight: bold;
   }
   
@@ -84,7 +81,7 @@
     top: 10px;
     right: 10px;
     padding: 8px 12px;
-    color: #000;
+    color: var(--bs-body-color);
     font-weight: bold;
     cursor: pointer;
     font-size: large;
