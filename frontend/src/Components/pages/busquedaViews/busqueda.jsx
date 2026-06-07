@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { parseISO, format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { Eye, Pencil, Trash } from 'react-bootstrap-icons';
 import Rouben from '../../../Assets/Rouben.otf';
 
 // --- FUNCIONES AUXILIARES DE FECHAS (FORMATO ARGENTINO DD/MM/YYYY) ---
@@ -39,7 +40,7 @@ export function Busqueda() {
   }
 
   return (
-    <div className="container my-5" style={{border: '1px solid #001461'}}>
+    <div className="container my-5 bg-white rounded-4 shadow-sm p-4">
       {content}
     </div>
   );
@@ -285,7 +286,7 @@ export function BusquedaList() {
         Limpiar Filtros
       </button>
 
-      <table className="table">
+      <table className="table table-hover align-middle mt-3">
         <thead>
           <tr>
             <th style={{ width: '15%' }}>
@@ -299,7 +300,7 @@ export function BusquedaList() {
               </button>
             </th>
             <th style={{ width: '25%' }}>Dirección</th>
-            <th style={{ width: '10%' }}>Precio</th>
+            <th className="text-end" style={{ width: '10%' }}>Precio</th>
             <th style={{ width: '10%' }}>
               Fecha{' '}
               <button
@@ -318,22 +319,22 @@ export function BusquedaList() {
             <tr key={index}>
               <td style={{ width: '15%' }}>{dataCliente.length > 0 && dataCliente.find(cliente => cliente.IdCliente === dato.IdCliente)?.Nombre}</td>
               <td style={{ width: '25%' }}>{dato.Direccion}</td>
-              <td style={{ width: '10%' }}>{dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}</td>
+              <td className="text-end" style={{ width: '10%' }}>{dato.Precio !== undefined ? `$ ${dato.Precio}` : ''}</td>
               <td style={{ width: '10%' }}>{formatFecha(dato.Fecha)}</td>
               <td style={{ width: '30%', textAlign: 'right' }}>
-                <Link to={`/datosdetalle/${dato.IdVisita}`} type="button" className="btn btn-secondary btn-sm me-2">
-                  Detalle
+                <Link to={`/datosdetalle/${dato.IdVisita}`} className="btn btn-link text-secondary p-1" title="Detalle">
+                  <Eye />
                 </Link>
-                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'busqueda' }} type="button" className="btn btn-primary btn-sm me-2" style={{ backgroundColor: '#140097', borderColor: '#140097' }}>
-                  Editar
+                <Link to={`/updatevisita/${dato.IdVisita}`} state={{ from: 'busqueda' }} className="btn btn-link text-primary p-1" title="Editar">
+                  <Pencil />
                 </Link>
                 <button
                   type="button"
-                  className="btn btn-danger btn-sm"
-                  style={{ backgroundColor: '#ae2012', borderColor: '#ae2012' }}
+                  className="btn btn-link text-danger p-1"
+                  title="Borrar"
                   onClick={() => handleDelete(dato.IdVisita)}
                 >
-                  Borrar
+                  <Trash />
                 </button>
               </td>
             </tr>
