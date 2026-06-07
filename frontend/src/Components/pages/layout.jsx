@@ -67,8 +67,8 @@ export function Navbar({ setAuthenticated }) {
 
 export function Footer() {
   return (
-    <footer style={{ backgroundColor: '#acafb1' }}>
-      <small className="d-block text-muted text-center">&copy; 2024 - Lopardo</small>
+    <footer className="bg-light border-top mt-auto py-3">
+      <small className="d-block text-secondary text-center">&copy; 2024 - Lopardo</small>
     </footer>
   );
 }
