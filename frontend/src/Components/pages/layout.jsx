@@ -1,10 +1,10 @@
 import React from 'react';
-import LogoutIcon from '../../Assets/logout.png';
+
 import CirculoLogo from '../../Assets/Circulo_Logo.png';
 import SearchIcon from '../../Assets/search.png';  
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { MoonFill, SunFill } from 'react-bootstrap-icons';
+import { MoonFill, SunFill, BoxArrowRight } from 'react-bootstrap-icons';
 import './layout.css';
 
 export function Navbar({ setAuthenticated, theme, setTheme }) {
@@ -58,15 +58,15 @@ export function Navbar({ setAuthenticated, theme, setTheme }) {
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
           >
-            {theme === 'light' ? <MoonFill size={20} /> : <SunFill size={20} />}
+            {theme === 'light' ? <MoonFill size={20} className="nav-icon-theme" /> : <SunFill size={20} className="nav-icon-theme" />}
           </button>
-          <span className="me-3" style={{ fontWeight: 'bold' }}>{userName}</span> 
-          <img
-            src={LogoutIcon}
-            alt="Cerrar sesión"
-            className="logout-icon"
-            style={{ width: '24px', height: '24px', objectFit: 'contain', cursor: 'pointer' }}
+          <span className="me-3 username-text" style={{ fontWeight: 'bold' }}>{userName}</span> 
+          <BoxArrowRight
+            size={20}
+            className="nav-icon-theme"
+            style={{ cursor: 'pointer' }}
             onClick={handleLogout}
+            title="Cerrar sesión"
           />
         </div>
       </div>

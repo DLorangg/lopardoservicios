@@ -21,7 +21,7 @@ export function Datos() {
     setContent(<DatosForm ShowList={ShowList} />);
   }
   return (
-    <div className="container my-5 custom-card-container rounded-3 shadow-sm p-4">
+    <div className="container main-content-container p-4 mt-4">
       {content}
     </div>
   );
@@ -167,7 +167,7 @@ export function DatosList(props) {
         }
       `}</style>
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>VISITAS</h2>
-      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2" style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }}>Crear</button>
+      <button onClick={() => props.ShowForm()} type="button" className="btn btn-primary me-2">Crear</button>
       <button onClick={() => fetchVisita()} type="button" className="btn btn-outline-secondary me-2" title="Actualizar">
         <ArrowClockwise />
       </button>

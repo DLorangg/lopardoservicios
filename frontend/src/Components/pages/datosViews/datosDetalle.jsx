@@ -135,7 +135,7 @@ function DatosDetalle() {
   const baseUrl = import.meta.env.VITE_API_URL.replace('/backend/routes', '').replace('/routes', '');
 
   return (
-    <div className="container my-5 custom-card-container rounded-4 shadow-sm p-4 datos-detalle">
+    <div className="main-content-container container p-4 mt-4 datos-detalle">
       <p>ID: {id}</p>
       <div className="form-group detalle-item fecha-estado fecha-visita">
         <label className="font-weight-bold">Fecha: {fechaFormateada} </label>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CalendarCheck, People, CashStack, Search } from 'react-bootstrap-icons';
 import Rouben from '../../Assets/Rouben.otf';
@@ -10,7 +10,7 @@ export function Home() {
   }, []);
   
   return (
-    <div className="container my-5 custom-card-container rounded-3 shadow-sm p-4">
+    <div className="container main-content-container p-4 mt-4">
         <style>{`
         @font-face {
           font-family: 'Rouben';
@@ -35,25 +35,25 @@ export function Home() {
       <h2 className="text-center mb-3" style={{ fontFamily: 'Rouben, sans-serif' }}>LOPARDO SERVICIOS</h2>
       <div className="row g-4 justify-content-center">
         <div className="col-12 col-sm-6 col-lg-3">
-          <Link to="/datos" className="custom-card-container rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
+          <Link to="/datos" className="custom-card-container bg-comprobante rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
             <CalendarCheck size={48} />
             Visitas
           </Link>
         </div>
         <div className="col-12 col-sm-6 col-lg-3">
-          <Link to="/cliente" className="custom-card-container rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
+          <Link to="/cliente" className="custom-card-container bg-comprobante rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
             <People size={48} />
             Clientes
           </Link>
         </div>
         <div className="col-12 col-sm-6 col-lg-3">
-          <Link to="/caja" className="custom-card-container rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
+          <Link to="/caja" className="custom-card-container bg-comprobante rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
             <CashStack size={48} />
             Caja
           </Link>
         </div>
         <div className="col-12 col-sm-6 col-lg-3">
-          <Link to="/busqueda" className="custom-card-container rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
+          <Link to="/busqueda" className="custom-card-container bg-comprobante rounded-4 p-4 text-center text-decoration-none shadow-sm text-primary dashboard-card">
             <Search size={48} />
             Búsqueda
           </Link>

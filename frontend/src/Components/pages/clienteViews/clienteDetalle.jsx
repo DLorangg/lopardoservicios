@@ -33,7 +33,7 @@ export function ClienteDetalle() {
   }
 
   return (
-    <div className="container my-5 custom-card-container rounded-4 shadow-sm p-4 cliente-detalle">
+    <div className="main-content-container container p-4 mt-4 cliente-detalle">
       <h2>Detalle del Cliente</h2>
       <div className="row">
         <div className="col-md-6 detalle-div">

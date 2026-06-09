@@ -40,7 +40,7 @@ export function Busqueda() {
   }
 
   return (
-    <div className="container my-5 custom-card-container rounded-4 shadow-sm p-4">
+    <div className="container main-content-container p-4 mt-4">
       {content}
     </div>
   );

@@ -14,6 +14,7 @@ frontend/build/
 db_data/
 *.sql
 *.sqlite
+forzar_admin.php
 
 # Logs y SO
 *.log

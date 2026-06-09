@@ -44,7 +44,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column min-vh-100">
       <Toaster position="top-right" reverseOrder={false} />
       {authenticated && showCacheAlert && (
         <div className="alert alert-warning alert-dismissible fade show m-0 text-center" role="alert" style={{ borderRadius: 0 }}>
