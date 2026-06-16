@@ -2,7 +2,7 @@
 // --- CONFIGURACIÓN DE CORS ---
 $allowed_origins = [
     'http://localhost:5173',
-    'https://lopardoservicios.com'
+    'https://sistema.lopardoservicios.com'
 ];
 
 if (isset($_SERVER['HTTP_ORIGIN'])) {

@@ -331,3 +331,31 @@ html {
     color: var(--bs-secondary-color) !important;
     opacity: 0.7 !important;
 }
+
+/* --- BOTONES DE NAVEGACIÓN HOME (MINIMALISTAS) --- */
+.home-nav-button {
+    background-color: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important; /* Borde ultra fino e imperceptible de entrada */
+    border-radius: 1rem !important;
+    padding: 2rem 1.5rem !important;
+    transition: all 0.25s ease-in-out !important;
+    cursor: pointer;
+}
+
+[data-bs-theme="dark"] .home-nav-button {
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Efecto interactivo al pasar el mouse (Tu propuesta) */
+.home-nav-button:hover {
+    background-color: rgba(0, 20, 97, 0.03) !important; /* Sutil tinte del azul del cliente */
+    border: 1px solid #001461 !important;              /* Se dibuja el borde finito identitario */
+    transform: translateY(-3px);                        /* Pequeño efecto de elevación premium */
+    box-shadow: 0 6px 15px rgba(0, 20, 97, 0.06) !important;
+}
+
+[data-bs-theme="dark"] .home-nav-button:hover {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+    border: 1px solid #3b82f6 !important;
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.1) !important;
+}

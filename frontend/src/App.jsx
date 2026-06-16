@@ -32,27 +32,32 @@ function App() {
       setAuthenticated(true);
     }
 
-    const cacheNotified = localStorage.getItem('lopardo_v2_cache_2026');
+    const cacheNotified = localStorage.getItem('lopardo_v3_cache_2026');
     if (!cacheNotified) {
       setShowCacheAlert(true);
     }
   }, []);
 
   const handleDismissAlert = () => {
-    localStorage.setItem('lopardo_v2_cache_2026', 'true');
+    localStorage.setItem('lopardo_v3_cache_2026', 'true');
     setShowCacheAlert(false);
   };
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <Toaster position="top-right" reverseOrder={false} />
+      
+      {/* La alerta de caché ahora solo se muestra si el usuario está realmente autenticado */}
       {authenticated && showCacheAlert && (
         <div className="alert alert-warning alert-dismissible fade show m-0 text-center" role="alert" style={{ borderRadius: 0 }}>
-          ⚠️ <strong>¡Actualización del sistema!</strong> Si experimentas problemas al cargar datos o fechas, limpia la caché con Ctrl + F5
-          <button type="button" className="btn-close" aria-label="Close" onClick={handleDismissAlert}></button>
+          ⚠️ <strong>¡Actualización del sistema!</strong> Limpia la caché con Ctrl + F5 para ver los cambios.
+          <button type="button" zclassName="btn-close" aria-label="Close" onClick={handleDismissAlert}></button>
         </div>
       )}
-      <Navbar setAuthenticated={setAuthenticated} theme={theme} setTheme={setTheme} />
+
+      {/* CORRECCIÓN: La Navbar ahora solo aparece si el usuario está logueado */}
+      {authenticated && <Navbar setAuthenticated={setAuthenticated} theme={theme} setTheme={setTheme} />}
+      
       <Routes>
         <Route path='/' element={authenticated ? <Home /> : <Navigate to='/login' replace />} />
         <Route path='/datos' element={authenticated ? <Datos /> : <Navigate to='/login' replace />} />
@@ -71,6 +76,7 @@ function App() {
         <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/busqueda' replace />} />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
       </Routes>
+      
       {authenticated && <Footer />}
     </div>
   );

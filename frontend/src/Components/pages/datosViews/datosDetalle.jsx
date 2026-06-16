@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './datosDetalle.css';
 import { format, parseISO } from 'date-fns';
+import { Pencil } from 'react-bootstrap-icons';
 
 function getClassForEstado(estado) {
   switch (estado) {
@@ -136,7 +137,12 @@ function DatosDetalle() {
 
   return (
     <div className="main-content-container container p-4 mt-4 datos-detalle">
-      <p>ID: {id}</p>
+      <div className="d-flex align-items-center gap-3 mb-4 flex-wrap">
+        <p className="mb-0 fs-4 fw-semibold">ID: {id}</p>
+        <Link to={`/updatevisita/${id}`} className="btn btn-primary fw-bold d-flex align-items-center gap-2">
+          <Pencil /> Editar Visita
+        </Link>
+      </div>
       <div className="form-group detalle-item fecha-estado fecha-visita">
         <label className="font-weight-bold">Fecha: {fechaFormateada} </label>
       </div>
