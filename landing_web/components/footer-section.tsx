@@ -1,9 +1,9 @@
 "use client";
 
-import { MessageCircle, MapPin, Truck, PhoneCall, Shield, FileText } from "lucide-react";
+import { MessageCircle, MapPin, Truck, Phone, Mail } from "lucide-react";
 
-// NOTA: Dejamos el número placeholder hasta que Dali te pase el real
-const WHATSAPP_NUMBER = "5492990000000";
+const WHATSAPP_NUMBER = "5492995177079"; // Formato internacional para Neuquén
+const EMAIL_CONTACTO = "administración@lopardoservicios.com";
 const TEXT_BASE = "Hola Lopardo Servicios, me comunico desde la web para solicitar información sobre ";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(TEXT_BASE)}`;
 
@@ -67,7 +67,25 @@ export function FooterSection() {
               </li>
               <li className="flex items-start gap-2.5 text-sm text-white/60">
                 <Truck className="h-4 w-4 mt-0.5 shrink-0 text-brand/70" strokeWidth={1.75} aria-hidden="true" />
-                Atención a toda la región petrolera
+                Atención a toda la región
+              </li>
+              <li className="flex items-start gap-2.5 text-sm text-white/60">
+                <Phone className="h-4 w-4 mt-0.5 shrink-0 text-brand/70" strokeWidth={1.75} aria-hidden="true" />
+                <span>
+                  Teléfono:{" "}
+                  <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-white hover:text-whatsapp transition-colors duration-200 font-semibold">
+                    299 517-7079
+                  </a>
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5 text-sm text-white/60">
+                <Mail className="h-4 w-4 mt-0.5 shrink-0 text-brand/70" strokeWidth={1.75} aria-hidden="true" />
+                <span>
+                  Email:{" "}
+                  <a href={`mailto:${EMAIL_CONTACTO}`} className="text-white hover:text-whatsapp transition-colors duration-200">
+                    {EMAIL_CONTACTO}
+                  </a>
+                </span>
               </li>
             </ul>
           </div>

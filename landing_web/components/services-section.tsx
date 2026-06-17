@@ -25,7 +25,7 @@ const services = [
 
 export function ServicesSection() {
   return (
-    <section className="bg-white py-20 px-6">
+    <section id="servicios" className="bg-white py-20 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-14">
@@ -88,6 +88,13 @@ export function ServicesSection() {
               />
             </article>
           ))}
+        </div>
+
+        {/* Multibrand support notice */}
+        <div className="mt-12 p-6 rounded-xl bg-brand/5 border border-brand/10 text-center max-w-4xl mx-auto">
+          <p className="text-sm md:text-base text-slate-700 leading-relaxed">
+            <strong className="text-brand font-bold">Soporte Multimarca Integral:</strong> Trabajamos con todas las tecnologías y marcas del mercado (Split, Central, VRV, Rooftop, Piso-Techo y Cassette), adaptándonos a la infraestructura específica de cada cliente.
+          </p>
         </div>
       </div>
     </section>

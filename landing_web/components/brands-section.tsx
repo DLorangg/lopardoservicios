@@ -1,49 +1,49 @@
 "use client";
 
-const brands = [
-  { name: "CARRIER", sub: "Climatización" },
-  { name: "DAIKIN", sub: "VRV / Inverter" },
-  { name: "BGH", sub: "Confort" },
-  { name: "SURREY", sub: "Industrial" },
-  { name: "YORK", sub: "Chillers" },
-  { name: "MIDEA", sub: "Eficiencia A" },
+const clients = [
+  { name: "NIPPON CAR", sub: "Concesionario Toyota" },
+  { name: "CAMUZZI", sub: "Distribuidora de Gas del Sur" },
+  { name: "SAHIORA", sub: "Concesionario Chevrolet" },
+  { name: "FARMACIAS GLOBAL", sub: "Red de Farmacias" },
+  { name: "GLOBAL OIL", sub: "Servicios Petroleros" },
+  { name: "GTC", sub: "Logística y Servicios" },
 ];
 
 export function BrandsSection() {
   return (
-    <section className="bg-surface py-16 px-6">
+    <section id="clientes" className="bg-surface py-16 px-6">
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-10">
-        {/* Label */}
-        <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground text-center">
-          Especialistas capacitados en las tecnologías líderes del mercado
-        </p>
+        {/* Title */}
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-800 text-center leading-tight">
+          Empresas e Instituciones que confían en nosotros
+        </h2>
 
-        {/* Brands row */}
-        <div className="w-full grid grid-cols-3 sm:grid-cols-6 gap-6">
-          {brands.map(({ name, sub }) => (
+        {/* Clients row */}
+        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+          {clients.map(({ name, sub }) => (
             <div
               key={name}
               className="
                 group flex flex-col items-center justify-center
-                gap-1 py-5 px-3
+                gap-2 py-5 px-3
                 rounded-xl border border-border bg-white
-                opacity-75 grayscale
+                opacity-85
                 transition-all duration-300
-                hover:opacity-100 hover:grayscale-0 hover:shadow-sm hover:border-brand/20
+                hover:opacity-100 hover:shadow-sm hover:border-brand/20
                 cursor-default select-none
               "
             >
-              {/* Brand logotype — bold wordmark style */}
+              {/* Client name */}
               <span
                 className="
-                  text-base font-black tracking-tight
-                  text-slate-600
-                  leading-none
+                  text-center text-sm md:text-base font-extrabold tracking-tight
+                  text-slate-800
+                  leading-snug
                 "
               >
                 {name}
               </span>
-              <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+              <span className="text-center text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                 {sub}
               </span>
             </div>
@@ -52,7 +52,7 @@ export function BrandsSection() {
 
         {/* Fine print */}
         <p className="text-xs text-muted-foreground/60 text-center">
-          Todos los equipos reciben servicio con repuestos originales y mano de obra certificada por fabricante.
+          Servicios homologados bajo los estándares operativos más exigentes de la región.
         </p>
       </div>
     </section>

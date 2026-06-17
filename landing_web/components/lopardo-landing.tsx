@@ -13,10 +13,9 @@ import {
 } from "lucide-react"
 
 const NAV_LINKS = [
-  { label: "Instalación de Equipos", href: "#instalacion" },
-  { label: "Mantenimiento Preventivo", href: "#mantenimiento" },
+  { label: "Instalación de Equipos", href: "#servicios" },
+  { label: "Mantenimiento Preventivo", href: "#servicios" },
   { label: "Clientes", href: "#clientes" },
-  { label: "Empresa", href: "#empresa" },
 ]
 
 const TRIGGERS = [
@@ -25,8 +24,8 @@ const TRIGGERS = [
   { icon: BadgeCheck, label: "Técnicos Certificados" },
 ]
 
-// NOTA: Dejamos el número placeholder hasta que Dali te pase el real
-const WHATSAPP_NUMBER = "5492990000000"; 
+const WHATSAPP_NUMBER = "5492995177079"; // Formato internacional para Neuquén
+const EMAIL_CONTACTO = "administración@lopardoservicios.com";
 const TEXT_BASE = "Hola Lopardo Servicios, me comunico desde la web para solicitar información sobre ";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(TEXT_BASE)}`;
 
@@ -117,8 +116,7 @@ export default function LopardoLanding() {
           {/* Columna texto */}
           <div className="flex flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand ring-1 ring-brand/15">
-              <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              Climatización corporativa en Neuquén
+              🛡️ MÁS DE 10 AÑOS DE EXPERIENCIA EN EL RUBRO
             </span>
 
             <h1 className="mt-5 text-pretty text-4xl font-extrabold leading-[1.1] tracking-tight text-brand sm:text-5xl lg:text-6xl">
@@ -127,9 +125,7 @@ export default function LopardoLanding() {
             </h1>
 
             <h2 className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-              Aseguramos la eficiencia térmica de tu empresa o institución.
-              Expertos en sistemas VRV, Rooftops y refrigeración industrial con
-              atención inmediata.
+              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, garantizamos la continuidad de tus activos.
             </h2>
 
             {/* CTA principal WhatsApp */}
