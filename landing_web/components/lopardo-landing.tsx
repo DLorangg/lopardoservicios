@@ -19,7 +19,7 @@ const NAV_LINKS = [
 ]
 
 const TRIGGERS = [
-  { icon: Zap, label: "Respuesta Inmediata" },
+  { icon: Zap, label: "Respuesta en 24/48 hs" },
   { icon: Truck, label: "Flota Propia" },
   { icon: BadgeCheck, label: "Técnicos Certificados" },
 ]
@@ -116,7 +116,7 @@ export default function LopardoLanding() {
           {/* Columna texto */}
           <div className="flex flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand ring-1 ring-brand/15">
-              🛡️ MÁS DE 10 AÑOS DE EXPERIENCIA EN EL RUBRO
+              🛡️ ATENCIÓN PERSONALIZADA DIRECTA POR SUS DUEÑOS
             </span>
 
             <h1 className="mt-5 text-pretty text-4xl font-extrabold leading-[1.1] tracking-tight text-brand sm:text-5xl lg:text-6xl">
@@ -178,7 +178,7 @@ export default function LopardoLanding() {
                   Atención Corporativa
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  Cobertura en toda la región
+                  Cobertura en todo el Alto Valle y zona petrolera
                 </span>
               </span>
             </div>

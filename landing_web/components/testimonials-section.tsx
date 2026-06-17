@@ -4,18 +4,18 @@ import { Quote } from "lucide-react";
 
 const testimonials = [
   {
-    sector: "Sector Educativo / Institucional",
+    sector: "Sector Automotriz",
     quote:
-      "La climatización central de nuestra institución requiere un funcionamiento ininterrumpido. El contrato de mantenimiento SLA de Lopardo nos garantiza un ambiente seguro y óptimo para nuestros alumnos sin sorpresas presupuestarias.",
-    author: "Director de Mantenimiento",
-    company: "Red Educativa Neuquén",
+      "La confiabilidad de nuestra concesionaria exige instalaciones impecables. El equipo de Lopardo Servicios nos brinda un mantenimiento preventivo estructurado y respuesta rápida ante cualquier eventualidad térmica.",
+    author: "Gerencia Operativa",
+    company: "Nippon Car",
   },
   {
-    sector: "Sector Industrial",
+    sector: "Sector Energía / Petróleo",
     quote:
-      "Su unidad móvil resolvió una falla crítica en un equipo Rooftop de nuestra planta bajo estrictas normas de seguridad industrial (HSE). Profesionales rápidos, estructurados y con repuestos en mano.",
-    author: "Gerente Operativo",
-    company: "Parque Industrial Región Patagonia",
+      "Destacamos el profesionalismo y la capacidad técnica en terreno. Contar con un soporte multimarca que entiende los protocolos de seguridad industrial es clave para nuestra continuidad operativa.",
+    author: "Jefatura de Mantenimiento",
+    company: "Camuzzi Gas del Sur",
   },
 ];
 

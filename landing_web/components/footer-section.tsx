@@ -67,7 +67,7 @@ export function FooterSection() {
               </li>
               <li className="flex items-start gap-2.5 text-sm text-white/60">
                 <Truck className="h-4 w-4 mt-0.5 shrink-0 text-brand/70" strokeWidth={1.75} aria-hidden="true" />
-                Atención a toda la región
+                Cobertura en todo el Alto Valle y zona petrolera
               </li>
               <li className="flex items-start gap-2.5 text-sm text-white/60">
                 <Phone className="h-4 w-4 mt-0.5 shrink-0 text-brand/70" strokeWidth={1.75} aria-hidden="true" />
