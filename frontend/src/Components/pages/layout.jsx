@@ -1,7 +1,7 @@
 import React from 'react';
 
 import CirculoLogo from '../../Assets/Circulo_Logo.png';
-import SearchIcon from '../../Assets/search.png';  
+import SearchIcon from '../../Assets/search.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { MoonFill, SunFill, BoxArrowRight } from 'react-bootstrap-icons';
@@ -20,6 +20,7 @@ export function Navbar({ setAuthenticated, theme, setTheme }) {
   };
 
   const userName = localStorage.getItem('userName');
+  const idRol = parseInt(localStorage.getItem('userRole'));
 
   return (
     <nav className="navbar navbar-expand-lg box-shadow py-3 mb-3">
@@ -44,6 +45,11 @@ export function Navbar({ setAuthenticated, theme, setTheme }) {
             <li className={`nav-item ${location.pathname === '/personal' ? 'active' : ''}`}>
               <Link className="nav-link" to="/personal" id="personal">Personal</Link>
             </li>
+            {idRol === 1 && (
+              <li className={`nav-item ${location.pathname === '/panel/resenas' ? 'active' : ''}`}>
+                <Link className="nav-link" to="/resenas" id="nav-resenas">Reseñas</Link>
+              </li>
+            )}
             <li className={`nav-item ${location.pathname === '/busqueda' ? 'active' : ''}`}>
               <Link className="nav-link" to="/busqueda" id="busqueda">
                 <img src={SearchIcon} alt="Búsqueda" style={{ width: '24px', marginRight: '8px' }} />
@@ -52,15 +58,15 @@ export function Navbar({ setAuthenticated, theme, setTheme }) {
           </ul>
         </div>
         <div className="d-flex align-items-center">
-          <button 
+          <button
             type="button"
-            className="btn btn-link nav-link me-3 p-0 border-0" 
+            className="btn btn-link nav-link me-3 p-0 border-0"
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
           >
             {theme === 'light' ? <MoonFill size={20} className="nav-icon-theme" /> : <SunFill size={20} className="nav-icon-theme" />}
           </button>
-          <span className="me-3 username-text" style={{ fontWeight: 'bold' }}>{userName}</span> 
+          <span className="me-3 username-text" style={{ fontWeight: 'bold' }}>{userName}</span>
           <BoxArrowRight
             size={20}
             className="nav-icon-theme"

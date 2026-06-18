@@ -1,8 +1,11 @@
 <?php
 // --- CONFIGURACIÓN DE CORS ---
 $allowed_origins = [
-    'http://localhost:5173',
-    'https://sistema.lopardoservicios.com'
+    'http://localhost:5173',                 // Tu sistema local (Vite)
+    'http://localhost:3000',                 // Tu landing local (Next.js)
+    'https://sistema.lopardoservicios.com',  // Tu sistema en producción
+    'https://lopardoservicios.com',          // Tu landing en producción
+    'https://www.lopardoservicios.com'       // Tu landing en producción (con www)
 ];
 
 if (isset($_SERVER['HTTP_ORIGIN'])) {

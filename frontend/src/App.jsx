@@ -15,6 +15,7 @@ import { PersonalUpdate } from './Components/pages/personalViews/personalUpdate'
 import { CajaUpdate } from './Components/pages/cajaViews/cajaUpdate';
 import { Busqueda } from './Components/pages/busquedaViews/busqueda';
 import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
+import { ModeracionResenas } from './Components/pages/ModeracionResenas';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -46,7 +47,7 @@ function App() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Toaster position="top-right" reverseOrder={false} />
-      
+
       {/* La alerta de caché ahora solo se muestra si el usuario está realmente autenticado */}
       {authenticated && showCacheAlert && (
         <div className="alert alert-warning alert-dismissible fade show m-0 text-center" role="alert" style={{ borderRadius: 0 }}>
@@ -57,7 +58,7 @@ function App() {
 
       {/* CORRECCIÓN: La Navbar ahora solo aparece si el usuario está logueado */}
       {authenticated && <Navbar setAuthenticated={setAuthenticated} theme={theme} setTheme={setTheme} />}
-      
+
       <Routes>
         <Route path='/' element={authenticated ? <Home /> : <Navigate to='/login' replace />} />
         <Route path='/datos' element={authenticated ? <Datos /> : <Navigate to='/login' replace />} />
@@ -74,9 +75,17 @@ function App() {
         <Route path="/cajaUpdate/:id" element={authenticated ? <CajaUpdate /> : <Navigate to='/login' replace />} />
         <Route path="/personalUpdate/:id" element={authenticated ? <PersonalUpdate /> : <Navigate to='/login' replace />} />
         <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/busqueda' replace />} />
+        <Route
+          path='/resenas'
+          element={
+            authenticated && parseInt(localStorage.getItem('userRole')) === 1
+              ? <ModeracionResenas />
+              : <Navigate to='/' replace />
+          }
+        />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
       </Routes>
-      
+
       {authenticated && <Footer />}
     </div>
   );
