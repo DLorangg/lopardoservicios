@@ -1,8 +1,7 @@
 <?php
 include '../db.php';
-// ¡Sin verificarToken.php porque esto lo lee la página pública!
 
-$sql = "SELECT nombre_cliente, empresa, comentario FROM resenas WHERE estado = 'aprobado' ORDER BY fecha DESC";
+$sql = "SELECT * FROM resenas WHERE estado = 'aprobado' ORDER BY fecha DESC";
 $stmt = $pdo->prepare($sql);
 
 try {
@@ -15,6 +14,6 @@ try {
     error_log('Error al obtener reseñas aprobadas: ' . $e->getMessage());
     header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(['error' => 'Error interno del servidor']);
+    echo json_encode(['error' => 'Error interno del servidor al obtener las reseñas']);
 }
 ?>

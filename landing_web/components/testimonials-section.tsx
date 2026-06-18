@@ -1,24 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Quote, Send, CheckCircle2, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Quote, Send, CheckCircle2, X, ChevronLeft, ChevronRight } from "lucide-react";
 
-const testimonials = [
-  {
-    sector: "Sector Automotriz",
-    quote:
-      "La confiabilidad de nuestra concesionaria exige instalaciones impecables. El equipo de Lopardo Servicios nos brinda un mantenimiento preventivo estructurado y respuesta rápida ante cualquier eventualidad térmica.",
-    author: "Gerencia Operativa",
-    company: "Nippon Car",
-  },
-  {
-    sector: "Sector Energía / Petróleo",
-    quote:
-      "Destacamos el profesionalismo y la capacidad técnica en terreno. Contar con un soporte multimarca que entiende los protocolos de seguridad industrial es clave para nuestra continuidad operativa.",
-    author: "Jefatura de Mantenimiento",
-    company: "Camuzzi Gas del Sur",
-  },
-];
+interface Review {
+  id: number;
+  nombre_cliente: string;
+  empresa?: string;
+  comentario: string;
+  fecha: string;
+}
 
 export function TestimonialsSection() {
   const [name, setName] = useState("");
@@ -27,6 +18,57 @@ export function TestimonialsSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [approvedReviews, setApprovedReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = current.clientWidth * 0.8; // Desplaza el 80% del ancho visible
+      current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    const fetchApprovedReviews = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        const response = await fetch(`${baseUrl}/getResenasAprobadas.php`);
+        if (response.ok) {
+          const data = await response.json();
+          setApprovedReviews(data);
+        }
+      } catch (error) {
+        console.error("Error al cargar reseñas aprobadas:", error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+    fetchApprovedReviews();
+  }, []);
+
+  // Auto-desplazamiento del carrusel cada 8 segundos
+  useEffect(() => {
+    if (approvedReviews.length === 0 || isModalOpen) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { current } = scrollRef;
+        const maxScrollLeft = current.scrollWidth - current.clientWidth;
+
+        // Si está en el extremo derecho (con margen de 5px), vuelve al inicio
+        if (current.scrollLeft >= maxScrollLeft - 5) {
+          current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          const scrollAmount = current.clientWidth * 0.8;
+          current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        }
+      }
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [approvedReviews, isModalOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,58 +121,93 @@ export function TestimonialsSection() {
         </div>
 
         {/* Carousel Container */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar">
-          {testimonials.map(({ sector, quote, author, company }) => (
-            <article
-              key={company}
-              className="
-                relative flex flex-col gap-6
-                rounded-xl border border-border bg-white
-                p-8 md:p-10
-                shadow-sm hover:shadow-md
-                transition-shadow duration-300
-                overflow-hidden
-                min-w-[85%] md:min-w-[45%] lg:min-w-[40%] flex-shrink-0 snap-center
-              "
+        {loadingReviews ? (
+          <div className="text-center text-slate-500 py-8">
+            Cargando testimonios...
+          </div>
+        ) : approvedReviews.length === 0 ? (
+          <div className="text-center text-slate-500 py-8">
+            Aún no hay testimonios disponibles.
+          </div>
+        ) : (
+          <div className="relative group">
+            {/* Botón Izquierdo */}
+            <button
+              onClick={() => scroll('left')}
+              className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
+              aria-label="Desplazar a la izquierda"
             >
-              {/* Decorative oversized quote mark */}
-              <Quote
-                className="
-                  absolute -top-2 -left-1
-                  h-24 w-24 text-muted-foreground/[0.06]
-                  rotate-180
-                "
-                strokeWidth={1}
-                aria-hidden="true"
-              />
+              <ChevronLeft className="h-5 w-5" />
+            </button>
 
-              {/* Sector tag */}
-              <span
-                className="
-                  self-start text-xs font-semibold uppercase tracking-widest
-                  text-brand bg-brand/10
-                  px-3 py-1 rounded-full
-                "
-              >
-                {sector}
-              </span>
+            <div
+              ref={scrollRef}
+              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar"
+            >
+              {approvedReviews.map((review) => (
+                <article
+                  key={review.id}
+                  className="
+                    relative flex flex-col gap-6
+                    rounded-xl border border-border bg-white
+                    p-8 md:p-10
+                    shadow-sm hover:shadow-md
+                    transition-shadow duration-300
+                    overflow-hidden
+                    min-w-[85%] md:min-w-[45%] lg:min-w-[30%] flex-shrink-0 snap-center
+                  "
+                >
+                  {/* Decorative oversized quote mark */}
+                  <Quote
+                    className="
+                      absolute -top-2 -left-1
+                      h-24 w-24 text-muted-foreground/[0.06]
+                      rotate-180
+                    "
+                    strokeWidth={1}
+                    aria-hidden="true"
+                  />
 
-              {/* Quote text */}
-              <blockquote className="relative z-10 text-base md:text-lg text-slate-700 leading-relaxed italic">
-                &ldquo;{quote}&rdquo;
-              </blockquote>
+                  {/* Sector tag */}
+                  <span
+                    className="
+                      self-start text-xs font-semibold uppercase tracking-widest
+                      text-brand bg-brand/10
+                      px-3 py-1 rounded-full
+                    "
+                  >
+                    Cliente Verificado
+                  </span>
 
-              {/* Divider */}
-              <div className="h-px w-12 bg-brand/30 rounded-full" />
+                  {/* Quote text */}
+                  <blockquote className="relative z-10 text-base md:text-lg text-slate-700 leading-relaxed italic">
+                    &ldquo;{review.comentario}&rdquo;
+                  </blockquote>
 
-              {/* Author */}
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-bold text-slate-800">{author}</span>
-                <span className="text-sm text-slate-500">{company}</span>
-              </div>
-            </article>
-          ))}
-        </div>
+                  {/* Divider */}
+                  <div className="h-px w-12 bg-brand/30 rounded-full" />
+
+                  {/* Author */}
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-bold text-slate-800">{review.nombre_cliente}</span>
+                    {review.empresa && (
+                      <span className="text-sm text-slate-500">{review.empresa}</span>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {/* Botón Derecho */}
+            <button
+              onClick={() => scroll('right')}
+              className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
+              aria-label="Desplazar a la derecha"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        )}
 
         {/* Action Button to Open Review Modal */}
         <div className="mt-12 flex justify-center">
