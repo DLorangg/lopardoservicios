@@ -33,15 +33,38 @@ export function TestimonialsSection() {
     if (!name.trim() || !comment.trim()) return;
 
     setIsSubmitting(true);
-    // Simular llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
 
-    // Limpiar campos
-    setName("");
-    setCompany("");
-    setComment("");
+    try {
+      // Usamos la variable de entorno de Next.js. 
+      // Si por alguna razón falla, tiene un fallback de seguridad.
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
+      const response = await fetch(`${baseUrl}/postResena.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre_cliente: name,
+          empresa: company,
+          comentario: comment,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        // Limpiar campos
+        setName("");
+        setCompany("");
+        setComment("");
+      } else {
+        console.error("Error del servidor al guardar la reseña. Código:", response.status);
+      }
+    } catch (error) {
+      console.error("Error de conexión:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // -----------------------------
 
 // Si la variable de entorno existe (Docker), la usa. Si no (Hostinger), usa el default.
-$host = getenv('DB_HOST') ?: 'localhost';
+$host = getenv('DB_HOST') ?: '127.0.0.1';
 $dbname = getenv('DB_NAME') ?: 'u172758686_lopardo';
 $username = getenv('DB_USER') ?: 'u172758686_lopardoAdm';
 $password = getenv('DB_PASS') ?: '_Lopardix123';
