@@ -125,7 +125,7 @@ export default function LopardoLanding() {
             </h1>
 
             <h2 className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, garantizamos la continuidad de tus activos.
+              Soluciones de climatización, instalación y mantenimiento industrial con atención corporativa prioritaria en todo el Alto Valle.
             </h2>
 
             {/* CTA principal WhatsApp */}
@@ -156,32 +156,41 @@ export default function LopardoLanding() {
             </ul>
           </div>
 
-          {/* Columna imagen */}
-          <div className="relative">
-            <div className="overflow-hidden rounded-xl shadow-2xl shadow-brand/15 ring-1 ring-border/60">
-              <Image
-                src="/images/hero-hvac.png"
-                alt="Técnico profesional de Lopardo Servicios realizando mantenimiento en una unidad condensadora de aire acondicionado industrial en una azotea"
-                width={1024}
-                height={1024}
-                className="h-full w-full object-cover"
-                priority
-              />
-            </div>
-            {/* Tarjeta flotante */}
-            <div className="absolute -bottom-5 left-5 hidden rounded-xl border border-border/60 bg-surface/95 px-5 py-3 shadow-lg backdrop-blur sm:flex sm:items-center sm:gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-brand-foreground">
-                <Zap className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <span className="flex flex-col leading-tight">
-                <span className="text-sm font-bold text-brand">
-                  Atención Corporativa
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Cobertura en todo el Alto Valle y zona petrolera
-                </span>
-              </span>
-            </div>
+          {/* Columna imagen (ahora Logo principal) */}
+          <div className="relative flex items-center justify-center">
+            <Image
+              src="/images/lopardo-logo.png"
+              alt="Lopardo Servicios"
+              width={384}
+              height={384}
+              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain mx-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              priority
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ===================== TRAYECTORIA ===================== */}
+      <section className="bg-slate-50 border-y border-slate-100">
+        <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto py-16 px-6">
+          {/* Columna Izquierda (Texto) */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-3xl font-bold tracking-tight text-brand md:text-4xl">
+              Respaldo y Experiencia en Terreno
+            </h2>
+            <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
+              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, garantizamos la continuidad de tus activos.
+            </p>
+          </div>
+          {/* Columna Derecha (Imagen) */}
+          <div>
+            <Image
+              src="/images/hero-hvac.png"
+              alt="Técnico profesional de Lopardo Servicios realizando mantenimiento"
+              width={800}
+              height={600}
+              className="rounded-2xl shadow-xl w-full object-cover"
+            />
           </div>
         </div>
       </section>
