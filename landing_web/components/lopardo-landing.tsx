@@ -39,15 +39,7 @@ export default function LopardoLanding() {
         <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <a href="#inicio" className="flex shrink-0 items-center gap-3">
-            <Image
-              src="/images/lopardo-logo.png"
-              alt="Lopardo Servicios Climatización"
-              width={56}
-              height={56}
-              className="h-12 w-12 object-contain sm:h-14 sm:w-14"
-              priority
-            />
-            <span className="hidden flex-col leading-tight sm:flex">
+            <span className="flex flex-col leading-tight">
               <span className="text-base font-bold tracking-tight text-brand">
                 LOPARDO SERVICIOS
               </span>
@@ -72,13 +64,13 @@ export default function LopardoLanding() {
           </ul>
 
           {/* CTA derecha + toggle mobile */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
               aria-expanded={menuOpen}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border text-brand lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border text-brand"
             >
               {menuOpen ? (
                 <X className="h-5 w-5" aria-hidden="true" />
@@ -111,21 +103,50 @@ export default function LopardoLanding() {
       </header>
 
       {/* ===================== HERO ===================== */}
-      <section id="inicio" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-10 py-12 md:py-20 lg:grid-cols-2 lg:gap-16">
-          {/* Columna texto */}
-          <div className="flex flex-col">
+      <section id="inicio" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-5rem)] flex items-center py-12 lg:py-0">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 w-full items-center">
+          {/* Columna Texto (Agrupada) */}
+          <div className="flex flex-col items-start text-left lg:max-w-xl w-full">
+            {/* Badge */}
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand ring-1 ring-brand/15">
               🛡️ ATENCIÓN PERSONALIZADA DIRECTA POR SUS DUEÑOS
             </span>
 
-            <h1 className="mt-5 text-pretty text-4xl font-extrabold leading-[1.1] tracking-tight text-brand sm:text-5xl lg:text-6xl">
-              Climatización Corporativa y Mantenimiento de Aires Acondicionados
-              en Neuquén.
-            </h1>
+            {/* Contenedor relativo de H1 + Logo en Desktop */}
+            <div className="relative w-full mt-5">
+              <h1 className="text-pretty text-3xl font-extrabold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-5xl pr-0 lg:pr-4">
+                Mantenimiento, reparación e instalación <br className="hidden lg:inline" />
+                de aires acondicionados en Neuquén.
+              </h1>
 
-            <h2 className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-              Soluciones de climatización, instalación y mantenimiento industrial con atención corporativa prioritaria en todo el Alto Valle.
+              {/* Logo grande para desktop centrado verticalmente con el H1 */}
+              <div className="hidden lg:flex absolute left-[calc(100%+4rem)] top-1/2 -translate-y-1/2 w-80 h-80 xl:w-96 xl:h-96 items-center justify-center">
+                <Image
+                  src="/images/lopardo-logo.png"
+                  alt="Lopardo Servicios"
+                  width={384}
+                  height={384}
+                  className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Logo para mobile (solo visible en pantallas pequeñas) */}
+            <div className="relative flex items-center justify-center lg:hidden w-full my-6">
+              <Image
+                src="/images/lopardo-logo.png"
+                alt="Lopardo Servicios"
+                width={256}
+                height={256}
+                className="w-56 h-56 object-contain mx-auto drop-shadow-2xl"
+                priority
+              />
+            </div>
+
+            {/* Subtítulo */}
+            <h2 className="mt-5 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg max-w-xl">
+              Soluciones de climatización domiciliaria e industrial con atención corporativa prioritaria en todo el Alto Valle y alrededores.
             </h2>
 
             {/* CTA principal WhatsApp */}
@@ -156,17 +177,8 @@ export default function LopardoLanding() {
             </ul>
           </div>
 
-          {/* Columna imagen (ahora Logo principal) */}
-          <div className="relative flex items-center justify-center">
-            <Image
-              src="/images/lopardo-logo.png"
-              alt="Lopardo Servicios"
-              width={384}
-              height={384}
-              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain mx-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-              priority
-            />
-          </div>
+          {/* Columna Derecha de Desktop (Vacía para dejar espacio al posicionamiento absoluto) */}
+          <div className="hidden lg:block" />
         </div>
       </section>
 
@@ -176,16 +188,16 @@ export default function LopardoLanding() {
           {/* Columna Izquierda (Texto) */}
           <div className="flex flex-col gap-4">
             <h2 className="text-3xl font-bold tracking-tight text-brand md:text-4xl">
-              Respaldo y Experiencia en Terreno
+              Respaldo y experiencia en terreno
             </h2>
             <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
-              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, garantizamos la continuidad de tus activos.
+              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, extendiendo la vida útil de sus instalaciones.
             </p>
           </div>
           {/* Columna Derecha (Imagen) */}
           <div>
             <Image
-              src="/images/hero-hvac.png"
+              src="/images/hero-hvac.jpg"
               alt="Técnico profesional de Lopardo Servicios realizando mantenimiento"
               width={800}
               height={600}

@@ -77,8 +77,6 @@ export function TestimonialsSection() {
     setIsSubmitting(true);
 
     try {
-      // Usamos la variable de entorno de Next.js. 
-      // Si por alguna razón falla, tiene un fallback de seguridad.
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
       const response = await fetch(`${baseUrl}/postResena.php`, {
@@ -115,7 +113,7 @@ export function TestimonialsSection() {
         {/* Heading */}
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-brand text-balance leading-tight">
-            La Confianza se Construye con Operatividad Comprobada
+            La confianza se construye estando cuando nos necesitás
           </h2>
           <div className="mt-4 mx-auto h-1 w-16 rounded-full bg-brand opacity-30" />
         </div>
@@ -255,10 +253,10 @@ export function TestimonialsSection() {
 
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-brand tracking-tight">
-                  Comparta su Experiencia
+                  Comparta su experiencia
                 </h3>
                 <p className="text-xs text-slate-500 mt-1.5 text-pretty">
-                  Su valoración nos ayuda a seguir garantizando la máxima operatividad y calidad de servicio.
+                  Tu opinión nos ayuda a seguir brindándote la mejor atención y calidad en cada trabajo.
                 </p>
               </div>
 

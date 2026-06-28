@@ -8,7 +8,7 @@ const clients = [
   { name: "Sahiora", sub: "Concesionario Chevrolet", logo: "/images/logos/sahiora.png" },
   { name: "Farmacias Global", sub: "Red de Farmacias", logo: "/images/logos/farmacias-global.png" },
   { name: "Global Oil", sub: "Servicios Petroleros", logo: "/images/logos/global-oil.png" },
-  { name: "GTC", sub: "Logística y Servicios", logo: "/images/logos/gtc.svg" },
+  { name: "Colegio San José Obrero", sub: "Colegio San José Obrero", logo: "/images/logos/san-jose-obrero.svg?v=3" },
   { name: "Radio Cumbre", sub: "Radio y Medios", logo: "/images/logos/radio-cumbre.webp" },
 ];
 
@@ -18,7 +18,7 @@ export function BrandsSection() {
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-10">
         {/* Title */}
         <h2 className="text-2xl md:text-3xl font-bold text-slate-800 text-center leading-tight">
-          Empresas e Instituciones que confían en nosotros
+          Empresas e instituciones que confían en nosotros
         </h2>
 
         {/* Clients row */}
@@ -27,12 +27,12 @@ export function BrandsSection() {
             <div
               key={name}
               className="
-                group flex flex-col items-center justify-center
-                gap-4 py-6 px-4
+                group flex flex-col items-center justify-between
+                py-6 px-4
                 rounded-xl border border-border bg-white
                 transition-all duration-300
                 hover:shadow-md hover:border-brand/20
-                cursor-default select-none h-32
+                cursor-default select-none h-36
               "
             >
               {/* Client logo */}
@@ -50,7 +50,7 @@ export function BrandsSection() {
                   "
                 />
               </div>
-              <span className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors duration-300">
+              <span className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors duration-300 mt-auto">
                 {sub}
               </span>
             </div>

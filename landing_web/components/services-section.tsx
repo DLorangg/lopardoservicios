@@ -5,21 +5,21 @@ import { Wind, ShieldCheck, Zap } from "lucide-react";
 const services = [
   {
     icon: Wind,
-    title: "Climatización Comercial e Industrial",
+    title: "Climatización comercial e industrial",
     description:
-      "Instalación y montaje de unidades Roof-Top, VRV/VRF, Chillers y sistemas centrales para colegios, empresas y depósitos.",
+      "Instalación y montaje de unidades Roof-Top, VRV/VRF y sistemas centrales para colegios, empresas y depósitos.",
   },
   {
     icon: ShieldCheck,
-    title: "Mantenimiento Preventivo (SLA)",
+    title: "Mantenimiento preventivo (SLA)",
     description:
-      "Contratos a medida para asegurar la trazabilidad técnica, cumplimiento normativo y prevención de fallas catastróficas.",
+      "Contratos a medida para asegurar la trazabilidad técnica, cumplimiento normativo y prevención de fallas.",
   },
   {
     icon: Zap,
-    title: "Servicio Técnico y Reparación",
+    title: "Servicio técnico y reparación",
     description:
-      "Diagnóstico avanzado y recambio con repuestos originales para optimizar el rendimiento de sus equipos.",
+      "Diagnóstico avanzado y recambio con repuestos originales para optimizar el rendimiento de sus sistemas.",
   },
 ];
 
@@ -30,7 +30,7 @@ export function ServicesSection() {
         {/* Heading */}
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-brand text-balance leading-tight">
-            Soluciones Integrales para Activos de Alta Exigencia
+            Soluciones integrales para sistemas de alta exigencia
           </h2>
           <div className="mt-4 mx-auto h-1 w-16 rounded-full bg-brand opacity-30" />
         </div>

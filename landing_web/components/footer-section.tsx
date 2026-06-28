@@ -14,10 +14,10 @@ export function FooterSection() {
       <div className="border-b border-white/10 py-20 px-6">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-balance leading-tight">
-            Su infraestructura no puede esperar a mañana.
+            Tu tranquilidad no puede esperar a mañana.
           </h2>
           <p className="text-base md:text-lg text-white/60 leading-relaxed max-w-xl text-pretty">
-            Conecte directamente con nuestra ingeniería y evalúe el estado de sus equipos.
+            Escribinos y coordinemos para asegurarnos de que todo funcione a la perfección.
           </p>
           <a
             href={WHATSAPP_URL}
@@ -51,7 +51,7 @@ export function FooterSection() {
               <span className="font-normal text-white/60">Climatización</span>
             </span>
             <p className="text-sm text-white/40 leading-relaxed">
-              Protegiendo activos térmicos e industriales.
+              Protegiendo la infraestructura térmica e industrial.
             </p>
           </div>
 
