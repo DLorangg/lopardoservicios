@@ -106,7 +106,7 @@ export default function LopardoLanding() {
       <section id="inicio" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-5rem)] flex items-center py-12 lg:py-0">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 w-full items-center">
           {/* Columna Texto (Agrupada) */}
-          <div className="flex flex-col items-start text-left lg:max-w-xl w-full">
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left lg:max-w-xl w-full">
             {/* Badge */}
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand ring-1 ring-brand/15">
               🛡️ ATENCIÓN PERSONALIZADA DIRECTA POR SUS DUEÑOS
@@ -116,7 +116,7 @@ export default function LopardoLanding() {
             <div className="relative w-full mt-5">
               <h1 className="text-pretty text-3xl font-extrabold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-5xl pr-0 lg:pr-4">
                 Mantenimiento, reparación e instalación <br className="hidden lg:inline" />
-                de aires acondicionados en Neuquén.
+                de sistemas de Climatización en Neuquén.
               </h1>
 
               {/* Logo grande para desktop centrado verticalmente con el H1 */}
@@ -163,7 +163,7 @@ export default function LopardoLanding() {
             </div>
 
             {/* Click-triggers */}
-            <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-4">
+            <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-x-7 gap-y-4">
               {TRIGGERS.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/5 text-brand ring-1 ring-brand/10">
