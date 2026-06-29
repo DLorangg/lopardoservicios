@@ -191,7 +191,7 @@ export default function LopardoLanding() {
               Respaldo y experiencia en terreno
             </h2>
             <p className="text-pretty text-lg leading-relaxed text-muted-foreground">
-              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, extendiendo la vida útil de sus instalaciones.
+              Aseguramos la eficiencia térmica de tu empresa o institución. Con un equipo técnico de más de 10 años de trayectoria y supervisión especializada con más de 30 años de experiencia en el rubro, extendiendo la vida útil de sus equipos.
             </p>
           </div>
           {/* Columna Derecha (Imagen) */}
