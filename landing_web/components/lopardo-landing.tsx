@@ -33,9 +33,9 @@ export default function LopardoLanding() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-surface text-foreground">
+    <div className="min-h-screen bg-white text-foreground">
       {/* ===================== HEADER ===================== */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-surface/85 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-white/85 backdrop-blur-md">
         <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <a href="#inicio" className="flex shrink-0 items-center gap-3">
@@ -83,7 +83,7 @@ export default function LopardoLanding() {
 
         {/* Menú mobile desplegable */}
         {menuOpen && (
-          <div className="border-t border-border/60 bg-surface lg:hidden">
+          <div className="border-t border-border/60 bg-white lg:hidden">
             <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
               {NAV_LINKS.map((link) => (
                 <li key={link.label}>
@@ -103,7 +103,7 @@ export default function LopardoLanding() {
       </header>
 
       {/* ===================== HERO ===================== */}
-      <section id="inicio" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-5rem)] flex items-center py-12 lg:py-0">
+      <section id="inicio" className="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-5rem)] flex items-center py-12 lg:py-0">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 w-full items-center">
           {/* Columna Texto (Agrupada) */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left lg:max-w-xl w-full">

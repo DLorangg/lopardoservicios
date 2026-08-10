@@ -14,7 +14,7 @@ const clients = [
 
 export function BrandsSection() {
   return (
-    <section id="clientes" className="bg-surface py-16 px-6">
+    <section id="clientes" className="bg-slate-50 border-y border-slate-100 py-16 px-6">
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-10">
         {/* Title */}
         <h2 className="text-2xl md:text-3xl font-bold text-slate-800 text-center leading-tight">
