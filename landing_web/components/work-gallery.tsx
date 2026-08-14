@@ -4,9 +4,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const images = [
-  "/images/carrusel/foto1.jpeg",
-  "/images/carrusel/foto2.jpeg",
-  "/images/carrusel/foto3.jpeg",
+  {
+    src: "/images/carrusel/foto1.jpeg",
+    alt: "Mantenimiento de unidad rooftop de climatización en techo de empresa en Neuquén - Lopardo Servicios",
+  },
+  {
+    src: "/images/carrusel/foto2.jpeg",
+    alt: "Técnico especialista realizando instalación de aire acondicionado central en Neuquén - Lopardo Servicios",
+  },
+  {
+    src: "/images/carrusel/foto3.jpeg",
+    alt: "Mantenimiento preventivo y reparación de sistemas de climatización VRF en Alto Valle - Lopardo Servicios",
+  },
 ];
 
 export function WorkGallery() {
@@ -38,14 +47,14 @@ export function WorkGallery() {
         {/* Heading */}
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-brand text-balance leading-tight">
-            Nuestros trabajos en terreno
+            Nuestros Trabajos en Terreno en el Alto Valle
           </h2>
           <div className="mt-4 mx-auto h-1 w-16 rounded-full bg-brand opacity-30" />
         </div>
 
         {/* Carousel */}
         <div className="relative w-full max-w-5xl mx-auto h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden py-4">
-          {images.map((src, index) => {
+          {images.map((imgObj, index) => {
             const position = getPosition(index);
 
             const baseClasses =
@@ -74,9 +83,9 @@ export function WorkGallery() {
 
             return (
               <Image
-                key={src}
-                src={src}
-                alt={`Trabajo de Lopardo Servicios ${index + 1}`}
+                key={imgObj.src}
+                src={imgObj.src}
+                alt={imgObj.alt}
                 width={800}
                 height={500}
                 className={`${baseClasses} ${positionClasses}`}

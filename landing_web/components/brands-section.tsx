@@ -18,7 +18,7 @@ export function BrandsSection() {
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-10">
         {/* Title */}
         <h2 className="text-2xl md:text-3xl font-bold text-slate-800 text-center leading-tight">
-          Empresas e instituciones que confían en nosotros
+          Empresas e Instituciones que Confían en Nosotros
         </h2>
 
         {/* Clients row */}
@@ -39,7 +39,7 @@ export function BrandsSection() {
               <div className="relative w-full h-12 flex items-center justify-center">
                 <Image
                   src={logo}
-                  alt={name}
+                  alt={`Logo de ${name} - Cliente de Lopardo Servicios Climatización Neuquén`}
                   width={160}
                   height={48}
                   className="

@@ -30,7 +30,7 @@ export function ServicesSection() {
         {/* Heading */}
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-brand text-balance leading-tight">
-            Soluciones integrales para sistemas de alta exigencia
+            Soluciones Integrales para Sistemas de Alta Exigencia
           </h2>
           <div className="mt-4 mx-auto h-1 w-16 rounded-full bg-brand opacity-30" />
         </div>
