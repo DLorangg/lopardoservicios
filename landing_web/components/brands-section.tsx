@@ -8,7 +8,7 @@ const clients = [
   { name: "Sahiora", sub: "Concesionario Chevrolet", logo: "/images/logos/sahiora.png" },
   { name: "Farmacias Global", sub: "Red de Farmacias", logo: "/images/logos/farmacias-global.png" },
   { name: "Global Oil", sub: "Servicios Petroleros", logo: "/images/logos/global-oil.png" },
-  { name: "Salesianos Don Bosco", sub: "Colegios Salesianos", logo: "/images/logos/san-jose-obrero.svg?v=4" },
+  { name: "Salesianos Don Bosco", sub: "Colegios Salesianos", logo: "/images/logos/salesianos.png" },
   { name: "Radio Cumbre", sub: "Radio y Medios", logo: "/images/logos/radio-cumbre.webp" },
   { name: "Biblioteca Popular Alberdi", sub: "Institución Cultural / Histórica", logo: "/images/logos/alberdi.jpeg" },
 ];

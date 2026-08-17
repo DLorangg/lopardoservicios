@@ -39,6 +39,14 @@ export default function LopardoLanding() {
         <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <a href="#inicio" className="flex shrink-0 items-center gap-3">
+            <Image
+              src="/images/lopardo-logo.png"
+              alt="Lopardo Servicios Climatización"
+              width={44}
+              height={44}
+              className="h-11 w-11 object-contain animate-[spin_8s_linear_infinite]"
+              priority
+            />
             <span className="flex flex-col leading-tight">
               <span className="text-base font-bold tracking-tight text-brand">
                 LOPARDO SERVICIOS
@@ -115,7 +123,7 @@ export default function LopardoLanding() {
             {/* Contenedor relativo de H1 + Logo en Desktop */}
             <div className="relative w-full mt-5">
               <h1 className="text-pretty text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl pr-0 lg:pr-4">
-                Mantenimiento, Reparación e Instalación de Climatización y Aire Acondicionado en Neuquén
+                Soluciones de Climatización Domiciliaria e Industrial en Neuquén
               </h1>
 
               {/* Logo grande para desktop centrado verticalmente con el H1 */}
@@ -145,7 +153,7 @@ export default function LopardoLanding() {
 
             {/* Subtítulo */}
             <p className="mt-5 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg max-w-xl">
-              Soluciones de climatización domiciliaria e industrial con atención corporativa prioritaria en todo el Alto Valle y alrededores.
+              Mantenimiento, reparación e instalación especializada de sistemas de aire acondicionado y calefacción con atención corporativa prioritaria en todo el Alto Valle y alrededores.
             </p>
 
             {/* CTA principal WhatsApp */}
