@@ -1,17 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { Building2 } from "lucide-react";
 
-const clients: { name: string; sub: string; logo: string | null }[] = [
+const clients = [
   { name: "Nippon Car", sub: "Concesionario Toyota", logo: "/images/logos/nippon-car.svg" },
   { name: "Camuzzi", sub: "Distribuidora de Gas del Sur", logo: "/images/logos/camuzzi.svg" },
   { name: "Sahiora", sub: "Concesionario Chevrolet", logo: "/images/logos/sahiora.png" },
   { name: "Farmacias Global", sub: "Red de Farmacias", logo: "/images/logos/farmacias-global.png" },
   { name: "Global Oil", sub: "Servicios Petroleros", logo: "/images/logos/global-oil.png" },
-  { name: "Salesianos Don Bosco", sub: "San José Obrero & Brentana", logo: "/images/logos/san-jose-obrero.svg?v=4" },
+  { name: "Salesianos Don Bosco", sub: "Colegios Salesianos", logo: "/images/logos/san-jose-obrero.svg?v=4" },
   { name: "Radio Cumbre", sub: "Radio y Medios", logo: "/images/logos/radio-cumbre.webp" },
-  { name: "Biblioteca Popular Alberdi", sub: "Institución Cultural / Histórica", logo: null },
+  { name: "Biblioteca Popular Alberdi", sub: "Institución Cultural / Histórica", logo: "/images/logos/alberdi.jpeg" },
 ];
 
 export function BrandsSection() {
@@ -39,24 +38,18 @@ export function BrandsSection() {
             >
               {/* Client logo */}
               <div className="relative w-full h-12 flex items-center justify-center">
-                {logo ? (
-                  <Image
-                    src={logo}
-                    alt={`Logo de ${name} - Cliente de Lopardo Servicios Climatización Neuquén`}
-                    width={160}
-                    height={48}
-                    className="
-                      max-h-full max-w-full object-contain
-                      filter grayscale opacity-60 contrast-75
-                      group-hover:grayscale-0 group-hover:opacity-100 group-hover:contrast-100
-                      transition-all duration-300
-                    "
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-brand/10 text-brand/50 group-hover:bg-brand/20 group-hover:text-brand transition-all duration-300">
-                    <Building2 className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
-                  </div>
-                )}
+                <Image
+                  src={logo}
+                  alt={`Logo de ${name} - Cliente de Lopardo Servicios Climatización Neuquén`}
+                  width={160}
+                  height={48}
+                  className="
+                    max-h-full max-w-full object-contain
+                    filter grayscale opacity-60 contrast-75
+                    group-hover:grayscale-0 group-hover:opacity-100 group-hover:contrast-100
+                    transition-all duration-300
+                  "
+                />
               </div>
               <span className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors duration-300 mt-auto">
                 {sub}

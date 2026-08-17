@@ -187,7 +187,7 @@ export default function LopardoLanding() {
           {/* Columna Izquierda en Desktop (Imagen) */}
           <div className="order-2 md:order-1">
             <Image
-              src="/images/trabajo-terreno.jpg"
+              src="/images/trabajo-terreno.JPG"
               alt="Técnico especialista de Lopardo Servicios realizando mantenimiento de aire acondicionado y climatización en Neuquén"
               width={800}
               height={600}
