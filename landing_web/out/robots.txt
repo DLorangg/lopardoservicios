@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /sistema/
+Disallow: /api/
+
+Sitemap: https://lopardoservicios.com/sitemap.xml
