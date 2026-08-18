@@ -92,9 +92,20 @@ export function FooterSection() {
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-white/10">
-          <p className="text-xs text-white/30 text-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 max-w-6xl mx-auto px-6 text-xs text-slate-500 mt-12 py-6 border-t border-slate-800">
+          <p className="text-center sm:text-left">
             &copy; {new Date().getFullYear()} Lopardo Servicios. Todos los derechos reservados.
+          </p>
+          <p className="text-center sm:text-right">
+            Desarrollo web por{" "}
+            <a
+              href="https://www.linkedin.com/in/lorang-damian/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-white transition-colors underline decoration-slate-600 underline-offset-4"
+            >
+              Damián Lorang
+            </a>
           </p>
         </div>
       </div>
