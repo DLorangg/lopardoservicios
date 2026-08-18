@@ -40,11 +40,11 @@ export default function LopardoLanding() {
           {/* Logo */}
           <a href="#inicio" className="flex shrink-0 items-center gap-3">
             <Image
-              src="/images/lopardo-logo.png"
+              src="/images/Circulo Logo.png"
               alt="Lopardo Servicios Climatización"
               width={44}
               height={44}
-              className="h-11 w-11 object-contain animate-[spin_8s_linear_infinite]"
+              className="h-11 w-11 object-contain animate-[spin_8s_linear_infinite_reverse]"
               priority
             />
             <span className="flex flex-col leading-tight">
