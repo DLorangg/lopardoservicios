@@ -120,24 +120,10 @@ export default function LopardoLanding() {
               🛡️ ATENCIÓN PERSONALIZADA DIRECTA POR SUS DUEÑOS
             </span>
 
-            {/* Contenedor relativo de H1 + Logo en Desktop */}
-            <div className="relative w-full mt-5">
-              <h1 className="text-pretty text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl pr-0 lg:pr-4">
-                Soluciones de Climatización Domiciliaria e Industrial en Neuquén
-              </h1>
-
-              {/* Logo grande para desktop centrado verticalmente con el H1 */}
-              <div className="hidden lg:flex absolute left-[calc(100%+4rem)] top-1/2 -translate-y-1/2 w-56 h-56 md:w-72 md:h-72 xl:w-80 xl:h-80 items-center justify-center">
-                <Image
-                  src="/images/lopardo-logo.png"
-                  alt="Lopardo Servicios - Climatización y Aire Acondicionado en Neuquén"
-                  width={384}
-                  height={384}
-                  className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-                  priority
-                />
-              </div>
-            </div>
+            {/* H1 */}
+            <h1 className="mt-2 text-pretty text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+              Soluciones de Climatización Domiciliaria e Industrial en Neuquén
+            </h1>
 
             {/* Logo para mobile (solo visible en pantallas pequeñas) */}
             <div className="relative flex items-center justify-center lg:hidden w-full my-6">
@@ -184,8 +170,17 @@ export default function LopardoLanding() {
             </ul>
           </div>
 
-          {/* Columna Derecha de Desktop (Vacía para dejar espacio al posicionamiento absoluto) */}
-          <div className="hidden lg:block" />
+          {/* Columna Derecha (Logo grande centrado en desktop) */}
+          <div className="hidden lg:flex items-center justify-center md:justify-center lg:justify-center w-full h-full my-auto">
+            <Image
+              src="/images/lopardo-logo.png"
+              alt="Lopardo Servicios - Climatización y Aire Acondicionado en Neuquén"
+              width={384}
+              height={384}
+              className="mx-auto object-contain w-72 h-72 md:w-80 md:h-80 xl:w-96 xl:h-96 drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              priority
+            />
+          </div>
         </div>
       </section>
 
