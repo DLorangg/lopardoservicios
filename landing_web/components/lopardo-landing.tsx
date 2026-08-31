@@ -170,14 +170,14 @@ export default function LopardoLanding() {
             </ul>
           </div>
 
-          {/* Columna Derecha (Logo grande centrado en desktop) */}
-          <div className="hidden lg:flex items-center justify-center md:justify-center lg:justify-center w-full h-full my-auto">
+          {/* Columna Derecha (Logo grande alineado a la derecha en desktop) */}
+          <div className="hidden lg:flex items-center justify-center md:justify-end w-full h-full">
             <Image
               src="/images/lopardo-logo.png"
               alt="Lopardo Servicios - Climatización y Aire Acondicionado en Neuquén"
               width={384}
               height={384}
-              className="mx-auto object-contain w-72 h-72 md:w-80 md:h-80 xl:w-96 xl:h-96 drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              className="object-contain md:mr-4 lg:mr-8 w-72 h-72 md:w-80 md:h-80 xl:w-96 xl:h-96 drop-shadow-2xl hover:scale-105 transition-transform duration-500"
               priority
             />
           </div>

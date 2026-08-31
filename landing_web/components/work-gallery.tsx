@@ -16,18 +16,37 @@ const images = [
     src: "/images/carrusel/foto3.jpeg",
     alt: "Mantenimiento preventivo y reparación de sistemas de climatización VRF en Alto Valle - Lopardo Servicios",
   },
+  {
+    src: "/images/carrusel/foto4.jpeg",
+    alt: "Instalación y conexionado de equipos de climatización comercial en Neuquén - Lopardo Servicios",
+  },
+  {
+    src: "/images/carrusel/foto5.jpeg",
+    alt: "Revisión técnica y calibración de sistemas de aire acondicionado industrial - Lopardo Servicios",
+  },
+  {
+    src: "/images/carrusel/foto6.jpeg",
+    alt: "Supervisión y control operativo de unidades de calefacción y refrigeración - Lopardo Servicios",
+  },
+  {
+    src: "/images/carrusel/foto7.jpeg",
+    alt: "Trabajos de mantenimiento y optimización térmica en instalaciones corporativas - Lopardo Servicios",
+  },
 ];
 
 export function WorkGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
+    if (isPaused) return;
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
     }, 3500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isPaused]);
 
   const getPosition = (index: number) => {
     if (index === activeIndex) return "active";
@@ -53,12 +72,16 @@ export function WorkGallery() {
         </div>
 
         {/* Carousel */}
-        <div className="relative w-full max-w-5xl mx-auto h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden py-4">
+        <div
+          className="relative w-full max-w-5xl mx-auto h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden py-4"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           {images.map((imgObj, index) => {
             const position = getPosition(index);
 
             const baseClasses =
-              "absolute top-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out rounded-2xl object-cover shadow-xl";
+              "absolute top-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out rounded-2xl object-cover shadow-xl cursor-pointer";
 
             let positionClasses = "";
 
@@ -69,11 +92,11 @@ export function WorkGallery() {
                 break;
               case "prev":
                 positionClasses =
-                  "left-[15%] md:left-[20%] -translate-x-1/2 w-[60%] md:w-[40%] h-[250px] md:h-[300px] z-20 opacity-40 blur-[2px] scale-90 hidden md:block";
+                  "left-[15%] md:left-[20%] -translate-x-1/2 w-[60%] md:w-[40%] h-[250px] md:h-[300px] z-20 opacity-40 blur-[2px] scale-90 hidden md:block hover:opacity-75 hover:blur-0";
                 break;
               case "next":
                 positionClasses =
-                  "left-[85%] md:left-[80%] -translate-x-1/2 w-[60%] md:w-[40%] h-[250px] md:h-[300px] z-20 opacity-40 blur-[2px] scale-90 hidden md:block";
+                  "left-[85%] md:left-[80%] -translate-x-1/2 w-[60%] md:w-[40%] h-[250px] md:h-[300px] z-20 opacity-40 blur-[2px] scale-90 hidden md:block hover:opacity-75 hover:blur-0";
                 break;
               default:
                 positionClasses =
@@ -88,6 +111,7 @@ export function WorkGallery() {
                 alt={imgObj.alt}
                 width={800}
                 height={500}
+                onClick={() => setActiveIndex(index)}
                 className={`${baseClasses} ${positionClasses}`}
               />
             );

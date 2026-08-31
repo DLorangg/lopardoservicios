@@ -20,14 +20,27 @@ export function TestimonialsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [approvedReviews, setApprovedReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { current } = scrollRef;
-      const scrollAmount = current.clientWidth * 0.8; // Desplaza el 80% del ancho visible
-      current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-    }
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      setItemsPerPage(window.innerWidth < 768 ? 1 : 3);
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  const prevSlide = () => {
+    if (approvedReviews.length === 0) return;
+    setCurrentIndex((current) => (current - 1 + approvedReviews.length) % approvedReviews.length);
+  };
+
+  const nextSlide = () => {
+    if (approvedReviews.length === 0) return;
+    setCurrentIndex((current) => (current + 1) % approvedReviews.length);
   };
 
   useEffect(() => {
@@ -48,27 +61,22 @@ export function TestimonialsSection() {
     fetchApprovedReviews();
   }, []);
 
-  // Auto-desplazamiento del carrusel cada 8 segundos
+  // Auto-rotación dinámica del slider según el largo del texto
   useEffect(() => {
-    if (approvedReviews.length === 0 || isModalOpen) return;
+    if (approvedReviews.length <= 1 || isModalOpen || isPaused) return;
 
-    const interval = setInterval(() => {
-      if (scrollRef.current) {
-        const { current } = scrollRef;
-        const maxScrollLeft = current.scrollWidth - current.clientWidth;
+    const activeReviewIndex = (currentIndex + (itemsPerPage === 3 ? 1 : 0)) % approvedReviews.length;
+    const currentReview = approvedReviews[activeReviewIndex];
+    const baseTime = 4000;
+    const textLength = currentReview?.comentario?.length || (currentReview as any)?.texto?.length || 0;
+    const dynamicDuration = Math.min(9500, Math.max(4500, baseTime + textLength * 25));
 
-        // Si está en el extremo derecho (con margen de 5px), vuelve al inicio
-        if (current.scrollLeft >= maxScrollLeft - 5) {
-          current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          const scrollAmount = current.clientWidth * 0.8;
-          current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-        }
-      }
-    }, 8000);
+    const timer = setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % approvedReviews.length);
+    }, dynamicDuration);
 
-    return () => clearInterval(interval);
-  }, [approvedReviews, isModalOpen]);
+    return () => clearTimeout(timer);
+  }, [currentIndex, approvedReviews, isModalOpen, isPaused, itemsPerPage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,8 +115,12 @@ export function TestimonialsSection() {
     }
   };
 
+  const displayReviews = approvedReviews.length >= 3 
+    ? [...approvedReviews, ...approvedReviews, ...approvedReviews] 
+    : approvedReviews;
+
   return (
-    <section id="empresa" className="bg-white py-20 px-6">
+    <section id="empresa" className="bg-white py-20 px-6 sm:px-12">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-14">
@@ -128,82 +140,137 @@ export function TestimonialsSection() {
             Aún no hay testimonios disponibles.
           </div>
         ) : (
-          <div className="relative group">
+          <div
+            className="relative group w-full"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
             {/* Botón Izquierdo */}
             <button
-              onClick={() => scroll('left')}
-              className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
-              aria-label="Desplazar a la izquierda"
+              onClick={prevSlide}
+              className="hidden md:flex absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
+              aria-label="Anterior testimonio"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
 
-            <div
-              ref={scrollRef}
-              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar"
-            >
-              {approvedReviews.map((review) => (
-                <article
-                  key={review.id}
-                  className="
-                    relative flex flex-col gap-6
-                    rounded-xl border border-border bg-white
-                    p-8 md:p-10
-                    shadow-sm hover:shadow-md
-                    transition-shadow duration-300
-                    overflow-hidden
-                    min-w-[85%] md:min-w-[45%] lg:min-w-[30%] flex-shrink-0 snap-center
-                  "
-                >
-                  {/* Decorative oversized quote mark */}
-                  <Quote
-                    className="
-                      absolute -top-2 -left-1
-                      h-24 w-24 text-muted-foreground/[0.06]
-                      rotate-180
-                    "
-                    strokeWidth={1}
-                    aria-hidden="true"
-                  />
+            {/* Viewport y Riel Desplazable */}
+            <div className="overflow-hidden w-full max-w-6xl mx-auto py-8 relative">
+              <div
+                className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
+              >
+                {displayReviews.map((review, index) => {
+                  const isCenter = itemsPerPage === 1
+                    ? index === currentIndex
+                    : index === currentIndex + 1;
 
-                  {/* Sector tag */}
-                  <span
-                    className="
-                      self-start text-xs font-semibold uppercase tracking-widest
-                      text-brand bg-brand/10
-                      px-3 py-1 rounded-full
-                    "
-                  >
-                    Cliente Verificado
-                  </span>
+                  return (
+                    <div key={`${review.id}-${index}`} className="w-full md:w-1/3 flex-shrink-0 px-3">
+                      <article
+                        onClick={() => {
+                          const targetIndex = itemsPerPage === 3
+                            ? (index - 1 + approvedReviews.length) % approvedReviews.length
+                            : index % approvedReviews.length;
+                          setCurrentIndex(targetIndex);
+                        }}
+                        className={`
+                          relative flex flex-col justify-between
+                          h-full min-h-[280px] md:min-h-[320px]
+                          p-6 sm:p-7 rounded-2xl
+                          transition-all duration-700 ease-out transform cursor-pointer
+                          overflow-hidden whitespace-normal
+                          ${isCenter
+                            ? "scale-100 opacity-100 shadow-xl border border-blue-500/30 ring-1 ring-blue-500/20 z-10 bg-white"
+                            : "scale-95 opacity-50 shadow-sm border border-slate-200 z-0 bg-white/90"
+                          }
+                        `}
+                      >
+                        {/* Contenido superior */}
+                        <div className="relative flex flex-col gap-4">
+                          {/* Decorative oversized quote mark */}
+                          <Quote
+                            className="
+                              absolute -top-2 -left-1
+                              h-24 w-24 text-muted-foreground/[0.06]
+                              rotate-180
+                            "
+                            strokeWidth={1}
+                            aria-hidden="true"
+                          />
 
-                  {/* Quote text */}
-                  <blockquote className="relative z-10 text-base md:text-lg text-slate-700 leading-relaxed italic">
-                    &ldquo;{review.comentario}&rdquo;
-                  </blockquote>
+                          {/* Sector tag */}
+                          <span
+                            className={`
+                              self-start text-xs font-semibold uppercase tracking-widest
+                              px-3 py-1 rounded-full transition-colors duration-700 ease-in-out
+                              ${isCenter ? "text-brand bg-brand/10" : "text-slate-500 bg-slate-100"}
+                            `}
+                          >
+                            Cliente Verificado
+                          </span>
 
-                  {/* Divider */}
-                  <div className="h-px w-12 bg-brand/30 rounded-full" />
+                          {/* Quote text */}
+                          <p className="relative z-10 text-slate-600 text-sm md:text-base leading-relaxed italic my-4 whitespace-normal break-words">
+                            &ldquo;{review.comentario}&rdquo;
+                          </p>
+                        </div>
 
-                  {/* Author */}
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-bold text-slate-800">{review.nombre_cliente}</span>
-                    {review.empresa && (
-                      <span className="text-sm text-slate-500">{review.empresa}</span>
-                    )}
-                  </div>
-                </article>
-              ))}
+                        {/* Contenido inferior (Autor) */}
+                        <div className="flex flex-col gap-3">
+                          {/* Divider */}
+                          <div className={`h-px w-12 rounded-full transition-colors duration-700 ease-in-out ${isCenter ? "bg-brand/40" : "bg-slate-300"}`} />
+
+                          {/* Author */}
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-bold text-slate-800">{review.nombre_cliente}</span>
+                            {review.empresa && (
+                              <span className="text-sm text-slate-500">{review.empresa}</span>
+                            )}
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Botón Derecho */}
             <button
-              onClick={() => scroll('right')}
-              className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
-              aria-label="Desplazar a la derecha"
+              onClick={nextSlide}
+              className="hidden md:flex absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-brand hover:border-brand transition-all cursor-pointer"
+              aria-label="Siguiente testimonio"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
+
+            {/* Dots Indicadores */}
+            {approvedReviews.length > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-2">
+                {approvedReviews.map((_, idx) => {
+                  const activeDot = (currentIndex + (itemsPerPage === 3 ? 1 : 0)) % approvedReviews.length;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        const target = itemsPerPage === 3
+                          ? (idx - 1 + approvedReviews.length) % approvedReviews.length
+                          : idx;
+                        setCurrentIndex(target);
+                      }}
+                      aria-label={`Ver testimonio ${idx + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        idx === activeDot
+                          ? "w-6 bg-brand"
+                          : "w-2 bg-slate-300 hover:bg-slate-400"
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -345,6 +412,7 @@ export function TestimonialsSection() {
                       id="client-comment"
                       required
                       rows={4}
+                      maxLength={300}
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       placeholder="Describa brevemente su experiencia con nuestro soporte técnico, mantenimiento preventivo o instalación..."
@@ -355,6 +423,9 @@ export function TestimonialsSection() {
                         transition-all duration-200 resize-none
                       "
                     />
+                    <div className="flex justify-end">
+                      <span className="text-xs text-slate-400">{comment.length}/300 caracteres</span>
+                    </div>
                   </div>
 
                   {/* Botón enviar */}
