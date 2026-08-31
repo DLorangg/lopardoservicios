@@ -18,6 +18,14 @@ if (json_last_error() === JSON_ERROR_NONE) {
     $empresa = isset($input['empresa']) && trim($input['empresa']) !== '' ? trim($input['empresa']) : null;
     $comentario = trim($input['comentario']);
 
+    // Validar que el comentario no supere los 320 caracteres
+    if (mb_strlen($comentario, 'UTF-8') > 320) {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode(['error' => 'El comentario no puede superar los 320 caracteres.']);
+        exit;
+    }
+
     $sql = "INSERT INTO resenas (nombre_cliente, empresa, comentario, estado) VALUES (?, ?, ?, 'pendiente')";
     $stmt = $pdo->prepare($sql);
 
