@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import './datosDetalle.css';
 import { format, parseISO } from 'date-fns';
-import { Pencil } from 'react-bootstrap-icons';
+import { Pencil, Download } from 'react-bootstrap-icons';
 
 function getClassForEstado(estado) {
   switch (estado) {
@@ -135,6 +135,32 @@ function DatosDetalle() {
 
   const baseUrl = import.meta.env.VITE_API_URL.replace('/backend/routes', '').replace('/routes', '');
 
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename || url.split('/').pop() || 'adjunto';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error al descargar archivo:', error);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'adjunto';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className="main-content-container container p-4 mt-4 datos-detalle">
       <div className="d-flex align-items-center gap-3 mb-4 flex-wrap">
@@ -223,35 +249,64 @@ function DatosDetalle() {
           </div>
 
           <div className="form-group detalle-item">
-          <label className="font-weight-bold">Adjuntos: </label>
-          <div>
-            {visitaActual.adjuntos && visitaActual.adjuntos.length > 0 ? (
-              visitaActual.adjuntos.map((adjunto, index) => {
-                const fileUrl = baseUrl + adjunto.URL;
-                const isImage = fileUrl.match(/\.(jpeg|jpg|png)$/i);
-                return (
-                  <div key={index} style={{ display: 'inline-block', marginRight: '10px', verticalAlign: 'middle' }}>
-                    {isImage ? (
-                      <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={fileUrl}
-                          alt="Adjunto"
-                          style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }}
-                        />
-                      </a>
-                    ) : (
-                      <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info btn-sm">
-                        Ver Documento
-                      </a>
-                    )}
-                  </div>
-                );
-              })
-            ) : (
-              <p>No hay adjuntos.</p>
-            )}
+            <label className="font-weight-bold">Adjuntos: </label>
+            <div>
+              {visitaActual.adjuntos && visitaActual.adjuntos.length > 0 ? (
+                <div className="d-flex flex-wrap gap-3 mt-2">
+                  {visitaActual.adjuntos.map((adjunto, index) => {
+                    const fileUrl = baseUrl + adjunto.URL;
+                    const isImage = fileUrl.match(/\.(jpeg|jpg|png)$/i);
+                    return (
+                      <div
+                        key={index}
+                        className="card shadow-sm p-2 d-flex flex-column align-items-center"
+                        style={{ width: '170px', borderRadius: '8px', border: '1px solid var(--bs-border-color)' }}
+                      >
+                        {isImage ? (
+                          <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="mb-2">
+                            <img
+                              src={fileUrl}
+                              alt="Adjunto"
+                              style={{ width: '150px', height: '130px', objectFit: 'cover', borderRadius: '6px' }}
+                            />
+                          </a>
+                        ) : (
+                          <div
+                            className="d-flex align-items-center justify-content-center bg-body-secondary mb-2 rounded"
+                            style={{ width: '150px', height: '130px' }}
+                          >
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-info btn-sm">
+                              Ver Documento
+                            </a>
+                          </div>
+                        )}
+                        {adjunto.NombreOriginal && (
+                          <span
+                            className="text-truncate text-muted text-center w-100 mb-2"
+                            style={{ fontSize: '0.8rem' }}
+                            title={adjunto.NombreOriginal}
+                          >
+                            {adjunto.NombreOriginal}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 mt-auto"
+                          title="Descargar"
+                          onClick={() => handleDownload(fileUrl, adjunto.NombreOriginal)}
+                        >
+                          <Download size={14} />
+                          <span>Descargar</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p>No hay adjuntos.</p>
+              )}
+            </div>
           </div>
-        </div>
         <div className="form-group detalle-item">
           <label className="font-weight-bold">Fecha de cobro:</label>
           <span className="ml-2">{fechaCobroFormateada}</span>

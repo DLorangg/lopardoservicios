@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { Form, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Download, Trash } from 'react-bootstrap-icons';
 
 export function DatosUpdate() {
   const [dataVisita, setDataVisita] = useState([]);
@@ -77,6 +78,32 @@ export function DatosUpdate() {
   const handleRemoveExistingFile = (idAdjunto) => {
     setAdjuntosParaEliminar(prev => [...prev, idAdjunto]);
     setAdjuntos(prev => prev.filter(adj => adj.IdAdjunto !== idAdjunto));
+  };
+
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename || url.split('/').pop() || 'adjunto';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error al descargar archivo:', error);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'adjunto';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   useEffect(() => {
@@ -380,9 +407,26 @@ export function DatosUpdate() {
                             )}
                             <span className="ms-2 text-muted" style={{ fontSize: '0.85rem' }}>{adjunto.NombreOriginal}</span>
                           </div>
-                          <button type="button" className="btn btn-danger btn-sm" onClick={() => handleRemoveExistingFile(adjunto.IdAdjunto)}>
-                            Eliminar
-                          </button>
+                          <div className="d-flex align-items-center gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                              title="Descargar"
+                              onClick={() => handleDownload(fileUrl, adjunto.NombreOriginal)}
+                            >
+                              <Download size={15} />
+                              <span>Descargar</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm d-flex align-items-center gap-1"
+                              title="Eliminar"
+                              onClick={() => handleRemoveExistingFile(adjunto.IdAdjunto)}
+                            >
+                              <Trash size={15} />
+                              <span>Eliminar</span>
+                            </button>
+                          </div>
                         </li>
                       );
                     })}
