@@ -21,3 +21,12 @@ forzar_admin.php
 .DS_Store
 docker-compose.yml
 uploads/  # Ignoramos la carpeta uploads para evitar subir archivos subidos por los usuarios
+
+# Backend
+backend/db.php
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Landing Web (Next.js)
+landing_web/.next/
+landing_web/out/

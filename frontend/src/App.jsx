@@ -16,6 +16,8 @@ import { CajaUpdate } from './Components/pages/cajaViews/cajaUpdate';
 import { Busqueda } from './Components/pages/busquedaViews/busqueda';
 import { ClienteDetalle } from './Components/pages/clienteViews/clienteDetalle';
 import { ModeracionResenas } from './Components/pages/ModeracionResenas';
+import { GestionWeb } from './Components/GestionWeb/GestionWeb';
+import { NotFound } from './Components/NotFound/NotFound';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -74,16 +76,21 @@ function App() {
         <Route path='/personal' element={authenticated ? <Personal /> : <Navigate to='/login' replace />} />
         <Route path="/cajaUpdate/:id" element={authenticated ? <CajaUpdate /> : <Navigate to='/login' replace />} />
         <Route path="/personalUpdate/:id" element={authenticated ? <PersonalUpdate /> : <Navigate to='/login' replace />} />
-        <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/busqueda' replace />} />
+        <Route path='/busqueda' element={authenticated ? <Busqueda /> : <Navigate to='/login' replace />} />
         <Route
           path='/resenas'
+          element={<Navigate to='/gestion-web' replace />}
+        />
+        <Route
+          path='/gestion-web'
           element={
             authenticated && parseInt(localStorage.getItem('userRole')) === 1
-              ? <ModeracionResenas />
+              ? <GestionWeb />
               : <Navigate to='/' replace />
           }
         />
         <Route path='/login' element={<LoginForm setAuthenticated={setAuthenticated} />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
 
       {authenticated && <Footer />}

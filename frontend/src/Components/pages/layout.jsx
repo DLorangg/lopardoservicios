@@ -4,7 +4,7 @@ import CirculoLogo from '../../Assets/Circulo_Logo.png';
 import SearchIcon from '../../Assets/search.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { MoonFill, SunFill, BoxArrowRight } from 'react-bootstrap-icons';
+import { MoonFill, SunFill, BoxArrowRight, Globe2 } from 'react-bootstrap-icons';
 import './layout.css';
 
 export function Navbar({ setAuthenticated, theme, setTheme }) {
@@ -46,8 +46,11 @@ export function Navbar({ setAuthenticated, theme, setTheme }) {
               <Link className="nav-link" to="/personal" id="personal">Personal</Link>
             </li>
             {idRol === 1 && (
-              <li className={`nav-item ${location.pathname === '/panel/resenas' ? 'active' : ''}`}>
-                <Link className="nav-link" to="/resenas" id="nav-resenas">Reseñas</Link>
+              <li className={`nav-item ${location.pathname === '/gestion-web' || location.pathname === '/resenas' ? 'active' : ''}`}>
+                <Link className="nav-link d-inline-flex align-items-center" to="/gestion-web" id="nav-gestion-web">
+                  <Globe2 className="me-1" />
+                  Gestión Web
+                </Link>
               </li>
             )}
             <li className={`nav-item ${location.pathname === '/busqueda' ? 'active' : ''}`}>

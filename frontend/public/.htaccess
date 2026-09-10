@@ -1,0 +1,19 @@
+# 1. Enrutamiento para Single Page Application (Evita errores 404 al recargar)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# 2. Desactivar caché estricto únicamente para index.html (Fuerza descarga de nuevas versiones)
+<FilesMatch "index\.html">
+    FileETag None
+    <IfModule mod_headers.c>
+        Header Set Cache-Control "no-cache, no-store, must-revalidate"
+        Header Set Pragma "no-cache"
+        Header Set Expires 0
+    </IfModule>
+</FilesMatch>

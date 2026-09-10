@@ -11,6 +11,7 @@ export function LoginForm({ setAuthenticated }) {
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [blockedError, setBlockedError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,18 +27,19 @@ export function LoginForm({ setAuthenticated }) {
         });
 
         // Desestructura los datos de la respuesta
-        const { userName, userRole, token } = response.data;
+        const { userName, userRole, token, cambioClaveRequerido } = response.data;
 
         // Verifica que se reciban el nombre de usuario, el rol y el token
         if (userName && userRole && token) {
+            setBlockedError('');
             localStorage.setItem('userName', userName);
             localStorage.setItem('userRole', userRole);
             localStorage.setItem('token', token); // Guardar el token
             setAuthenticated(true);
             toast.success("¡Inicio de sesión exitoso! Bienvenido."); // Mostrar el mensaje de éxito
 
-            // Verifica la contraseña para decidir si mostrar el cambio de contraseña
-            if (password === '1234') {
+            // Verifica si el servidor requiere cambio de contraseña
+            if (cambioClaveRequerido) {
                 setShowChangePassword(true);
             } else {
                 setShowChangePassword(false);
@@ -53,9 +55,15 @@ export function LoginForm({ setAuthenticated }) {
         }
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 429) {
+            const msg = error.response.data?.error || "Demasiados intentos fallidos. Tu acceso está temporalmente bloqueado por 15 minutos.";
+            setBlockedError(msg);
+            toast.error(msg, { duration: 6000 });
+        } else if (error.response && error.response.status === 401) {
+            setBlockedError('');
             toast.error("Credenciales incorrectas. Inténtalo de nuevo.");
         } else {
+            setBlockedError('');
             toast.error('Error al iniciar sesión. Verifica tus credenciales.');
         }
     }
@@ -65,7 +73,6 @@ export function LoginForm({ setAuthenticated }) {
   const handleChangePassword = async () => {
     try {
       const response = await axios.put(`${import.meta.env.VITE_API_URL}/updatePassword.php`, {
-        username: username,
         currentPassword: password,
         newPassword: newPassword,
       });
@@ -76,7 +83,8 @@ export function LoginForm({ setAuthenticated }) {
       navigate('/'); // Redirigir al home después de cambiar la contraseña
     } catch (error) {
       console.error('Error al cambiar la contraseña:', error);
-      toast.error('Error al cambiar la contraseña. Verifica tus datos.');
+      const errorMsg = error.response?.data?.error || 'Error al cambiar la contraseña. Verifica tus datos.';
+      toast.error(errorMsg);
     }
   };
 
@@ -136,6 +144,18 @@ export function LoginForm({ setAuthenticated }) {
             }}
           />
           <h1 className="text-dark" style={{ fontSize: '36px', marginBottom: '30px' }}>Iniciar sesión</h1>
+
+          {blockedError && (
+            <div
+              className="alert alert-danger d-flex align-items-center mb-3 text-start shadow-sm"
+              role="alert"
+              style={{ borderRadius: '12px', fontSize: '13.5px', lineHeight: '1.4' }}
+            >
+              <div className="fw-semibold text-danger">
+                ⚠️ {blockedError}
+              </div>
+            </div>
+          )}
 
           <div
             style={{

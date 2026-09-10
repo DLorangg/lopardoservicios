@@ -1,13 +1,15 @@
 <?php
 
 // Función auxiliar para codificar (debe coincidir con la de login.php)
-function base64url_encode_jwt($data) {
-    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+if (!function_exists('base64url_encode_jwt')) {
+    function base64url_encode_jwt($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
 }
 
 // 1. Obtenemos los encabezados que nos envía React (Axios)
-$headers = apache_request_headers();
-$authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+$headers = function_exists('apache_request_headers') ? apache_request_headers() : [];
+$authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
 
 // 2. Buscamos el formato "Bearer [TOKEN]"
 if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
@@ -37,7 +39,7 @@ if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             } else {
                 http_response_code(401);
                 echo json_encode(['error' => 'La sesión ha expirado. Vuelve a iniciar sesión.']);
-                exit;
+                exit();
             }
         }
     }
@@ -45,6 +47,6 @@ if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
 
 // 5. Si el código llega hasta aquí, significa que NO hay token o es falso/modificado.
 http_response_code(401);
-echo json_encode(['error' => 'Acceso denegado. No estás autorizado.']);
-exit;
+echo json_encode(['error' => 'No autorizado']);
+exit();
 ?>

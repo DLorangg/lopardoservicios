@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const images = [
+const defaultImages = [
   {
     src: "/images/carrusel/foto1.jpeg",
     alt: "Mantenimiento de unidad rooftop de climatización en techo de empresa en Neuquén - Lopardo Servicios",
@@ -35,20 +35,50 @@ const images = [
 ];
 
 export function WorkGallery() {
+  const [images, setImages] = useState(defaultImages);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (isPaused) return;
+    const fetchCarruselFotos = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sistema.lopardoservicios.com/backend/routes";
+        const res = await fetch(`${baseUrl}/carrusel.php`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const apiOrigin = baseUrl.replace(/\/routes\/?$/, '');
+            const mapped = data.map((item: any) => ({
+              src: item.url.startsWith('http') 
+                ? item.url 
+                : `${apiOrigin}${item.url.startsWith('/') ? '' : '/'}${item.url}`,
+              alt: item.nombre_archivo 
+                ? `Trabajo en terreno - ${item.nombre_archivo}` 
+                : "Trabajos de climatización en terreno - Lopardo Servicios",
+            }));
+            setImages(mapped);
+          }
+        }
+      } catch (error) {
+        console.error("Error al cargar fotos dinámicas del carrusel:", error);
+      }
+    };
+
+    fetchCarruselFotos();
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || images.length === 0) return;
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, images.length]);
 
   const getPosition = (index: number) => {
+    if (images.length === 0) return "hidden";
     if (index === activeIndex) return "active";
 
     const prev = (activeIndex - 1 + images.length) % images.length;
